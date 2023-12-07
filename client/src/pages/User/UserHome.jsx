@@ -1,11 +1,12 @@
 import React from "react";
 import MyButton from "../../components/MyButton";
-import { useNavigate } from "react-router-dom";
-import { ServerVariables } from "../../util/ServerVariables";
+
 import Navbar from "../../components/Navbar";
+import { useDispatch } from "react-redux";
 
 function UserHome() {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   return (
     <>
       <Navbar />
@@ -17,11 +18,6 @@ function UserHome() {
             className="h-28 w-44 mx-auto"
           />
           <h2 className="text-2xl font-bold mb-6">Welcome User</h2>
-
-          <MyButton
-            text="Logout"
-            onClick={() => navigate(ServerVariables.Login)}
-          />
         </div>
       </div>
     </>

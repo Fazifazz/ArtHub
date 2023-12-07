@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { ServerVariables } from "../../util/ServerVariables";
+import { userRequest } from "../../Helper/instance";
+import { apiEndPoints } from "../../util/api";
 import MyButton from "../../components/MyButton";
 import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
-import { loginThunk } from "../../redux/AuthSlice";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../../redux/AlertSlice";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -15,10 +17,11 @@ const loginSchema = Yup.object().shape({
     .required("Password is required"),
 });
 
-const LoginPage = () => {
+const AdminLogin = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const { isLoading, isError, isSuccess, message, errorMsg, token } = useSelector((state) => state.Auth);
+  const navigate  = useNavigate();
+
+  // const { loading } = useSelector(state => state.alerts)
 
   const formik = useFormik({
     initialValues: {
@@ -27,14 +30,27 @@ const LoginPage = () => {
     },
     validationSchema: loginSchema,
     onSubmit: (values) => {
-      dispatch(loginThunk(values));
+      dispatch(showLoading())
+      userRequest({
+        url:apiEndPoints.postAdminLogin,
+        method:'post',
+        data:values
+      }).then((res)=>{
+        dispatch(hideLoading())
+        if(res.data.success){
+            navigate(ServerVariables.AdminDashboard)
+            toast.success(res.data.success)
+        }else{
+          toast.error(res.data.error)
+        }
+      }).catch((error)=>{
+        dispatch(hideLoading())
+        console.log(error.message)
+        toast.error(error.message)
+      })
     },
   });
 
-  useEffect(() => {
-    if (isSuccess) toast.success(message);
-    if (isError) toast.error(errorMsg);
-  }, [isSuccess, isError]);
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -44,7 +60,7 @@ const LoginPage = () => {
           alt="Logo"
           className="h-28 w-44 mx-auto"
         />
-        <h2 className="text-2xl font-bold mb-6">USER LOGIN</h2>
+        <h2 className="text-2xl font-bold mb-6">ADMIN LOGIN</h2>
 
         <form onSubmit={formik.handleSubmit} noValidate>
           <div className="mb-4">
@@ -84,25 +100,13 @@ const LoginPage = () => {
             </p>
           )}
           <div className="flex items-center justify-center">
-            <MyButton text="submit" />
+          <MyButton text="Login" />
           </div>
         </form>
 
-        <p className="text-sm">
-          Don't have an account?
-          <a
-            className="text-blue-500"
-            onClick={() => navigate(ServerVariables.Register)}
-          >
-            Sign up
-          </a>
-        </p>
-        <a href="#" className="text-blue-500">
-          Forgot Password?
-        </a>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default AdminLogin;

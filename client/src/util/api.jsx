@@ -3,8 +3,10 @@ export const apiEndPoints = {
     postRegisterData:'/api/user/register',
     postVerifyOtp:'/api/user/verifyOtp',
     postVerifyLogin:'/api/user/verifyLogin',
+    postResendOtp:'/api/user/resendOtp',
 
     //admin endpoints
+    postAdminLogin:'/api/admin/postAdminLogin',
     showUsers:'/api/admin/showUsers',
     blockUser:'/api/admin/blockUser',
     showCategories:'/api/admin/showCategories',
@@ -12,4 +14,5 @@ export const apiEndPoints = {
     unlistCategory:'/api/admin/deleteCategory',
     editCategory:'/api/admin/editCategory',
     updateCategory:'/api/admin/updateCategory',
+
 }

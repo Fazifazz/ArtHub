@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
@@ -12,8 +12,24 @@ import { hideLoading, showLoading } from "../../redux/AlertSlice";
 const OtpVerification = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [timer, setTimer] = useState(30);
+  const timerIntervalRef = useRef(null);
   const location = useLocation();
   const email = location.state ? location.state.email : "";
+
+  useEffect(() => {
+    startTimer();
+  }, []);
+
+  const startTimer = () => {
+    setTimer(30);
+    clearInterval(timerIntervalRef.current); // Clear any existing interval before starting a new one
+    const countdown = setInterval(() => {
+      setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
+    }, 1000);
+    timerIntervalRef.current = countdown; // Save the interval reference to clear it later
+    return () => clearInterval(countdown);
+  };
 
   // Assuming you have a state for OTP digits
   const initialValues = {
@@ -40,12 +56,29 @@ const OtpVerification = () => {
           toast.success(res.data.success);
           navigate(ServerVariables.Login);
         } else {
-          dispatch(hideLoading())
+          dispatch(hideLoading());
           toast.error(res.data.error);
         }
       });
     },
   });
+
+  const resendOtp = () => {
+    dispatch(showLoading());
+    userRequest({
+      url: apiEndPoints.postResendOtp,
+      method: "post",
+      data: { email: email },
+    }).then((res) => {
+      dispatch(hideLoading());
+      if (res.data.success) {
+        toast.success(res.data.success);
+        startTimer();
+      } else {
+        toast.error("failed to resend,try again");
+      }
+    });
+  };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -78,12 +111,18 @@ const OtpVerification = () => {
           </div>
         </form>
 
-        <p className="text-sm mt-2">
-          Did not receive the OTP?
-          <a href="#" className="text-blue-500">
-            Resend OTP
-          </a>
-        </p>
+        <div className="flex-1 flex flex-col items-center justify-center">
+          {timer ? (
+            <h1>{timer}</h1>
+          ) : (
+            <p
+              className="text-[#E0CDB6] cursor-pointer font-semibold"
+              onClick={resendOtp}
+            >
+              <p className="text-sm mt-2">Did not receive the OTP?</p>Resend Otp
+            </p>
+          )}
+        </div>
         <p className="text-sm">
           Back to
           <a

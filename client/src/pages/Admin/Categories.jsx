@@ -18,7 +18,8 @@ function Categories() {
     getCategories();
   });
 
-  const getCategories = () => {
+  const getCategories = async() => {
+    dispatch(showLoading)
     adminRequest({
       url: apiEndPoints.showCategories,
       method: "get",
@@ -72,7 +73,7 @@ function Categories() {
     }
   };
 
-  const handleEdit = (id) => {
+  const handleEdit = async(id) => {
     dispatch(showLoading());
     adminRequest({
       url: apiEndPoints.editCategory,
@@ -95,7 +96,7 @@ function Categories() {
         <header className="bg-white shadow">
           <div className="mx-auto max-w-7xl px-4 py-6 flex items-center justify-between sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              Fields
+              FIELDS
             </h1>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"

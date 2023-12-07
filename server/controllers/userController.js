@@ -16,19 +16,22 @@ exports.register = catchAsync(async (req, res) => {
   }
   //hash password
   const hashPassword = await bcrpt.hash(password, 10);
+  const newOtp = randomString.generate({
+    length: 4,
+    charset: "numeric",
+  });
   const user = new User({
     name,
     mobile,
     password: hashPassword,
     email,
+    otp:{
+      code:newOtp,
+      generatedAt:Date.now()
+    }
   });
   const newUser = await user.save();
   if (newUser) {
-    const newOtp = randomString.generate({
-      length: 4,
-      charset: "numeric",
-    });
-    await User.findOneAndUpdate({ email: email }, { $set: { otp: newOtp } });
     const options = {
       from: process.env.EMAIL,
       to: email,
@@ -45,7 +48,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
     return res.json({ error: "please enter otp" });
   }
   const user = await User.findOne({ email: req.body.email });
-  if (req.body.otp === user.otp) {
+  if (req.body.otp === user.otp.code) {
     await User.findOneAndUpdate(
       { email: req.body.email },
       { $set: { isVerfied: true } }
@@ -70,11 +73,38 @@ exports.verifyLogin = catchAsync(async (req, res) => {
     return res.json({ error: "sorry,you are blocked by the Admin!" });
   }
   if (!user.isVerfied) {
-    await User.findOneAndDelete({email:email})
+    await User.findOneAndDelete({ email: email });
     return res.json({ error: "sorry,you are not verified!, sign up again" });
   }
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  return res.status(200).json({ success: "Login Successfull",data:token });
+  return res.status(200).json({ success: "Login Successfull", token,user });
+});
+
+exports.ResendOtp = catchAsync(async (req, res) => {
+  if (!req.body.email) {
+    return console.log("email not found");
+  }
+  const user = await User.findOne({ email: req.body.email });
+  const newOtp = randomString.generate({
+    length: 4,
+    charset: "numeric",
+  });
+  const options = {
+    from: process.env.EMAIL,
+    to: req.body.email,
+    subject: "ArtHub verification otp",
+    html: `<center> <h2>Verify Your Email </h2> <br> <h5>OTP :${newOtp} </h5><br><p>This otp is only valid for 1 minutes only</p></center>`,
+  };
+  await Mail.sendMail(options)
+    .then((res) => console.log("otp sended"))
+    .catch((err) => console.log(err.message));
+
+  user.otp.code = newOtp;
+  user.otp.generatedAt = Date.now();
+  await user.save();
+  return res
+    .status(200)
+    .json({ success: "Otp Resended", email: req.body.email });
 });

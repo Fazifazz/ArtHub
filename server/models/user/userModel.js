@@ -21,7 +21,12 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     otp: {
-      type: String,
+      code:{
+        type:String,
+      },
+      generatedAt:{
+        type:Date
+      }
     },
     isVerfied: {
       type: Boolean,

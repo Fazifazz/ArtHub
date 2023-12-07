@@ -3,9 +3,12 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
 import { Fragment } from "react";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "../redux/AuthSlice";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const user = {
     name: "Tom Cook",
@@ -20,11 +23,16 @@ const Navbar = () => {
     { name: "Reports", navigation: "#", current: false },
   ];
 
+  const handleLogout = async()=>{
+    dispatch(logoutUser())
+  }
   const userNavigation = [
     { name: "Your Profile", navigation: "#" },
     { name: "Settings", navigation: "#" },
-    { name: "Sign out", navigation: "#" },
+    { name: "Logout", navigation: "#" },
   ];
+
+ 
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -102,7 +110,7 @@ const Navbar = () => {
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <a
-                                href={item.href}
+                               onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
                                   "block px-4 py-2 text-sm text-gray-700"
@@ -139,7 +147,7 @@ const Navbar = () => {
                 <Disclosure.Button
                   key={item.name}
                   as="a"
-                  href={item.href}
+                 onClick={() => navigate(item.navigation)}
                   className={classNames(
                     item.current
                       ? "bg-gray-900 text-white"
@@ -183,7 +191,7 @@ const Navbar = () => {
                   <Disclosure.Button
                     key={item.name}
                     as="a"
-                    href={item.href}
+                   onClick={() => navigate(item.navigation)}
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                   >
                     {item.name}
