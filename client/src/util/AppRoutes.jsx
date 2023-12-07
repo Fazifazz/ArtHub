@@ -13,6 +13,9 @@ import OtpVerification from "../pages/User/OtpRegister";
 import UserHome from "../pages/User/UserHome";
 import Dashboard from "../pages/Admin/Dashbord";
 import Users from "../pages/Admin/Users";
+import Categories from "../pages/Admin/Categories";
+import AddCategory from "../pages/Admin/AddCategory";
+import EditCategory from "../pages/Admin/EditCategory";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -54,6 +57,9 @@ function AppRoutes() {
           {/* admin routes */}
           <Route path={ServerVariables.AdminDashboard} element={<Dashboard />}/>
           <Route path={ServerVariables.Users} element={<Users />}/>
+          <Route path={ServerVariables.Categories} element={<Categories />}/>
+          <Route path={ServerVariables.AddCategory} element={<AddCategory />}/>
+          <Route path={ServerVariables.EditCategory} element={<EditCategory />}/>
       </Routes>
     </div>
   );

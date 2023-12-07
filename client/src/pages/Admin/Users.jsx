@@ -93,20 +93,20 @@ const Users = () => {
                   {users.map((user, index) => {
                     return (
                       <tr key={user._id}>
-                        <td className="border-b p-4 text-left">{index + 1}</td>
-                        <td className="border-b p-4 text-left">
+                        <td className="border-b p-4 text-center">{index + 1}</td>
+                        <td className="border-b p-4 text-center">
                           <img
                             className="h-10 w-10 rounded-full"
                             src='/images/avatar.png'
                             alt="image"
                           />
                         </td>
-                        <td className="border-b p-4 text-left">{user.name}</td>
-                        <td className="border-b p-4 text-left">
+                        <td className="border-b p-4 text-center">{user.name}</td>
+                        <td className="border-b p-4 text-center">
                           {user.mobile}
                         </td>
-                        <td className="border-b p-4 text-left">{user.email}</td>
-                        <td>
+                        <td className="border-b p-4 text-center">{user.email}</td>
+                        <td className="text-center">
                         <button
                         className={`${user.isBlocked ? 'bg-green-500' : 'bg-red-500'
                           } text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10`}

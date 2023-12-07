@@ -22,7 +22,7 @@ const AdminNavbar = () => {
     { name: "Users", navigation: ServerVariables.Users, current: false },
     { name: "Artists", navigation: "#", current: false },
     { name: "Subscriptions", navigation: "#", current: false },
-    { name: "Fields", navigation: "#", current: false },
+    { name: "Fields", navigation: ServerVariables.Categories, current: false },
     { name: "Plans", navigation: "#", current: false },
   ];
 

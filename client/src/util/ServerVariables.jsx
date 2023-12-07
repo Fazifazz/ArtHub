@@ -16,4 +16,7 @@ export const ServerVariables = {
     //Admin Routes
     AdminDashboard:'/dashboard',
     Users:'/users',
+    Categories:'/categories',
+    AddCategory:'/addCategory',
+    EditCategory:'/editCategory',
 }
