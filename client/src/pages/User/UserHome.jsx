@@ -1,11 +1,16 @@
-import React from "react";
-import MyButton from "../../components/MyButton";
+import React, { useEffect } from "react";
 
 import Navbar from "../../components/Navbar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 function UserHome() {
   const dispatch = useDispatch();
+  const {message} =  useSelector(state=>state.Auth)
+
+  useEffect(()=>{
+    message.length && toast.success(message)
+  },[])
 
   return (
     <>

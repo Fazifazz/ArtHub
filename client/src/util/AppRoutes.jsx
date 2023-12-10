@@ -17,8 +17,18 @@ import Categories from "../pages/Admin/Categories";
 import AddCategory from "../pages/Admin/AddCategory";
 import EditCategory from "../pages/Admin/EditCategory";
 import AdminLogin from "../pages/Admin/AdminLogin";
-import IsLoggedOutUser from "../components/IsLoggedOutUser";
-import IsLoggedUser from "../components/IsLoggedUser";
+import IsLoggedOutUser from "../components/middlewares/IsLoggedOutUser";
+import IsLoggedUser from "../components/middlewares/IsLoggedUser";
+import Plans from "../pages/Admin/Plans";
+import AddPlan from "../pages/Admin/AddPlan";
+import EditPlan from "../pages/Admin/EditPlan";
+import ArtistOtp from "../pages/Artist/ArtistOtp";
+import ArtistHome from "../pages/Artist/ArtistHome";
+import IsArtistLoggedOut from "../components/middlewares/IsArtistLoggedOut";
+import IsArtistLogged from "../components/middlewares/IsArtistLogged";
+import Artists from "../pages/Admin/Artists";
+import IsAdminLoggedOut from "../components/middlewares/IsAdminLoggedOut";
+import IsAdminLogged from "../components/middlewares/IsAdminLogged";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -71,20 +81,31 @@ function AppRoutes() {
         </Route>
 
         {/*artist routes */}
+        <Route element={<IsArtistLoggedOut/>}>
         <Route path={ServerVariables.ArtistLogin} element={<ArtistLogin />} />
+        <Route path={ServerVariables.ArtistRegister} element={<ArtistRegister />}/>
+        <Route path={ServerVariables.ArtistVerifyOtp} element={<ArtistOtp />} />
+        </Route>
+        <Route element={<IsArtistLogged/>}>
+        <Route path={ServerVariables.ArtistHome} element={<ArtistHome />} />
+        </Route>
 
-        <Route
-          path={ServerVariables.ArtistRegister}
-          element={<ArtistRegister />}
-        />
 
         {/* admin routes */}
+        <Route element={<IsAdminLoggedOut/>} >
         <Route path={ServerVariables.AdminLogin} element={<AdminLogin />} />
+        </Route>
+        <Route element={<IsAdminLogged/>}>
         <Route path={ServerVariables.AdminDashboard} element={<Dashboard />} />
         <Route path={ServerVariables.Users} element={<Users />} />
         <Route path={ServerVariables.Categories} element={<Categories />} />
         <Route path={ServerVariables.AddCategory} element={<AddCategory />} />
         <Route path={ServerVariables.EditCategory} element={<EditCategory />} />
+        <Route path={ServerVariables.Plans} element={<Plans />} />
+        <Route path={ServerVariables.AddPlan} element={<AddPlan />} />
+        <Route path={ServerVariables.Editplan} element={<EditPlan />} />
+        <Route path={ServerVariables.Artists} element={<Artists />} />
+        </Route>
       </Routes>
     </div>
   );

@@ -12,6 +12,8 @@ export const ServerVariables = {
     //ArtistRoutes
     ArtistLogin:'/artistLogin',
     ArtistRegister:'/artistRegister',
+    ArtistVerifyOtp:'/artistOtp',
+    ArtistHome:'/artistHome',
 
     //Admin Routes
     AdminLogin:'/adminLogin',
@@ -20,4 +22,8 @@ export const ServerVariables = {
     Categories:'/categories',
     AddCategory:'/addCategory',
     EditCategory:'/editCategory',
+    Plans:'/plans',
+    AddPlan:'/addPlan',
+    Editplan:'/editPlan',
+    Artists:'/artists',
 }

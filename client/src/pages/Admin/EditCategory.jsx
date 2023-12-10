@@ -69,7 +69,7 @@ function EditCategory() {
         <header className="bg-white shadow">
           <div className="mx-auto max-w-7xl px-4 py-6 flex items-center justify-between sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              Add Field
+              EDIT FIELD
             </h1>
           </div>
         </header>
@@ -78,7 +78,7 @@ function EditCategory() {
           <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             {/* Your content */}
             <form>
-              <div className="space-y-12">
+              <div className="space-y-12 ml-8 mr-8">
               {error?<p className="text-sm font-bold text-red-600">{error}</p>:''}
                 <div className="border-b border-gray-900/10 pb-12">
                   <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">

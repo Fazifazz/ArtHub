@@ -3,9 +3,16 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
 import { Fragment } from "react";
+import { logoutAdmin } from "../redux/AdminAuthSlice";
+import { useDispatch } from "react-redux";
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
+
+  const handleLogout = async()=>{
+    dispatch(logoutAdmin())
+  }
 
   const user = {
     name: "Tom Cook",
@@ -20,16 +27,16 @@ const AdminNavbar = () => {
       current: true,
     },
     { name: "Users", navigation: ServerVariables.Users, current: false },
-    { name: "Artists", navigation: "#", current: false },
+    { name: "Artists", navigation: ServerVariables.Artists, current: false },
     { name: "Subscriptions", navigation: "#", current: false },
     { name: "Fields", navigation: ServerVariables.Categories, current: false },
-    { name: "Plans", navigation: "#", current: false },
+    { name: "Plans", navigation: ServerVariables.Plans, current: false },
   ];
 
   const userNavigation = [
     { name: "Your Profile", navigation: "#" },
     { name: "Settings", navigation: "#" },
-    { name: "Sign out", navigation: "#" },
+    { name: "Logout", navigation:'#' },
   ];
 
   function classNames(...classes) {
@@ -110,9 +117,7 @@ const AdminNavbar = () => {
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <a
-                                onClick={() => {
-                                  navigate(item.navigation);
-                                }}
+                              onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
                                   "block px-4 py-2 text-sm text-gray-700"
@@ -195,9 +200,7 @@ const AdminNavbar = () => {
                   <Disclosure.Button
                     key={item.name}
                     as="a"
-                    onClick={() => {
-                      navigate(item.navigation);
-                    }}
+                    onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                   >
                     {item.name}

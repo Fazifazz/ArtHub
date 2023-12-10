@@ -28,16 +28,14 @@ const LoginPage = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       dispatch(loginThunk(values));
+      isError && toast.error(errorMsg)
     },
   });
 
-  useEffect(() => {
-    if (isSuccess) toast.success(message);
-    if (isError) toast.error(errorMsg);
-  }, [isSuccess, isError]);
+
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen ">
       <div className="bg-black text-white p-8 rounded shadow-md w-96 text-center">
         <img
           src="/images/userImages/hub1.png"
@@ -84,7 +82,7 @@ const LoginPage = () => {
             </p>
           )}
           <div className="flex items-center justify-center">
-            <MyButton text="submit" />
+            <MyButton text="Login" />
           </div>
         </form>
 

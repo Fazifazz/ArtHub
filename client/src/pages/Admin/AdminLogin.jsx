@@ -2,13 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { ServerVariables } from "../../util/ServerVariables";
-import { userRequest } from "../../Helper/instance";
-import { apiEndPoints } from "../../util/api";
 import MyButton from "../../components/MyButton";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
-import { hideLoading, showLoading } from "../../redux/AlertSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AdminLoginThunk } from "../../redux/AdminAuthSlice";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -19,9 +16,9 @@ const loginSchema = Yup.object().shape({
 
 const AdminLogin = () => {
   const dispatch = useDispatch();
-  const navigate  = useNavigate();
-
-  // const { loading } = useSelector(state => state.alerts)
+  const navigate = useNavigate();
+  const { isLoading, isError, isSuccess, message, errorMsg, token } =
+    useSelector((state) => state.AdminAuth);
 
   const formik = useFormik({
     initialValues: {
@@ -30,30 +27,13 @@ const AdminLogin = () => {
     },
     validationSchema: loginSchema,
     onSubmit: (values) => {
-      dispatch(showLoading())
-      userRequest({
-        url:apiEndPoints.postAdminLogin,
-        method:'post',
-        data:values
-      }).then((res)=>{
-        dispatch(hideLoading())
-        if(res.data.success){
-            navigate(ServerVariables.AdminDashboard)
-            toast.success(res.data.success)
-        }else{
-          toast.error(res.data.error)
-        }
-      }).catch((error)=>{
-        dispatch(hideLoading())
-        console.log(error.message)
-        toast.error(error.message)
-      })
+      dispatch(AdminLoginThunk(values));
+      isError && toast.error(errorMsg);
     },
   });
 
-
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen">
       <div className="bg-black text-white p-8 rounded shadow-md w-96 text-center">
         <img
           src="/images/userImages/hub1.png"
@@ -100,10 +80,9 @@ const AdminLogin = () => {
             </p>
           )}
           <div className="flex items-center justify-center">
-          <MyButton text="Login" />
+            <MyButton text="Login" />
           </div>
         </form>
-
       </div>
     </div>
   );

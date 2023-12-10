@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiEndPoints } from "../util/api";
-import {  userRequest } from "../Helper/instance";
+import { ArtistRequest } from "../Helper/instance";
 
 const initialState = {
   isLoading: false,
@@ -8,12 +8,12 @@ const initialState = {
   isSuccess: false,
   errorMsg: "",
   message: "",
-  user: JSON.parse(localStorage.getItem("userInfo")) || {},
-  token: JSON.parse(localStorage.getItem("UserToken")) || null,
+  artist: JSON.parse(localStorage.getItem("artistInfo")) || {},
+  token: JSON.parse(localStorage.getItem("artistToken")) || null,
 };
 
-export const AuthSlice = createSlice({
-  name: "Auth",
+export const ArtistAuthSlice = createSlice({
+  name: "ArtistAuth",
   initialState,
   reducers: {
     loginPending: (state) => {
@@ -23,9 +23,9 @@ export const AuthSlice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.isError = false;
-      state.user = action.payload.user;
-      localStorage.setItem("userInfo", JSON.stringify(action.payload.user));
-      localStorage.setItem("UserToken", JSON.stringify(action.payload.token));
+      state.artist = action.payload.artist;
+      localStorage.setItem("artistInfo", JSON.stringify(action.payload.artist));
+      localStorage.setItem("artistToken", JSON.stringify(action.payload.token));
       state.token = action.payload.token;
       state.message = action.payload.success;
     },
@@ -36,20 +36,20 @@ export const AuthSlice = createSlice({
       state.isSuccess = false;
       state.errorMsg = action.payload.error;
     },
-    logoutUser: (state, action) => {
-      localStorage.removeItem("UserToken");
-      localStorage.removeItem("userInfo");
+    logoutArtist: (state, action) => {
+      localStorage.removeItem("artistInfo");
+      localStorage.removeItem("artistToken");
       state.token = null;
-      state.user = {};
+      state.artist = {};
     },
   },
 });
 
-export const loginThunk = (data) => async (dispatch) => {
+export const ArtistLoginThunk = (data) => async (dispatch) => {
   try {
     dispatch(loginPending());
-    const res = await userRequest({
-      url: apiEndPoints.postVerifyLogin,
+    const res = await ArtistRequest({
+      url: apiEndPoints.postArtistVerifyLogin,
       method: "post",
       data: data,
     });
@@ -63,6 +63,6 @@ export const loginThunk = (data) => async (dispatch) => {
   }
 };
 
-export const { loginPending, loginSuccess, loginReject, logoutUser } =
-  AuthSlice.actions;
-export default AuthSlice.reducer;
+export const { loginPending, loginSuccess, loginReject, logoutArtist } =
+  ArtistAuthSlice.actions;
+export default ArtistAuthSlice.reducer;

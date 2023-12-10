@@ -9,25 +9,25 @@ import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
 import toast from "react-hot-toast";
 
-function Categories() {
+function Plans() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
+  const [plans, setPlans] = useState([]);
 
   useEffect(() => {
-    getCategories();
+    getPlans();
   });
 
-  const getCategories = async() => {
+  const getPlans = async() => {
     dispatch(showLoading)
     adminRequest({
-      url: apiEndPoints.showCategories,
+      url: apiEndPoints.showPlans,
       method: "get",
     })
       .then((res) => {
         dispatch(hideLoading());
         if (res.data.success) {
-          setCategories(res.data.categories);
+          setPlans(res.data.plans);
         } else {
           toast.error(res.data.error);
         }
@@ -38,15 +38,15 @@ function Categories() {
       });
   };
 
-  const deleteCategory = async (id) => {
-    const isDeleted = categories.find(
-      (category) => category._id === id
+  const deletePlan = async (id) => {
+    const isDeleted = plans.find(
+      (plan) => plan._id === id
     )?.isDeleted;
     const result = await Swal.fire({
       title: isDeleted ? "list Confirmation" : "Unlist Confirmation",
       text: isDeleted
-        ? "Are you sure you want to list this category?"
-        : "Are you sure you want to unlist this category?",
+        ? "Are you sure you want to list this plan?"
+        : "Are you sure you want to unlist this plan?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -58,14 +58,14 @@ function Categories() {
       dispatch(showLoading());
 
       adminRequest({
-        url: apiEndPoints.unlistCategory,
+        url: apiEndPoints.unlistPlan,
         method: "post",
         data: { id: id },
       }).then((res) => {
         dispatch(hideLoading());
         if (res.data.success) {
           toast.success(res.data.success);
-          getCategories();
+          getPlans();
         } else {
           toast.error(res.data.error);
         }
@@ -76,14 +76,14 @@ function Categories() {
   const handleEdit = async(id) => {
     dispatch(showLoading());
     adminRequest({
-      url: apiEndPoints.editCategory,
+      url: apiEndPoints.editPlan,
       method: "post",
       data: { id: id },
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data.success) {
-        navigate(ServerVariables.EditCategory, {
-          state: { category: res.data.category },
+        navigate(ServerVariables.Editplan, {
+          state: { plan: res.data.plan },
         });
       }
     });
@@ -96,11 +96,11 @@ function Categories() {
         <header className="bg-white shadow">
           <div className="mx-auto max-w-7xl px-4 py-6 flex items-center justify-between sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              FIELDS
+              PLANS
             </h1>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-              onClick={() => navigate(ServerVariables.AddCategory)}
+              onClick={() => navigate(ServerVariables.AddPlan)}
             >
               Add
             </button>
@@ -110,47 +110,55 @@ function Categories() {
         <main>
           <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             {/* Your content */}
-            <div className="overflow-x-auto ">
-              <table className="min-w-full bg-gray-100 border border-gray-300 ">
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-gray-100 border border-gray-300">
                 <thead className="bg-gray-400">
                   <tr>
                     <th className="border-b p-4">Sl No:</th>
                     <th className="border-b p-4">Name</th>
+                    <th className="border-b p-4">Type</th>
                     <th className="border-b p-4">Description</th>
+                    <th className="border-b p-4">Amount</th>
                     <th className="border-b p-4">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {categories.map((category, index) => {
+                  {plans.map((plan, index) => {
                     return (
-                      <tr key={category._id}>
+                      <tr key={plan._id}>
                         <td className="border-b p-4 text-center">
                           {index + 1}
                         </td>
 
                         <td className="border-b p-4 text-center">
-                          {category.name}
+                          {plan.name}
                         </td>
                         <td className="border-b p-4 text-center">
-                          {category.description}
+                          {plan.type}
+                        </td>
+                        <td className="border-b p-4 text-center">
+                          {plan.description}
+                        </td>
+                        <td className="border-b p-4 text-center">
+                          {plan.amount}
                         </td>
                         <td className="text-center">
                           <button
                             className="bg-blue-500 text-white px-2 py-1 rounded-full w-20 md:w-20 h-6 md:h-10"
-                            onClick={() => handleEdit(category._id)}
+                            onClick={() => handleEdit(plan._id)}
                           >
                             Edit
                           </button>
 
                           <button
                             className={`${
-                              category.isDeleted ? "bg-green-500" : "bg-red-500"
+                              plan.isDeleted ? "bg-green-500" : "bg-red-500"
                             } text-white px-2 py-1 rounded-full w-20 md:w-20 h-6 md:h-10`}
                             onClick={() => {
-                              deleteCategory(category._id);
+                              deletePlan(plan._id);
                             }}
                           >
-                            {category.isDeleted ? "Unlisted" : "Delete"}
+                            {plan.isDeleted ? "Unlisted" : "Delete"}
                           </button>
                         </td>
                       </tr>
@@ -166,4 +174,4 @@ function Categories() {
   );
 }
 
-export default Categories;
+export default Plans;

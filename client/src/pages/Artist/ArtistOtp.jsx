@@ -9,7 +9,7 @@ import { userRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 
-const OtpVerification = () => {
+const ArtistOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [timer, setTimer] = useState(30);
@@ -47,14 +47,14 @@ const OtpVerification = () => {
       const otp = `${values.digit1}${values.digit2}${values.digit3}${values.digit4}`;
 
       userRequest({
-        url: apiEndPoints.postVerifyOtp,
+        url: apiEndPoints.postArtistOtp,
         method: "post",
         data: { otp: otp, email: email },
       }).then((res) => {
         if (res.data.success) {
           dispatch(hideLoading());
           toast.success(res.data.success);
-          navigate(ServerVariables.Login);
+          navigate(ServerVariables.ArtistLogin);
         } else {
           dispatch(hideLoading());
           toast.error(res.data.error);
@@ -66,7 +66,7 @@ const OtpVerification = () => {
   const resendOtp = () => {
     dispatch(showLoading());
     userRequest({
-      url: apiEndPoints.postResendOtp,
+      url: apiEndPoints.ArtistResendOtp,
       method: "post",
       data: { email: email },
     }).then((res) => {
@@ -127,7 +127,7 @@ const OtpVerification = () => {
           Back to
           <a
             className="text-blue-500"
-            onClick={() => navigate(ServerVariables.Login)}
+            onClick={() => navigate(ServerVariables.ArtistLogin)}
           >
             Login
           </a>
@@ -137,4 +137,4 @@ const OtpVerification = () => {
   );
 };
 
-export default OtpVerification;
+export default ArtistOtp;

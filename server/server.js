@@ -21,8 +21,8 @@ const userRoute = require("./routes/userRoutes");
 app.use("/api/user", userRoute); 
 
 // //artist
-// const artistRoutes = require("./routes/artistRoutes");
-// app.use("/api/artist", artistRoutes);
+const artistRoutes = require("./routes/artistRoutes");
+app.use("/api/artist", artistRoutes);
 
 // //admin
 const adminRoutes = require("./routes/adminRoutes");

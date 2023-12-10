@@ -55,7 +55,7 @@ function Register() {
   });
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen">
       <div className="bg-black text-white p-8 rounded shadow-md w-96 text-center">
         <img
           src="/images/userImages/hub1.png"
@@ -158,7 +158,6 @@ function Register() {
           <div className="flex items-center justify-center">
             <button
               className="bg-yellow-500 text-black py-2 px-4 rounded hover:bg-green-600"
-              // onClick={registerSubmit}
             >
               Register
             </button>

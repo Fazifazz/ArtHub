@@ -1,6 +1,7 @@
 // Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import AdminNavbar from "../../components/AdminNav";
+import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import { adminRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import Swal from 'sweetalert2'
@@ -27,7 +28,6 @@ const Users = () => {
       }
     }).catch((error)=>{ 
         console.log(error.message)
-        toast.error('something went wrong')
     })
   }
   const blockUser = async(id)=>{
@@ -95,11 +95,13 @@ const Users = () => {
                       <tr key={user._id}>
                         <td className="border-b p-4 text-center">{index + 1}</td>
                         <td className="border-b p-4 text-center">
-                          <img
+                          <div
                             className="h-10 w-10 rounded-full"
-                            src='/images/avatar.png'
                             alt="image"
-                          />
+                            >
+                            <UserCircleIcon/>
+                            </div>
+                          
                         </td>
                         <td className="border-b p-4 text-center">{user.name}</td>
                         <td className="border-b p-4 text-center">

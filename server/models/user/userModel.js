@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
         type:Date
       }
     },
-    isVerfied: {
+    isVerified: {
       type: Boolean,
       default: false,
     },
@@ -38,13 +38,9 @@ const userSchema = new mongoose.Schema(
     },
     profile: {
       type: String,
-      default: "/images/avatar.png",
+      default: "avatar.png",
     },
-    isAdmin: {
-      type: Boolean,
-      default: false,
-    },
-    ArtistYouFollow: {
+    Following: {
       type: Array,
     },
   },

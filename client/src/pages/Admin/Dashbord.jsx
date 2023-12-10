@@ -1,8 +1,16 @@
 // Dashboard.jsx
-import React from "react";
+import React, { useEffect } from "react";
 import AdminNavbar from "../../components/AdminNav";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
+  const dispatch = useDispatch()
+  const {message,admin} = useSelector(state=>state.AdminAuth)
+  useEffect(()=>{
+    message.length && toast.success(message)
+  })
+
   return (
     <>
       <AdminNavbar />

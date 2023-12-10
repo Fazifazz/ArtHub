@@ -51,7 +51,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
   if (req.body.otp === user.otp.code) {
     await User.findOneAndUpdate(
       { email: req.body.email },
-      { $set: { isVerfied: true } }
+      { $set: { isVerified: true } }
     );
     return res.status(200).json({ success: "Otp verified successfully" });
   } else {
@@ -72,7 +72,7 @@ exports.verifyLogin = catchAsync(async (req, res) => {
   if (user.isBlocked) {
     return res.json({ error: "sorry,you are blocked by the Admin!" });
   }
-  if (!user.isVerfied) {
+  if (!user.isVerified) {
     await User.findOneAndDelete({ email: email });
     return res.json({ error: "sorry,you are not verified!, sign up again" });
   }

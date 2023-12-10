@@ -2,3 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* body{
+    font-family: 'Gothic A1', sans-serif;
+    background: linear-gradient(rgba(251, 251, 251, 0.9), rgba(251, 251, 251, 0.6)), url('/images/bgLogo.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+} */

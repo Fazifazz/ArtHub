@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiEndPoints } from "../util/api";
-import {  userRequest } from "../Helper/instance";
+import { ArtistRequest, adminRequest } from "../Helper/instance";
 
 const initialState = {
   isLoading: false,
@@ -8,12 +8,12 @@ const initialState = {
   isSuccess: false,
   errorMsg: "",
   message: "",
-  user: JSON.parse(localStorage.getItem("userInfo")) || {},
-  token: JSON.parse(localStorage.getItem("UserToken")) || null,
+  admin: JSON.parse(localStorage.getItem("adminInfo")) || {},
+  token: JSON.parse(localStorage.getItem("adminToken")) || null,
 };
 
-export const AuthSlice = createSlice({
-  name: "Auth",
+export const AdminAuthSlice = createSlice({
+  name: "AdminAuth",
   initialState,
   reducers: {
     loginPending: (state) => {
@@ -23,9 +23,9 @@ export const AuthSlice = createSlice({
       state.isLoading = false;
       state.isSuccess = true;
       state.isError = false;
-      state.user = action.payload.user;
-      localStorage.setItem("userInfo", JSON.stringify(action.payload.user));
-      localStorage.setItem("UserToken", JSON.stringify(action.payload.token));
+      state.artist = action.payload.artist;
+      localStorage.setItem("adminInfo", JSON.stringify(action.payload.admin));
+      localStorage.setItem("adminToken", JSON.stringify(action.payload.token));
       state.token = action.payload.token;
       state.message = action.payload.success;
     },
@@ -36,20 +36,20 @@ export const AuthSlice = createSlice({
       state.isSuccess = false;
       state.errorMsg = action.payload.error;
     },
-    logoutUser: (state, action) => {
-      localStorage.removeItem("UserToken");
-      localStorage.removeItem("userInfo");
+    logoutAdmin: (state, action) => {
+      localStorage.removeItem("adminInfo");
+      localStorage.removeItem("adminToken");
       state.token = null;
-      state.user = {};
+      state.admin = {};
     },
   },
 });
 
-export const loginThunk = (data) => async (dispatch) => {
+export const AdminLoginThunk = (data) => async (dispatch) => {
   try {
     dispatch(loginPending());
-    const res = await userRequest({
-      url: apiEndPoints.postVerifyLogin,
+    const res = await adminRequest({
+      url: apiEndPoints.postAdminLogin,
       method: "post",
       data: data,
     });
@@ -63,6 +63,6 @@ export const loginThunk = (data) => async (dispatch) => {
   }
 };
 
-export const { loginPending, loginSuccess, loginReject, logoutUser } =
-  AuthSlice.actions;
-export default AuthSlice.reducer;
+export const { loginPending, loginSuccess, loginReject, logoutAdmin } =
+  AdminAuthSlice.actions;
+export default AdminAuthSlice.reducer;

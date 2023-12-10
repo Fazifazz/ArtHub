@@ -1,14 +1,21 @@
 const mongoose = require("mongoose");
 
-const categorySchema = new mongoose.Schema(
+const planSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
-      unique:true,
+    },
+    type: {
+      type: String,
+      required: true,
     },
     description: {
       type: String,
+      required: true,
+    },
+    amount: {
+      type: Number,
       required: true,
     },
     isDeleted: {
@@ -21,6 +28,6 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
-const categoryModel = mongoose.model("category", categorySchema);
+const planModel = mongoose.model("plan", planSchema);
 
-module.exports = categoryModel;
+module.exports = planModel;
