@@ -13,6 +13,8 @@ function Plans() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [plans, setPlans] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   useEffect(() => {
     getPlans();
@@ -94,16 +96,19 @@ function Plans() {
       <AdminNavbar />
       <div className="min-h-full">
         <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 flex items-center justify-between sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               PLANS
             </h1>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-              onClick={() => navigate(ServerVariables.AddPlan)}
-            >
-              Add
-            </button>
+            <div className="flex items-center">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border p-2 mr-2"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />  
+            </div>
           </div>
         </header>
 
@@ -123,7 +128,11 @@ function Plans() {
                   </tr>
                 </thead>
                 <tbody>
-                  {plans.map((plan, index) => {
+                  {plans.length?plans.filter((item)=>{
+                      return searchTerm.toLowerCase()===""?item:item.name.toLowerCase().includes(searchTerm)
+                      || item.type.toLowerCase().includes(searchTerm)
+                      || item.description.toLowerCase().includes(searchTerm)
+                    }).map((plan, index) => {
                     return (
                       <tr key={plan._id}>
                         <td className="border-b p-4 text-center">
@@ -163,7 +172,7 @@ function Plans() {
                         </td>
                       </tr>
                     );
-                  })}
+                  }):<h1 className="text-center text-red-600">No plan found</h1>}
                 </tbody>
               </table>
             </div>

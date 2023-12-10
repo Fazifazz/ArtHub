@@ -13,6 +13,8 @@ function Categories() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   useEffect(() => {
     getCategories();
@@ -98,6 +100,15 @@ function Categories() {
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               FIELDS
             </h1>
+            <div className="flex items-center">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border p-2 mr-2"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />  
+            </div>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
               onClick={() => navigate(ServerVariables.AddCategory)}
@@ -121,7 +132,10 @@ function Categories() {
                   </tr>
                 </thead>
                 <tbody>
-                  {categories.map((category, index) => {
+                  {categories.length?categories.filter((item)=>{
+                      return searchTerm.toLowerCase()===""?item:item.name.toLowerCase().includes(searchTerm)
+                      || item.description.toLowerCase().includes(searchTerm)
+                    }).map((category, index) => {
                     return (
                       <tr key={category._id}>
                         <td className="border-b p-4 text-center">
@@ -155,7 +169,9 @@ function Categories() {
                         </td>
                       </tr>
                     );
-                  })}
+                  }): (
+                    <h1 className="text-center text-red-600">No field found</h1>
+                  )}
                 </tbody>
               </table>
             </div>

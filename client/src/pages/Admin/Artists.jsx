@@ -12,6 +12,8 @@ import toast from "react-hot-toast";
 const Artists = () => {
   const [artists, setArtists] = useState([]);
   const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     getArtists();
   }, []);
@@ -70,10 +72,19 @@ const Artists = () => {
       <AdminNavbar />
       <div className="min-h-full">
         <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               Artists
             </h1>
+            <div className="flex items-center">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border p-2 mr-2"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
         </header>
         <main>
@@ -93,44 +104,63 @@ const Artists = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {artists.map((artist, index) => {
-                    return (
-                      <tr key={artist._id}>
-                        <td className="border-b p-4 text-center">
-                          {index + 1}
-                        </td>
-                        <td className="border-b p-4 text-center">
-                          <div className="h-10 w-10 rounded-full" alt="image">
-                            <UserCircleIcon />
-                          </div>
-                        </td>
-                        <td className="border-b p-4 text-center">
-                          {artist.name}
-                        </td>
-                        <td className="border-b p-4 text-center">
-                          {artist.mobile}
-                        </td>
-                        <td className="border-b p-4 text-center">
-                          {artist.email}
-                        </td>
-                        <td className="border-b p-4 text-center">
-                          {artist.planStatus}
-                        </td>
-                        <td className="text-center">
-                          <button
-                            className={`${
-                              artist.isBlocked ? "bg-green-500" : "bg-red-500"
-                            } text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10`}
-                            onClick={() => {
-                              blockArtist(artist._id);
-                            }}
-                          >
-                            {artist.isApproved ? "Blocked" : "Block"}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {artists.length ? (
+                    artists
+                      .filter((item) => {
+                        return searchTerm.toLowerCase() === ""
+                          ? item
+                          : item.name.toLowerCase().includes(searchTerm) ||
+                              item.mobile.toString().includes(searchTerm) ||
+                              item.email.toLowerCase().includes(searchTerm);
+                      })
+                      .map((artist, index) => {
+                        return (
+                          <tr key={artist._id}>
+                            <td className="border-b p-4 text-center">
+                              {index + 1}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              <div
+                                className="h-10 w-10 rounded-full"
+                                alt="image"
+                              >
+                                <UserCircleIcon />
+                              </div>
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {artist.name}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {artist.mobile}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {artist.email}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {artist.planStatus}
+                            </td>
+                            <td className="text-center">
+                              <button
+                                className={`${
+                                  artist.isBlocked
+                                    ? "bg-green-500"
+                                    : "bg-red-500"
+                                } text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10`}
+                                onClick={() => {
+                                  blockArtist(artist._id);
+                                }}
+                              >
+                                {artist.isBlocked ? "Blocked" : "Block"}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                  ) : (
+                    <h1 className="text-center text-red-600">
+                      No artist found
+                    </h1>
+                  )}
                 </tbody>
               </table>
             </div>

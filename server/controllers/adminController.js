@@ -214,7 +214,7 @@ exports.updatePlan = catchAsync(async (req, res) => {
 //Artists
 
 exports.showArtists = catchAsync(async (req, res) => {
-  const artists = await Artist.find({});
+  const artists = await Artist.find({isVerified:true});
   return res.status(200).json({ success: "ok", artists });
 });
 
