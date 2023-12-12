@@ -4,7 +4,6 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { ServerVariables } from "../../util/ServerVariables";
 import MyButton from "../../components/MyButton";
-import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { ArtistLoginThunk } from "../../redux/ArtistAuthSlice";
 
@@ -18,7 +17,6 @@ const loginSchema = Yup.object().shape({
 const ArtistLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, isError, isSuccess, message, errorMsg, token } = useSelector((state) => state.ArtistAuth);
 
   const formik = useFormik({
     initialValues: {
@@ -28,8 +26,6 @@ const ArtistLogin = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       dispatch(ArtistLoginThunk(values));
-      isError && toast.error(errorMsg)
-
     },
   });
 
@@ -96,9 +92,15 @@ const ArtistLogin = () => {
             Sign up
           </a>
         </p>
-        <a href="#" className="text-blue-500">
+        <a className="text-blue-500" onClick={()=>navigate(ServerVariables.artistVerifyEmail)}>
           Forgot Password?
         </a>
+        <div className="text-center">
+        <a className="text-yellow-300" onClick={()=>navigate(ServerVariables.Landing)}>
+          Back
+        </a>
+
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ export const apiEndPoints = {
     postVerifyOtp:'/api/user/verifyOtp',
     postVerifyLogin:'/api/user/verifyLogin',
     postResendOtp:'/api/user/resendOtp',
+    forgetVerifyEmail:'/api/user/verifyEmail',
+    updatePassword:'/api/user/updatePassword',
 
     //artist endpoints
     postArtistVerifyLogin:'/api/artist/artistVerifyLogin',
@@ -11,6 +13,8 @@ export const apiEndPoints = {
     getCategories:'/api/artist/getCategories',
     postArtistOtp:'/api/artist/artistOtp',
     ArtistResendOtp:'/api/artist/artistResendOtp',
+    forgetArtistVerifyEmail:'/api/artist/artistVerifyEmail',
+    artistUpdatePassword:'/api/artist/artistUpdatePassword',
 
     //admin endpoints
     postAdminLogin:'/api/admin/postAdminLogin',

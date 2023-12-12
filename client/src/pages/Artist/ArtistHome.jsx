@@ -1,25 +1,18 @@
-import React, { useEffect } from "react";
-import toast from "react-hot-toast";
-// import Navbar from "../../components/Navbar";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutArtist } from "../../redux/ArtistAuthSlice";
 import MyButton from "../../components/MyButton";
 
 function ArtistHome() {
   const dispatch = useDispatch();
-  const {message,artist} = useSelector(state=>state.ArtistAuth)
+  const {artist} =  useSelector((state)=>state.ArtistAuth)
 
-  useEffect(()=>{
-    message.length && toast.success(message)
-  })
+  const handleLogout = async () => {
+    dispatch(logoutArtist());
+  };
 
-  const handleLogout = async()=>{
-    dispatch(logoutArtist())
-  }
-  
   return (
     <>
-      {/* <Navbar /> */}
       <div className="flex items-center justify-center h-screen bg-gray-100">
         <div className="bg-black text-white p-8 rounded shadow-md w-96 text-center">
           <img
@@ -27,8 +20,8 @@ function ArtistHome() {
             alt="Logo"
             className="h-28 w-44 mx-auto"
           />
-          <h2 className="text-2xl font-bold mb-6">Welcome Artist</h2>
-          <MyButton text='Logout' onClick={handleLogout} />
+          <h2 className="text-2xl font-bold mb-6">Welcome {artist.name}</h2>
+          <MyButton text="Logout" onClick={handleLogout} />
         </div>
       </div>
     </>

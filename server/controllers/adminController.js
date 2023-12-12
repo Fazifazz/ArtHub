@@ -1,5 +1,6 @@
-const bcrpt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const jwt =  require('jsonwebtoken')
+const cookies = require('cookie-parser')
 const User = require("../models/user/userModel");
 const Category = require("../models/admin/categoryModel");
 const Admin = require("../models/admin/adminModel");
@@ -9,7 +10,7 @@ const catchAsync = require("../util/catchAsync");
 
 // exports.adminLogin = catchAsync(async(req,res)=>{
 //   const {email,password}  = req.body;
-//   const hashPassword = await bcrpt.hash(password,10)
+//   const hashPassword = await bcrypt.hash(password,10)
 //   const admin =  new Admin({
 //     email:email,
 //     password:hashPassword
@@ -29,20 +30,22 @@ exports.verifyAdmin = catchAsync(async (req, res) => {
   if (!admin) {
     return res.json({ error: "Admin not found" });
   }
-  const samePassword = await bcrpt.compare(password, admin.password);
+  const samePassword = await bcrypt.compare(password, admin.password);
   if (!samePassword) {
     return res.json({ error: "incorrect password" });
   }
   const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
+
   return res.status(200).json({ success: "Admin Login Successfull",token,admin });
 });
 
 exports.getUsers = catchAsync(async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({}).sort({ createdAt: -1 });
   return res.status(200).json({ success: "ok", users });
 });
+
 
 exports.blockUser = catchAsync(async (req, res) => {
   const user = await User.findById(req.body.id);
@@ -61,7 +64,7 @@ exports.blockUser = catchAsync(async (req, res) => {
 });
 
 exports.showCategories = catchAsync(async (req, res) => {
-  const categories = await Category.find({});
+  const categories = await Category.find({}).sort({ createdAt: -1 });;
   if (categories) {
     return res.status(200).json({ success: "ok", categories });
   } else {
@@ -132,7 +135,7 @@ exports.updateCategory = catchAsync(async (req, res) => {
 //plans
 
 exports.showPlans = catchAsync(async (req, res) => {
-  const plans = await Plan.find({});
+  const plans = await Plan.find({}).sort({ createdAt: -1 });;
   if (plans) {
     res.status(200).json({ success: "ok", plans });
   }
@@ -214,7 +217,7 @@ exports.updatePlan = catchAsync(async (req, res) => {
 //Artists
 
 exports.showArtists = catchAsync(async (req, res) => {
-  const artists = await Artist.find({isVerified:true});
+  const artists = await Artist.find({}).sort({ createdAt: -1 });;
   return res.status(200).json({ success: "ok", artists });
 });
 

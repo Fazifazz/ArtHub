@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiEndPoints } from "../util/api";
-import { ArtistRequest, adminRequest } from "../Helper/instance";
+import { adminRequest } from "../Helper/instance";
+import toast from "react-hot-toast";
+import { hideLoading, showLoading } from "./AlertSlice";
 
 const initialState = {
   isLoading: false,
@@ -47,15 +49,19 @@ export const AdminAuthSlice = createSlice({
 
 export const AdminLoginThunk = (data) => async (dispatch) => {
   try {
+    dispatch(showLoading())
     dispatch(loginPending());
     const res = await adminRequest({
       url: apiEndPoints.postAdminLogin,
       method: "post",
       data: data,
     });
+    dispatch(hideLoading())
     if (res.data.success) {
+      toast.success(res.data.success)
       dispatch(loginSuccess(res.data));
     } else {
+      toast.error(res.data.error)
       dispatch(loginReject(res.data));
     }
   } catch (error) {

@@ -21,7 +21,7 @@ export const userRequest = async({ ...options }) => {
 
   export const adminRequest = async ({ ...options }) => {
     user.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem(
-      "admintoken"
+      "adminToken"
     )}`;
     const onSuccess = (response) => response;
     const onError = (error) => {

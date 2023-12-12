@@ -78,7 +78,9 @@ function ArtistRegister() {
           }
         })
         .catch((err) => {
-          console.log(err);
+          dispatch(hideLoading());
+          toast.error("something went wrong");
+          console.log(err.message);
         });
     },
   });

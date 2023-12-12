@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import MyButton from "../../components/MyButton";
-import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { AdminLoginThunk } from "../../redux/AdminAuthSlice";
 
 const loginSchema = Yup.object().shape({
@@ -17,8 +16,6 @@ const loginSchema = Yup.object().shape({
 const AdminLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, isError, isSuccess, message, errorMsg, token } =
-    useSelector((state) => state.AdminAuth);
 
   const formik = useFormik({
     initialValues: {
@@ -28,7 +25,6 @@ const AdminLogin = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       dispatch(AdminLoginThunk(values));
-      isError && toast.error(errorMsg);
     },
   });
 

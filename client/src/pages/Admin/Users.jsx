@@ -14,6 +14,7 @@ const Users = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const dispatch = useDispatch();
+  
   useEffect(() => {
     getUsers();
   }, []);
@@ -63,6 +64,10 @@ const Users = () => {
         } else {
           toast.error(res.data.error);
         }
+      }).catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong");
+        console.log(err.message);
       });
     }
   };
@@ -99,6 +104,7 @@ const Users = () => {
                     <th className="border-b p-4">Name</th>
                     <th className="border-b p-4">Mobile</th>
                     <th className="border-b p-4">Email</th>
+                    <th className="border-b p-4">Verified</th>
                     <th className="border-b p-4">Actions</th>
                   </tr>
                 </thead>
@@ -135,6 +141,9 @@ const Users = () => {
                             </td>
                             <td className="border-b p-4 text-center">
                               {user.email}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {user.isVerified?'Yes':'No'}
                             </td>
                             <td className="text-center">
                               <button

@@ -63,6 +63,10 @@ const Artists = () => {
         } else {
           toast.error(res.data.error);
         }
+      }).catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong");
+        console.log(err.message);
       });
     }
   };
@@ -99,6 +103,7 @@ const Artists = () => {
                     <th className="border-b p-4">Name</th>
                     <th className="border-b p-4">Mobile</th>
                     <th className="border-b p-4">Email</th>
+                    <th className="border-b p-4">Verified</th>
                     <th className="border-b p-4">Plan status</th>
                     <th className="border-b p-4">Actions</th>
                   </tr>
@@ -135,6 +140,9 @@ const Artists = () => {
                             </td>
                             <td className="border-b p-4 text-center">
                               {artist.email}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {artist.isVerified?'yes':'No'}
                             </td>
                             <td className="border-b p-4 text-center">
                               {artist.planStatus}

@@ -71,6 +71,10 @@ function Categories() {
         } else {
           toast.error(res.data.error);
         }
+      }).catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong");
+        console.log(err.message);
       });
     }
   };

@@ -9,7 +9,7 @@ import { userRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 
-const OtpVerification = () => {
+const ForgetOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [timer, setTimer] = useState(30);
@@ -54,7 +54,7 @@ const OtpVerification = () => {
         if (res.data.success) {
           dispatch(hideLoading());
           toast.success(res.data.success);
-          navigate(ServerVariables.Login);
+          navigate(ServerVariables.changePassword,{state:{email:res.data.email}});
         } else {
           dispatch(hideLoading());
           toast.error(res.data.error);
@@ -141,4 +141,4 @@ const OtpVerification = () => {
   );
 };
 
-export default OtpVerification;
+export default ForgetOtp;

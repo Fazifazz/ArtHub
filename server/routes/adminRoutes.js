@@ -1,29 +1,29 @@
 const express = require("express");
 const adminRouter = express.Router();
 const adminController = require("../controllers/adminController");
+const adminAuthMiddleware = require("../middlewares/adminAuth");
 
 adminRouter
   .post("/postAdminLogin", adminController.verifyAdmin)
-  .get("/showUsers", adminController.getUsers)
-  .post("/blockUser", adminController.blockUser)
+  .get("/showUsers", adminAuthMiddleware, adminController.getUsers)
+  .post("/blockUser",adminAuthMiddleware, adminController.blockUser)
 
-//   category
-  .get("/showCategories", adminController.showCategories)
-  .post("/addCategory", adminController.addCategory)
-  .post("/deleteCategory", adminController.deleteCategory)
-  .post("/editCategory", adminController.editCategory)
-  .post("/updateCategory", adminController.updateCategory)
+  //   category
+  .get("/showCategories", adminAuthMiddleware, adminController.showCategories)
+  .post("/addCategory", adminAuthMiddleware, adminController.addCategory)
+  .post("/deleteCategory", adminAuthMiddleware, adminController.deleteCategory)
+  .post("/editCategory", adminAuthMiddleware, adminController.editCategory)
+  .post("/updateCategory", adminAuthMiddleware, adminController.updateCategory)
 
-//plans
-  .get("/showPlans", adminController.showPlans)
-  .post("/postAddPlan", adminController.addPlan)
-  .post("/deletePlan", adminController.deletePlan)
-  .post("/editPlan", adminController.editPlan)
-  .post("/updatePlan", adminController.updatePlan)
+  //plans
+  .get("/showPlans", adminAuthMiddleware, adminController.showPlans)
+  .post("/postAddPlan", adminAuthMiddleware, adminController.addPlan)
+  .post("/deletePlan", adminAuthMiddleware, adminController.deletePlan)
+  .post("/editPlan", adminAuthMiddleware, adminController.editPlan)
+  .post("/updatePlan", adminAuthMiddleware, adminController.updatePlan)
 
-//arists
-  .get('/showArtists',adminController.showArtists)  
-  .post('/blockArtist',adminController.blockArtist)  
-
+  //arists
+  .get("/showArtists", adminAuthMiddleware, adminController.showArtists)
+  .post("/blockArtist", adminAuthMiddleware, adminController.blockArtist);
 
 module.exports = adminRouter;

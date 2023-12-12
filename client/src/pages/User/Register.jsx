@@ -5,6 +5,9 @@ import { ServerVariables } from "../../util/ServerVariables";
 import { userRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../../redux/AlertSlice";
+import toast from "react-hot-toast";
 
 const registerSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -23,7 +26,8 @@ const registerSchema = Yup.object().shape({
 
 function Register() {
   const navigate = useNavigate();
-  const [error,setError] =  useState('')
+  const dispatch = useDispatch();
+  const [error, setError] = useState("");
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -33,24 +37,32 @@ function Register() {
     },
     validationSchema: registerSchema,
     onSubmit: (values) => {
+      dispatch(showLoading());
       const registerData = values;
 
       userRequest({
         url: apiEndPoints.postRegisterData,
         method: "post",
         data: registerData,
-      }).then((response) => {
-        if (response.data.success) {
-          navigate(ServerVariables.verifyOtp, { state: { email:response.data.email } });
-        }else{
-          setError(response.data.error)
-          setTimeout(()=>{
-            setError('')
-          },2000)
-        }
-      }).catch((err)=>{
-       console.log(err)
       })
+        .then((response) => {
+          dispatch(hideLoading());
+          if (response.data.success) {
+            navigate(ServerVariables.verifyOtp, {
+              state: { email: response.data.email },
+            });
+          } else {
+            setError(response.data.error);
+            setTimeout(() => {
+              setError("");
+            }, 2000);
+          }
+        })
+        .catch((err) => {
+          dispatch(hideLoading());
+          toast.error("something went wrong");
+          console.log(err.message);
+        });
     },
   });
 
@@ -63,12 +75,10 @@ function Register() {
           className="h-28 w-44 mx-auto"
         />
         <h2 className="text-2xl font-bold mb-6">USER REGISTER</h2>
-        {error?<p className="text-sm font-bold text-red-600">{error}</p>:''}
+        {error ? <p className="text-sm font-bold text-red-600">{error}</p> : ""}
         <form onSubmit={formik.handleSubmit} noValidate>
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Name:
-            </label>
+            <label className="block text-sm font-semibold">Name:</label>
             <input
               type="name"
               name="name"
@@ -84,9 +94,7 @@ function Register() {
             </p>
           )}
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Mobile:
-            </label>
+            <label className="block text-sm font-semibold">Mobile:</label>
             <input
               type="mobile"
               name="mobile"
@@ -102,9 +110,7 @@ function Register() {
             </p>
           )}
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Email:
-            </label>
+            <label className="block text-sm font-semibold">Email:</label>
             <input
               type="email"
               name="email"
@@ -120,9 +126,7 @@ function Register() {
             </p>
           )}
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
-              Password:
-            </label>
+            <label className="block text-sm font-semibold">Password:</label>
             <input
               type="password"
               name="password"
@@ -138,7 +142,7 @@ function Register() {
             </p>
           )}
           <div className="mb-4">
-            <label className="block text-sm font-semibold text-gray-600">
+            <label className="block text-sm font-semibold">
               Confirm Password:
             </label>
             <input
@@ -156,9 +160,7 @@ function Register() {
             </p>
           )}
           <div className="flex items-center justify-center">
-            <button
-              className="bg-yellow-500 text-black py-2 px-4 rounded hover:bg-green-600"
-            >
+            <button className="bg-yellow-500 text-black py-2 px-4 rounded hover:bg-green-600">
               Register
             </button>
           </div>

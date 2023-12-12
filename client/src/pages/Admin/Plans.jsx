@@ -15,13 +15,12 @@ function Plans() {
   const [plans, setPlans] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-
   useEffect(() => {
     getPlans();
-  });
+  },[]);
 
-  const getPlans = async() => {
-    dispatch(showLoading)
+  const getPlans = async () => {
+    dispatch(showLoading())
     adminRequest({
       url: apiEndPoints.showPlans,
       method: "get",
@@ -34,16 +33,15 @@ function Plans() {
           toast.error(res.data.error);
         }
       })
-      .catch((error) => {
-        console.log(error.message);
-        toast.error(error.message);
+      .catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong");
+        console.log(err.message);
       });
   };
 
   const deletePlan = async (id) => {
-    const isDeleted = plans.find(
-      (plan) => plan._id === id
-    )?.isDeleted;
+    const isDeleted = plans.find((plan) => plan._id === id)?.isDeleted;
     const result = await Swal.fire({
       title: isDeleted ? "list Confirmation" : "Unlist Confirmation",
       text: isDeleted
@@ -57,14 +55,11 @@ function Plans() {
       cancelButtonText: "Cancel",
     });
     if (result.isConfirmed) {
-      dispatch(showLoading());
-
       adminRequest({
         url: apiEndPoints.unlistPlan,
         method: "post",
         data: { id: id },
       }).then((res) => {
-        dispatch(hideLoading());
         if (res.data.success) {
           toast.success(res.data.success);
           getPlans();
@@ -75,7 +70,7 @@ function Plans() {
     }
   };
 
-  const handleEdit = async(id) => {
+  const handleEdit = async (id) => {
     dispatch(showLoading());
     adminRequest({
       url: apiEndPoints.editPlan,
@@ -96,7 +91,7 @@ function Plans() {
       <AdminNavbar />
       <div className="min-h-full">
         <header className="bg-white shadow">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               PLANS
             </h1>
@@ -107,8 +102,14 @@ function Plans() {
                 className="border p-2 mr-2"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-              />  
+              />
             </div>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              onClick={() => navigate(ServerVariables.AddPlan)}
+            >
+              Add
+            </button>
           </div>
         </header>
 
@@ -128,51 +129,61 @@ function Plans() {
                   </tr>
                 </thead>
                 <tbody>
-                  {plans.length?plans.filter((item)=>{
-                      return searchTerm.toLowerCase()===""?item:item.name.toLowerCase().includes(searchTerm)
-                      || item.type.toLowerCase().includes(searchTerm)
-                      || item.description.toLowerCase().includes(searchTerm)
-                    }).map((plan, index) => {
-                    return (
-                      <tr key={plan._id}>
-                        <td className="border-b p-4 text-center">
-                          {index + 1}
-                        </td>
+                  {plans.length ? (
+                    plans
+                      .filter((item) => {
+                        return searchTerm.toLowerCase() === ""
+                          ? item
+                          : item.name.toLowerCase().includes(searchTerm) ||
+                              item.type.toLowerCase().includes(searchTerm) ||
+                              item.description
+                                .toLowerCase()
+                                .includes(searchTerm);
+                      })
+                      .map((plan, index) => {
+                        return (
+                          <tr key={plan._id}>
+                            <td className="border-b p-4 text-center">
+                              {index + 1}
+                            </td>
 
-                        <td className="border-b p-4 text-center">
-                          {plan.name}
-                        </td>
-                        <td className="border-b p-4 text-center">
-                          {plan.type}
-                        </td>
-                        <td className="border-b p-4 text-center">
-                          {plan.description}
-                        </td>
-                        <td className="border-b p-4 text-center">
-                          {plan.amount}
-                        </td>
-                        <td className="text-center">
-                          <button
-                            className="bg-blue-500 text-white px-2 py-1 rounded-full w-20 md:w-20 h-6 md:h-10"
-                            onClick={() => handleEdit(plan._id)}
-                          >
-                            Edit
-                          </button>
+                            <td className="border-b p-4 text-center">
+                              {plan.name}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {plan.type}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {plan.description}
+                            </td>
+                            <td className="border-b p-4 text-center">
+                              {plan.amount}
+                            </td>
+                            <td className="text-center">
+                              <button
+                                className="bg-blue-500 text-white px-2 py-1 rounded-full w-20 md:w-20 h-6 md:h-10"
+                                onClick={() => handleEdit(plan._id)}
+                              >
+                                Edit
+                              </button>
 
-                          <button
-                            className={`${
-                              plan.isDeleted ? "bg-green-500" : "bg-red-500"
-                            } text-white px-2 py-1 rounded-full w-20 md:w-20 h-6 md:h-10`}
-                            onClick={() => {
-                              deletePlan(plan._id);
-                            }}
-                          >
-                            {plan.isDeleted ? "Unlisted" : "Delete"}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  }):<h1 className="text-center text-red-600">No plan found</h1>}
+                              <button
+                                className={`${
+                                  plan.isDeleted ? "bg-green-500" : "bg-red-500"
+                                } text-white px-2 py-1 rounded-full w-20 md:w-20 h-6 md:h-10`}
+                                onClick={() => {
+                                  deletePlan(plan._id);
+                                }}
+                              >
+                                {plan.isDeleted ? "Unlisted" : "Delete"}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })
+                  ) : (
+                    <h1 className="text-center text-red-600">No plan found</h1>
+                  )}
                 </tbody>
               </table>
             </div>

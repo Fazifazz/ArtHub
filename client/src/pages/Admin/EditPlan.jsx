@@ -68,8 +68,10 @@ function EditPlan() {
           toast.error(res.data.error);
         }
       })
-      .catch((error) => {
-        console.log(error.message);
+      .catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong");
+        console.log(err.message);
       });
   };
 

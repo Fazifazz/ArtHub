@@ -5,11 +5,11 @@ import toast from "react-hot-toast";
 import { useFormik } from "formik";
 import MyButton from "../../components/MyButton";
 import { ServerVariables } from "../../util/ServerVariables";
-import { userRequest } from "../../Helper/instance";
+import { ArtistRequest, userRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 
-const OtpVerification = () => {
+const ArtistForgetOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [timer, setTimer] = useState(30);
@@ -46,15 +46,15 @@ const OtpVerification = () => {
       // Handle OTP submission
       const otp = `${values.digit1}${values.digit2}${values.digit3}${values.digit4}`;
 
-      userRequest({
-        url: apiEndPoints.postVerifyOtp,
+      ArtistRequest({
+        url: apiEndPoints.postArtistOtp,
         method: "post",
         data: { otp: otp, email: email },
       }).then((res) => {
         if (res.data.success) {
           dispatch(hideLoading());
           toast.success(res.data.success);
-          navigate(ServerVariables.Login);
+          navigate(ServerVariables.artistChangePassword,{state:{email:res.data.email}});
         } else {
           dispatch(hideLoading());
           toast.error(res.data.error);
@@ -65,8 +65,8 @@ const OtpVerification = () => {
 
   const resendOtp = () => {
     dispatch(showLoading());
-    userRequest({
-      url: apiEndPoints.postResendOtp,
+    ArtistRequest({
+      url: apiEndPoints.ArtistResendOtp,
       method: "post",
       data: { email: email },
     }).then((res) => {
@@ -131,7 +131,7 @@ const OtpVerification = () => {
           Back to
           <a
             className="text-blue-500"
-            onClick={() => navigate(ServerVariables.Login)}
+            onClick={() => navigate(ServerVariables.ArtistLogin)}
           >
             Login
           </a>
@@ -141,4 +141,4 @@ const OtpVerification = () => {
   );
 };
 
-export default OtpVerification;
+export default ArtistForgetOtp;

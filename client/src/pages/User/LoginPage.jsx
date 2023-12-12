@@ -18,7 +18,6 @@ const loginSchema = Yup.object().shape({
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isLoading, isError, isSuccess, message, errorMsg, token } = useSelector((state) => state.Auth);
 
   const formik = useFormik({
     initialValues: {
@@ -28,11 +27,8 @@ const LoginPage = () => {
     validationSchema: loginSchema,
     onSubmit: (values) => {
       dispatch(loginThunk(values));
-      isError && toast.error(errorMsg)
     },
   });
-
-
 
   return (
     <div className="flex items-center justify-center h-screen ">
@@ -95,9 +91,15 @@ const LoginPage = () => {
             Sign up
           </a>
         </p>
-        <a href="#" className="text-blue-500">
-          Forgot Password?
-        </a>
+        <a className="text-blue-500" onClick={()=>navigate(ServerVariables.verifyEmail)}>Forgot Password?</a>
+        <div className="text-center">
+          <a
+            className="text-yellow-300"
+            onClick={() => navigate(ServerVariables.Landing)}
+          >
+            Back
+          </a>
+        </div>
       </div>
     </div>
   );

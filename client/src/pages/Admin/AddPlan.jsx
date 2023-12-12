@@ -58,9 +58,10 @@ function AddPlan() {
           toast.error(res.data.error);
         }
       })
-      .catch((error) => {
-        console.log(error.message);
-        toast.error(error.message);
+      .catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong");
+        console.log(err.message);
       });
   };
 

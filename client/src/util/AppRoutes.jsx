@@ -29,6 +29,12 @@ import IsArtistLogged from "../components/middlewares/IsArtistLogged";
 import Artists from "../pages/Admin/Artists";
 import IsAdminLoggedOut from "../components/middlewares/IsAdminLoggedOut";
 import IsAdminLogged from "../components/middlewares/IsAdminLogged";
+import VerifyEmail from "../pages/User/VerifyEmail";
+import ForgetOtp from "../pages/User/ForgetOtp";
+import ChangePassword from "../pages/User/ChangePassword";
+import ArtistForgetOtp from "../pages/Artist/ArtistForgetOtp";
+import ArtistVerifyEmail from "../pages/Artist/ArtistVerifyEmail";
+import ArtistChangePassword from "../pages/Artist/ArtistChangePassword";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -71,6 +77,9 @@ function AppRoutes() {
         <Route element={<IsLoggedOutUser />}>
           <Route path={ServerVariables.Login} element={<LoginPage />} />
           <Route path={ServerVariables.Register} element={<Register />} />
+          <Route path={ServerVariables.verifyEmail} element={<VerifyEmail />} />
+          <Route path={ServerVariables.forgetOtp} element={<ForgetOtp />} />
+          <Route path={ServerVariables.changePassword} element={<ChangePassword />} />
           <Route
             path={ServerVariables.verifyOtp}
             element={<OtpVerification />}
@@ -85,6 +94,9 @@ function AppRoutes() {
         <Route path={ServerVariables.ArtistLogin} element={<ArtistLogin />} />
         <Route path={ServerVariables.ArtistRegister} element={<ArtistRegister />}/>
         <Route path={ServerVariables.ArtistVerifyOtp} element={<ArtistOtp />} />
+        <Route path={ServerVariables.artistVerifyEmail} element={<ArtistVerifyEmail />} />
+        <Route path={ServerVariables.forgetArtistOtp} element={<ArtistForgetOtp />} />
+        <Route path={ServerVariables.artistChangePassword} element={<ArtistChangePassword />} />
         </Route>
         <Route element={<IsArtistLogged/>}>
         <Route path={ServerVariables.ArtistHome} element={<ArtistHome />} />

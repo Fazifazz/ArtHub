@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiEndPoints } from "../util/api";
-import {  userRequest } from "../Helper/instance";
+import { userRequest } from "../Helper/instance";
+import {showLoading,hideLoading} from '../redux/AlertSlice'
+import toast from "react-hot-toast";
 
 const initialState = {
   isLoading: false,
@@ -47,15 +49,19 @@ export const AuthSlice = createSlice({
 
 export const loginThunk = (data) => async (dispatch) => {
   try {
+    dispatch(showLoading())
     dispatch(loginPending());
     const res = await userRequest({
       url: apiEndPoints.postVerifyLogin,
       method: "post",
       data: data,
     });
+    dispatch(hideLoading())
     if (res.data.success) {
+      toast.success(res.data.success)
       dispatch(loginSuccess(res.data));
     } else {
+      toast.error(res.data.error)
       dispatch(loginReject(res.data));
     }
   } catch (error) {

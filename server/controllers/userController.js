@@ -1,8 +1,9 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 // to hash  password (encrypt)
-const bcrpt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const randomString = require("randomstring");
+const otpTemplate = require('../util/otpTemplate')
 
 const User = require("../models/user/userModel");
 const catchAsync = require("../util/catchAsync");
@@ -14,8 +15,12 @@ exports.register = catchAsync(async (req, res) => {
   if (userExists) {
     return res.json({ error: "User already exists" });
   }
+  const mobileExists = await User.findOne({mobile:mobile})
+  if (mobileExists) {
+    return res.json({ error: "mobile number already exists" });
+  }
   //hash password
-  const hashPassword = await bcrpt.hash(password, 10);
+  const hashPassword = await bcrypt.hash(password, 10);
   const newOtp = randomString.generate({
     length: 4,
     charset: "numeric",
@@ -36,7 +41,7 @@ exports.register = catchAsync(async (req, res) => {
       from: process.env.EMAIL,
       to: email,
       subject: "ArtHub register verification OTP",
-      html: `<center> <h2>Verify Your Email </h2> <br> <h5>OTP :${newOtp}</h5><br><p>This otp is only valid for 2 minutes only</p></center>`,
+      html: otpTemplate(newOtp),
     };
     await Mail.sendMail(options);
     return res.json({ success: "otp sented to mail", email });
@@ -53,7 +58,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
       { email: req.body.email },
       { $set: { isVerified: true } }
     );
-    return res.status(200).json({ success: "Otp verified successfully" });
+    return res.status(200).json({ success: "Otp verified successfully",email:req.body.email });
   } else {
     return res.json({ error: "otp is invalid" });
   }
@@ -63,9 +68,9 @@ exports.verifyLogin = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) {
-    return res.json({ error: "Email not found" });
+    return res.json({ error: "User not found" });
   }
-  const samePass = await bcrpt.compare(password, user.password);
+  const samePass = await bcrypt.compare(password, user.password);
   if (!samePass) {
     return res.json({ error: "invalid password" });
   }
@@ -95,7 +100,7 @@ exports.ResendOtp = catchAsync(async (req, res) => {
     from: process.env.EMAIL,
     to: req.body.email,
     subject: "ArtHub verification otp",
-    html: `<center> <h2>Verify Your Email </h2> <br> <h5>OTP :${newOtp} </h5><br><p>This otp is only valid for 1 minutes only</p></center>`,
+    html: otpTemplate(newOtp),
   };
   await Mail.sendMail(options)
     .then((res) => console.log("otp sended"))
@@ -108,3 +113,38 @@ exports.ResendOtp = catchAsync(async (req, res) => {
     .status(200)
     .json({ success: "Otp Resended", email: req.body.email });
 });
+
+
+exports.forgetVerifyEmail = catchAsync(async(req,res)=>{
+  const {email} = req.body;
+  const user = await User.findOne({email:email})
+  const newOtp = randomString.generate({
+    length: 4,
+    charset: "numeric",
+  });
+  if(user){
+    const options = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "ArtHub Email verification OTP for forget password",
+      html: otpTemplate(newOtp),
+    };
+    await Mail.sendMail(options);
+    await User.findOneAndUpdate({email:email},{$set:{otp:{code:newOtp}}},{new:true})
+    return res.status(200).json({success:'otp sended to your Email',email})
+  }
+})
+
+
+
+exports.updatePassword = catchAsync(async(req,res)=>{
+  const {email,password} = req.body;
+  const user = await User.findOne({email:email})
+  const hashPassword = await bcrypt.hash(password,10)
+  if(user){
+    user.password = hashPassword
+    await user.save()
+   return res.status(200).json({success:'password changed successfully'})
+  }
+  return res.status(200).json({error:'password changing failed'})
+})

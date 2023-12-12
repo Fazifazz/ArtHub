@@ -1,18 +1,27 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { logoutAdmin } from "../redux/AdminAuthSlice";
 import { useDispatch } from "react-redux";
 
 const AdminNavbar = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const [activeItem, setActiveItem] = useState("Dashboard");
+  const location = useLocation();
 
-  const handleLogout = async()=>{
-    dispatch(logoutAdmin())
-  }
+  useEffect(() => {
+    if (location.state) {
+      const { data } = location.state;
+      setActiveItem(data);
+    }
+  });
+
+  const handleLogout = async () => {
+    dispatch(logoutAdmin());
+  };
 
   const user = {
     name: "Tom Cook",
@@ -24,19 +33,18 @@ const AdminNavbar = () => {
     {
       name: "Dashboard",
       navigation: ServerVariables.AdminDashboard,
-      current: true,
     },
-    { name: "Users", navigation: ServerVariables.Users, current: false },
-    { name: "Artists", navigation: ServerVariables.Artists, current: false },
-    { name: "Subscriptions", navigation: "#", current: false },
-    { name: "Fields", navigation: ServerVariables.Categories, current: false },
-    { name: "Plans", navigation: ServerVariables.Plans, current: false },
+    { name: "Users", navigation: ServerVariables.Users },
+    { name: "Artists", navigation: ServerVariables.Artists },
+    { name: "Subscriptions", navigation: "#" },
+    { name: "Fields", navigation: ServerVariables.Categories },
+    { name: "Plans", navigation: ServerVariables.Plans },
   ];
 
   const userNavigation = [
     { name: "Your Profile", navigation: "#" },
     { name: "Settings", navigation: "#" },
-    { name: "Logout", navigation:'#' },
+    { name: "Logout", navigation: "#" },
   ];
 
   function classNames(...classes) {
@@ -63,15 +71,18 @@ const AdminNavbar = () => {
                       <a
                         key={item.name}
                         onClick={() => {
-                          navigate(item.navigation);
+                          navigate(item.navigation, {
+                            state: { data: item.name },
+                          });
                         }}
-                        className={classNames(
-                          item.current
-                            ? "bg-blue-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
-                        )}
-                        aria-current={item.current ? "page" : undefined}
+                        className={
+                          item.name === activeItem
+                            ? "bg-blue-900 text-white rounded-md px-3 py-2 text-sm font-medium"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
+                        }
+                        aria-current={
+                          item.name === activeItem ? "page" : undefined
+                        }
                       >
                         {item.name}
                       </a>
@@ -117,7 +128,11 @@ const AdminNavbar = () => {
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <a
-                              onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
+                                onClick={() =>
+                                  item.name === "Logout"
+                                    ? handleLogout()
+                                    : navigate(item.navigation)
+                                }
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
                                   "block px-4 py-2 text-sm text-gray-700"
@@ -155,15 +170,14 @@ const AdminNavbar = () => {
                   key={item.name}
                   as="a"
                   onClick={() => {
-                    navigate(item.navigation);
+                    navigate(item.navigation,{state:{data:item.name}});
                   }}
-                  className={classNames(
-                    item.current
+                  className={
+                    item.name === activeItem
                       ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium"
-                  )}
-                  aria-current={item.current ? "page" : undefined}
+                      : "text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
+                  }
+                  aria-current={item.name === activeItem ? "page" : undefined}
                 >
                   {item.name}
                 </Disclosure.Button>
@@ -200,7 +214,11 @@ const AdminNavbar = () => {
                   <Disclosure.Button
                     key={item.name}
                     as="a"
-                    onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
+                    onClick={() =>
+                      item.name === "Logout"
+                        ? handleLogout()
+                        : navigate(item.navigation)
+                    }
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                   >
                     {item.name}

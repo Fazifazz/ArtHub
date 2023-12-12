@@ -6,7 +6,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { logoutUser } from "../redux/AuthSlice";
 
-const Navbar = () => {
+const ArtistNavbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const [activeItem, setActiveItem] = useState('Home')
@@ -26,10 +26,10 @@ const Navbar = () => {
 
   const navigation = [
     { name: "Home", navigation: "#"},
-    { name: "About", navigation: ServerVariables.Landing},
+    { name: "About", navigation: "#"},
     { name: "Contact", navigation: "#"},
-    { name: "Artists", navigation: "#"},
-    { name: "Reports", navigation: "#"},
+    { name: "chats", navigation: "#"},
+    { name: "profile", navigation: "#"},
   ];
 
   const handleLogout = async()=>{
@@ -217,4 +217,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default ArtistNavbar;
