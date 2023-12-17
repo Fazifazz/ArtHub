@@ -11,6 +11,9 @@ export const ServerVariables = {
     verifyEmail:'/verifyEmail',
     forgetOtp:'/forgetOtp',
     changePassword:'/changePassword',
+    artistPosts:'/artistPosts',
+    addPost:'/addPost',
+    
 
     //ArtistRoutes
     ArtistLogin:'/artistLogin',
@@ -20,6 +23,12 @@ export const ServerVariables = {
     artistVerifyEmail:'/artistVerifyEmail',
     forgetArtistOtp:'/forgetArtistOtp',
     artistChangePassword:'/artistChangePassword',
+    plansAvailable:'/plansAvailable',
+    razorpayCheckout:'/razorpayCheckout',
+    successPage:'/successPage',
+    artistProfile:'/artistProfile',
+    editArtistProfile:'/editArtistProfile',
+
 
     //Admin Routes
     AdminLogin:'/adminLogin',

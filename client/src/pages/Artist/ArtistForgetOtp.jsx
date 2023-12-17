@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { useFormik } from "formik";
 import MyButton from "../../components/MyButton";
 import { ServerVariables } from "../../util/ServerVariables";
-import { ArtistRequest, userRequest } from "../../Helper/instance";
+import { ArtistRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 
@@ -54,7 +54,9 @@ const ArtistForgetOtp = () => {
         if (res.data.success) {
           dispatch(hideLoading());
           toast.success(res.data.success);
-          navigate(ServerVariables.artistChangePassword,{state:{email:res.data.email}});
+          navigate(ServerVariables.artistChangePassword, {
+            state: { email: res.data.email },
+          });
         } else {
           dispatch(hideLoading());
           toast.error(res.data.error);
@@ -69,19 +71,21 @@ const ArtistForgetOtp = () => {
       url: apiEndPoints.ArtistResendOtp,
       method: "post",
       data: { email: email },
-    }).then((res) => {
-      dispatch(hideLoading());
-      if (res.data.success) {
-        toast.success(res.data.success);
-        startTimer();
-      } else {
-        toast.error("failed to resend,try again");
-      }
-    }).catch((err) => {
-      dispatch(hideLoading());
-      toast.error("something went wrong");
-      console.log(err.message);
-    });
+    })
+      .then((res) => {
+        dispatch(hideLoading());
+        if (res.data.success) {
+          toast.success(res.data.success);
+          startTimer();
+        } else {
+          toast.error("failed to resend,try again");
+        }
+      })
+      .catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong");
+        console.log(err.message);
+      });
   };
 
   return (

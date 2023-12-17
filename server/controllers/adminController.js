@@ -221,6 +221,17 @@ exports.showArtists = catchAsync(async (req, res) => {
   return res.status(200).json({ success: "ok", artists });
 });
 
+exports.approveArtist  = catchAsync(async (req,res)=>{
+  const {id} = req.body;
+  const artist = await Artist.findOne({_id:id})
+  if(artist){
+     artist.isApproved=true;
+     await artist.save()
+     return res.status(200).json({success:`${artist.name} has approved`}) 
+  } 
+  return res.json({error:'Approval failed'})
+})
+
 exports.blockArtist = catchAsync(async (req, res) => {
   const artist = await Artist.findById(req.body.id);
   const updatedArtist = await Artist.findOneAndUpdate(

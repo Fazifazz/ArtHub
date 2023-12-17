@@ -3,45 +3,44 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../redux/AuthSlice";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const [activeItem, setActiveItem] = useState('Home')
+  const dispatch = useDispatch();
+  const [activeItem, setActiveItem] = useState("Home");
   const location = useLocation();
 
+  const {user} =  useSelector((state)=>state.Auth)
+  
+  
   useEffect(() => {
     if (location.state) {
       const { data } = location.state;
       setActiveItem(data);
+      console.log(user)
     }
   });
 
-  const user = {
-    name: "Mohamed fasil p",
-    email: "fazzfasi7@gmail.com",
-    imageUrl:"/images/adminImages/pyphoto1.jpg"  };
+ 
 
   const navigation = [
-    { name: "Home", navigation: "#"},
-    { name: "About", navigation: ServerVariables.Landing},
-    { name: "Contact", navigation: "#"},
-    { name: "Artists", navigation: "#"},
-    { name: "Reports", navigation: "#"},
+    { name: "Home", navigation: "#" },
+    { name: "About", navigation:'#'},
+    { name: "Contact", navigation: "#" },
+    { name: "Artists", navigation: "#" },
+    { name: "Reports", navigation: "#" },
   ];
 
-  const handleLogout = async()=>{
-    dispatch(logoutUser())
-  }
+  const handleLogout = async () => {
+    dispatch(logoutUser());
+  };
   const userNavigation = [
     { name: "Your Profile", navigation: "#" },
     { name: "Settings", navigation: "#" },
     { name: "Logout", navigation: "#" },
   ];
-
- 
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -66,7 +65,11 @@ const Navbar = () => {
                     {navigation.map((item) => (
                       <a
                         key={item.name}
-                        onClick={() => navigate(item.navigation,{state:{data:item.name}})}
+                        onClick={() =>
+                          navigate(item.navigation, {
+                            state: { data: item.name },
+                          })
+                        }
                         className={
                           item.name === activeItem
                             ? "bg-blue-900 text-white rounded-md px-3 py-2 text-sm font-medium"
@@ -101,7 +104,7 @@ const Navbar = () => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src={user.imageUrl}
+                          src={`http://localhost:5000/profile/${user.profile}`}
                           alt=""
                         />
                       </Menu.Button>
@@ -120,7 +123,11 @@ const Navbar = () => {
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <a
-                               onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
+                                onClick={() =>
+                                  item.name === "Logout"
+                                    ? handleLogout()
+                                    : navigate(item.navigation)
+                                }
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
                                   "block px-4 py-2 text-sm text-gray-700"
@@ -158,7 +165,7 @@ const Navbar = () => {
                   key={item.name}
                   as="a"
                   onClick={() => {
-                    navigate(item.navigation,{state:{data:item.name}});
+                    navigate(item.navigation, { state: { data: item.name } });
                   }}
                   className={
                     item.name === activeItem
@@ -176,7 +183,7 @@ const Navbar = () => {
                 <div className="flex-shrink-0">
                   <img
                     className="h-10 w-10 rounded-full"
-                    src={user.imageUrl}
+                    src={`http://localhost:5000/profile/${user.profile}`}
                     alt=""
                   />
                 </div>
@@ -202,7 +209,11 @@ const Navbar = () => {
                   <Disclosure.Button
                     key={item.name}
                     as="a"
-                    onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
+                    onClick={() =>
+                      item.name === "Logout"
+                        ? handleLogout()
+                        : navigate(item.navigation)
+                    }
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                   >
                     {item.name}

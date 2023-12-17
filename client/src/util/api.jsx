@@ -6,6 +6,8 @@ export const apiEndPoints = {
     postResendOtp:'/api/user/resendOtp',
     forgetVerifyEmail:'/api/user/verifyEmail',
     updatePassword:'/api/user/updatePassword',
+    getAllPosts:'/api/user/getAllPosts',
+    likePost:'/api/user/likePost',
 
     //artist endpoints
     postArtistVerifyLogin:'/api/artist/artistVerifyLogin',
@@ -15,6 +17,13 @@ export const apiEndPoints = {
     ArtistResendOtp:'/api/artist/artistResendOtp',
     forgetArtistVerifyEmail:'/api/artist/artistVerifyEmail',
     artistUpdatePassword:'/api/artist/artistUpdatePassword',
+    getPlansAvailable:'/api/artist/getPlansAvailable',
+    subscribePlan:'/api/artist/subscribePlan',
+    verifyPayment:'/api/artist/verifyPayment',
+    uploadPost:'/api/artist/uploadPost',
+    getMyPosts:'/api/artist/getMyPosts',
+    deletePost:'/api/artist/deletePost',
+    editArtistProfile:'/api/artist/editArtistProfile',
 
     //admin endpoints
     postAdminLogin:'/api/admin/postAdminLogin',
@@ -31,6 +40,7 @@ export const apiEndPoints = {
     editPlan:'/api/admin/editPlan',
     updatePlan:'/api/admin/updatePlan',
     showArtists:'/api/admin/showArtists',
+    approveArtist:'/api/admin/approveArtist',
     blockArtist:'/api/admin/blockArtist',
 
 }

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { ServerVariables } from "../../util/ServerVariables";
 import MyButton from "../../components/MyButton";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { ArtistLoginThunk } from "../../redux/ArtistAuthSlice";
 
 const loginSchema = Yup.object().shape({
@@ -84,7 +83,7 @@ const ArtistLogin = () => {
         </form>
 
         <p className="text-sm">
-          Don't have an account?
+          Dont have an account?
           <a
             className="text-blue-500"
             onClick={() => navigate(ServerVariables.ArtistRegister)}

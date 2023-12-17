@@ -1,4 +1,3 @@
-import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { ServerVariables } from "./ServerVariables";
@@ -35,6 +34,13 @@ import ChangePassword from "../pages/User/ChangePassword";
 import ArtistForgetOtp from "../pages/Artist/ArtistForgetOtp";
 import ArtistVerifyEmail from "../pages/Artist/ArtistVerifyEmail";
 import ArtistChangePassword from "../pages/Artist/ArtistChangePassword";
+import SubscriptionPlans from "../pages/Artist/PlansAvailable";
+import RazorpayPaymentPage from "../pages/Artist/RazorpayCheckout";
+import SuccessPage from "../pages/Artist/SuccessPage";
+import PostPage from "../pages/Artist/ArtistPosts";
+import AddPost from "../pages/Artist/AddPost";
+import ArtistProfile from "../pages/Artist/ArtistProfile";
+import EditArtistProfile from "../pages/Artist/EditArtistProfile";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -80,14 +86,13 @@ function AppRoutes() {
           <Route path={ServerVariables.verifyEmail} element={<VerifyEmail />} />
           <Route path={ServerVariables.forgetOtp} element={<ForgetOtp />} />
           <Route path={ServerVariables.changePassword} element={<ChangePassword />} />
-          <Route
-            path={ServerVariables.verifyOtp}
-            element={<OtpVerification />}
-          />
+          <Route path={ServerVariables.verifyOtp} element={<OtpVerification />}/>
         </Route>
+
         <Route element={<IsLoggedUser />}>
           <Route path={ServerVariables.userHome} element={<UserHome />} />
         </Route>
+
 
         {/*artist routes */}
         <Route element={<IsArtistLoggedOut/>}>
@@ -100,6 +105,13 @@ function AppRoutes() {
         </Route>
         <Route element={<IsArtistLogged/>}>
         <Route path={ServerVariables.ArtistHome} element={<ArtistHome />} />
+        <Route path={ServerVariables.plansAvailable} element={<SubscriptionPlans />} />
+        <Route path={ServerVariables.razorpayCheckout} element={<RazorpayPaymentPage />} />
+        <Route path={ServerVariables.successPage} element={<SuccessPage />} />
+        <Route path={ServerVariables.artistPosts} element={<PostPage />} />
+        <Route path={ServerVariables.addPost} element={<AddPost />} />
+        <Route path={ServerVariables.artistProfile} element={<ArtistProfile />} />
+        <Route path={ServerVariables.editArtistProfile} element={<EditArtistProfile />} />
         </Route>
 
 

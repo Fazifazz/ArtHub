@@ -22,7 +22,6 @@ const artistSchema = new mongoose.Schema(
     },
     worksDone: {
       type: Number,
-      required: true,
     },
     YearOfExperience: {
       type: Number,
@@ -39,9 +38,12 @@ const artistSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "category",
     },
-    interest: {
+    field: {
       type: String,
       required: true,
+    },
+    interest: {
+      type: String,
     },
     educationalQualifications: {
       type: String,
@@ -58,13 +60,30 @@ const artistSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    payment: {
+      type: String,
+      required: false,
+    },
+    paymentHistory: [
+      {
+        date: Date,
+        expireDate: Date,
+        planName: String,
+        price: Number,
+        duration: String,
+      },
+    ],
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
     currentPlan: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "plan",
     },
-    planStatus:{
-      type:String,
-      default:'No plan'
+    planStatus: {
+      type: String,
+      default: "No plan",
     },
     isSubscribed: {
       type: Boolean,
@@ -79,7 +98,7 @@ const artistSchema = new mongoose.Schema(
     },
     posts: [
       {
-        name: {
+        title: {
           type: String,
           required: true,
         },
@@ -91,6 +110,31 @@ const artistSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
+        likes: [
+          {
+            user: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "user", // Assuming there is a User model
+            },
+            count: {
+              type: Number,
+              defualt: 0,
+            },
+          },
+        ],
+        comments: [
+          {
+            user: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "user", // Assuming there is a User model
+            },
+            text: String,
+            createdAt: {
+              type: Date,
+              default: Date.now,
+            },
+          },
+        ],
       },
     ],
   },

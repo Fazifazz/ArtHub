@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutArtist } from "../../redux/ArtistAuthSlice";
 import MyButton from "../../components/MyButton";
+import ArtistNavbar from "../../components/ArtistNav";
 
 function ArtistHome() {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ function ArtistHome() {
 
   return (
     <>
+    <ArtistNavbar/>
       <div className="flex items-center justify-center h-screen bg-gray-100">
         <div className="bg-black text-white p-8 rounded shadow-md w-96 text-center">
           <img

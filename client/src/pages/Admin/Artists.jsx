@@ -55,19 +55,58 @@ const Artists = () => {
         url: apiEndPoints.blockArtist,
         method: "post",
         data: { id: id },
-      }).then((res) => {
-        dispatch(hideLoading());
-        if (res.data.success) {
-          toast.success(res.data.success);
-          getArtists();
-        } else {
-          toast.error(res.data.error);
-        }
-      }).catch((err) => {
-        dispatch(hideLoading());
-        toast.error("something went wrong");
-        console.log(err.message);
-      });
+      })
+        .then((res) => {
+          dispatch(hideLoading());
+          if (res.data.success) {
+            toast.success(res.data.success);
+            getArtists();
+          } else {
+            toast.error(res.data.error);
+          }
+        })
+        .catch((err) => {
+          dispatch(hideLoading());
+          toast.error("something went wrong");
+          console.log(err.message);
+        });
+    }
+  };
+
+  const handleApprove = async (id) => {
+    const artist = artists.find((artist) => artist._id === id);
+    const result = await Swal.fire({
+      title: `Approve ${artist.name}`,
+      text: "Are you sure you want to Approve this artist?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Approve",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      dispatch(showLoading());
+      adminRequest({
+        url: apiEndPoints.approveArtist,
+        method: "post",
+        data: { id: id },
+      })
+        .then((res) => {
+          dispatch(hideLoading());
+          if (res.data.success) {
+            toast.success(res.data.success);
+            getArtists();
+          } else {
+            toast.error(res.data.error);
+          }
+        })
+        .catch((err) => {
+          dispatch(hideLoading());
+          toast.error("something went wrong");
+          console.log(err.message);
+        });
     }
   };
 
@@ -129,7 +168,11 @@ const Artists = () => {
                                 className="h-10 w-10 rounded-full"
                                 alt="image"
                               >
-                                <UserCircleIcon />
+                                <img
+                                  className="h-8 w-8 rounded-full mr-2 "
+                                  src={`http://localhost:5000/profile/${artist.profile}`}
+                                  alt=""
+                                />
                               </div>
                             </td>
                             <td className="border-b p-4 text-center">
@@ -142,24 +185,41 @@ const Artists = () => {
                               {artist.email}
                             </td>
                             <td className="border-b p-4 text-center">
-                              {artist.isVerified?'yes':'No'}
+                              {artist.isVerified ? "yes" : "No"}
                             </td>
                             <td className="border-b p-4 text-center">
                               {artist.planStatus}
                             </td>
                             <td className="text-center">
-                              <button
-                                className={`${
-                                  artist.isBlocked
-                                    ? "bg-green-500"
-                                    : "bg-red-500"
-                                } text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10`}
-                                onClick={() => {
-                                  blockArtist(artist._id);
-                                }}
-                              >
-                                {artist.isBlocked ? "Blocked" : "Block"}
-                              </button>
+                              {artist.isApproved ? (
+                                <button
+                                  className={`${
+                                    artist.isBlocked
+                                      ? "bg-green-500"
+                                      : "bg-red-500"
+                                  } text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10`}
+                                  onClick={() => {
+                                    blockArtist(artist._id);
+                                  }}
+                                >
+                                  {artist.isBlocked ? "Blocked" : "Block"}
+                                </button>
+                              ) : (
+                                <div>
+                                  <button
+                                    className="bg-blue-500 text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10 mr-1"
+                                    onClick=""
+                                  >
+                                    View
+                                  </button>
+                                  <button
+                                    className="bg-green-500 text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10"
+                                    onClick={() => handleApprove(artist._id)}
+                                  >
+                                    Approve
+                                  </button>
+                                </div>
+                              )}
                             </td>
                           </tr>
                         );

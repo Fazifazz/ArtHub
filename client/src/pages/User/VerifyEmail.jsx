@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { ServerVariables } from "../../util/ServerVariables";
 import MyButton from "../../components/MyButton";
 import { useNavigate } from "react-router-dom";

@@ -38,6 +38,10 @@ export const ArtistAuthSlice = createSlice({
       state.isSuccess = false;
       state.errorMsg = action.payload.error;
     },
+    updateArtist: (state,action)=> {
+      localStorage.setItem("artistInfo", JSON.stringify(action.payload));
+      state.artist = action.payload;
+    },
     logoutArtist: (state, action) => {
       localStorage.removeItem("artistInfo");
       localStorage.removeItem("artistToken");
@@ -69,6 +73,6 @@ export const ArtistLoginThunk = (data) => async (dispatch) => {
   }
 };
 
-export const { loginPending, loginSuccess, loginReject, logoutArtist } =
+export const { loginPending, loginSuccess, loginReject, logoutArtist,updateArtist } =
   ArtistAuthSlice.actions;
 export default ArtistAuthSlice.reducer;

@@ -1,16 +1,18 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BellIcon, XMarkIcon,ChatBubbleLeftRightIcon,PhotoIcon, } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { logoutUser } from "../redux/AuthSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutArtist } from "../redux/ArtistAuthSlice";
 
 const ArtistNavbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const [activeItem, setActiveItem] = useState('Home')
   const location = useLocation();
+
+  const {artist}  = useSelector((state)=>state.ArtistAuth)
 
   useEffect(() => {
     if (location.state) {
@@ -25,18 +27,18 @@ const ArtistNavbar = () => {
     imageUrl:"/images/adminImages/pyphoto1.jpg"  };
 
   const navigation = [
-    { name: "Home", navigation: "#"},
+    { name: "Home", navigation: ServerVariables.ArtistHome},
     { name: "About", navigation: "#"},
+    { name: "plans", navigation: ServerVariables.plansAvailable},
+    { name: "My Posts", navigation:ServerVariables.artistPosts},
     { name: "Contact", navigation: "#"},
-    { name: "chats", navigation: "#"},
-    { name: "profile", navigation: "#"},
   ];
 
   const handleLogout = async()=>{
-    dispatch(logoutUser())
+    dispatch(logoutArtist())
   }
   const userNavigation = [
-    { name: "Your Profile", navigation: "#" },
+    { name: "Your Profile", navigation: ServerVariables.artistProfile},
     { name: "Settings", navigation: "#" },
     { name: "Logout", navigation: "#" },
   ];
@@ -55,11 +57,7 @@ const ArtistNavbar = () => {
             <div className="flex h-16 items-center justify-between">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <img
-                    className="h-36 w-34"
-                    src="/images/userImages/hub1.png"
-                    alt="Your Company"
-                  />
+                 <PhotoIcon/>
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
@@ -92,6 +90,14 @@ const ArtistNavbar = () => {
                     <span className="sr-only">View notifications</span>
                     <BellIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
+                  <button
+                    type="button"
+                    className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  >
+                    <span className="absolute -inset-1.5" />
+                    <span className="sr-only">View notifications</span>
+                    <ChatBubbleLeftRightIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
 
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative ml-3">
@@ -101,7 +107,7 @@ const ArtistNavbar = () => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src={user.imageUrl}
+                          src={`http://localhost:5000/artistPosts/${artist.profile}`}
                           alt=""
                         />
                       </Menu.Button>
@@ -174,11 +180,12 @@ const ArtistNavbar = () => {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img
+                  {/* <img
                     className="h-10 w-10 rounded-full"
                     src={user.imageUrl}
                     alt=""
-                  />
+                  /> */}
+                  <PhotoIcon/>
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">

@@ -9,5 +9,7 @@ userRouter.post("/register", userController.register)
           .post("/verifyLogin", userController.verifyLogin)
           .post("/verifyEmail", userController.forgetVerifyEmail)
           .post("/updatePassword", userController.updatePassword)
+          .get("/getAllPosts", userController.getAllPosts)
+          .post("/likePost", userController.likePost)
 
 module.exports = userRouter;
