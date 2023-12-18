@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon,HeartIcon } from "@heroicons/react/24/outline";
 import ArtistNavbar from "../../components/ArtistNav";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
@@ -12,7 +12,7 @@ import Swal from "sweetalert2";
 
 const PostCard = ({ post, onDelete }) => {
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5">
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 relative">
       <img
         className="w-full h-42 object-cover"
         src={`http://localhost:5000/artistPosts/${post.image}`}
@@ -21,16 +21,24 @@ const PostCard = ({ post, onDelete }) => {
       <div className="p-4">
         <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
         <p className="text-gray-600 mb-2">{post.description}</p>
-        <button
-          className="bg-red-500 text-white p-2 rounded-full hover:bg-red-700"
-          onClick={() => onDelete(post._id)}
-        >
-          <TrashIcon className="h-6 w-6" />
-        </button>
+
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-gray-800">
+            {post.likes?.length} Likes{" "}
+            <HeartIcon className="w-6 h-6 text-red-600 fill-red-600" />
+          </p>
+          <button
+            className="bg-red-500 text-white p-2 rounded-full hover:bg-red-700"
+            onClick={() => onDelete(post._id)}
+          >
+            <TrashIcon className="h-6 w-6" />
+          </button>
+        </div>
       </div>
     </div>
   );
 };
+
 
 const PostList = ({ posts, onDelete }) => {
   return (

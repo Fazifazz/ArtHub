@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { apiEndPoints } from "../util/api";
 import { userRequest } from "../Helper/instance";
-import {showLoading,hideLoading} from '../redux/AlertSlice'
+import { showLoading, hideLoading } from "../redux/AlertSlice";
 import toast from "react-hot-toast";
 
 const initialState = {
@@ -38,6 +38,10 @@ export const AuthSlice = createSlice({
       state.isSuccess = false;
       state.errorMsg = action.payload.error;
     },
+    updateUser: (state, action) => {
+      localStorage.setItem("userInfo", JSON.stringify(action.payload));
+      state.user = action.payload;
+    },
     logoutUser: (state, action) => {
       localStorage.removeItem("UserToken");
       localStorage.removeItem("userInfo");
@@ -49,19 +53,19 @@ export const AuthSlice = createSlice({
 
 export const loginThunk = (data) => async (dispatch) => {
   try {
-    dispatch(showLoading())
+    dispatch(showLoading());
     dispatch(loginPending());
     const res = await userRequest({
       url: apiEndPoints.postVerifyLogin,
       method: "post",
       data: data,
     });
-    dispatch(hideLoading())
+    dispatch(hideLoading());
     if (res.data.success) {
-      toast.success(res.data.success)
+      toast.success(res.data.success);
       dispatch(loginSuccess(res.data));
     } else {
-      toast.error(res.data.error)
+      toast.error(res.data.error);
       dispatch(loginReject(res.data));
     }
   } catch (error) {
@@ -69,6 +73,11 @@ export const loginThunk = (data) => async (dispatch) => {
   }
 };
 
-export const { loginPending, loginSuccess, loginReject, logoutUser } =
-  AuthSlice.actions;
+export const {
+  loginPending,
+  loginSuccess,
+  loginReject,
+  updateUser,
+  logoutUser,
+} = AuthSlice.actions;
 export default AuthSlice.reducer;

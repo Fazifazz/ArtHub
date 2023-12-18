@@ -35,12 +35,13 @@ import ArtistForgetOtp from "../pages/Artist/ArtistForgetOtp";
 import ArtistVerifyEmail from "../pages/Artist/ArtistVerifyEmail";
 import ArtistChangePassword from "../pages/Artist/ArtistChangePassword";
 import SubscriptionPlans from "../pages/Artist/PlansAvailable";
-import RazorpayPaymentPage from "../pages/Artist/RazorpayCheckout";
 import SuccessPage from "../pages/Artist/SuccessPage";
 import PostPage from "../pages/Artist/ArtistPosts";
 import AddPost from "../pages/Artist/AddPost";
 import ArtistProfile from "../pages/Artist/ArtistProfile";
 import EditArtistProfile from "../pages/Artist/EditArtistProfile";
+import UserProfile from "../pages/User/UserProfile";
+import EditUserProfile from "../pages/User/EditUserProfile";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -91,6 +92,8 @@ function AppRoutes() {
 
         <Route element={<IsLoggedUser />}>
           <Route path={ServerVariables.userHome} element={<UserHome />} />
+          <Route path={ServerVariables.userProfile} element={<UserProfile />} />
+          <Route path={ServerVariables.editUserProfile} element={<EditUserProfile />} />
         </Route>
 
 
@@ -106,7 +109,6 @@ function AppRoutes() {
         <Route element={<IsArtistLogged/>}>
         <Route path={ServerVariables.ArtistHome} element={<ArtistHome />} />
         <Route path={ServerVariables.plansAvailable} element={<SubscriptionPlans />} />
-        <Route path={ServerVariables.razorpayCheckout} element={<RazorpayPaymentPage />} />
         <Route path={ServerVariables.successPage} element={<SuccessPage />} />
         <Route path={ServerVariables.artistPosts} element={<PostPage />} />
         <Route path={ServerVariables.addPost} element={<AddPost />} />

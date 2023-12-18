@@ -26,7 +26,7 @@ const Navbar = () => {
  
 
   const navigation = [
-    { name: "Home", navigation: "#" },
+    { name: "Home", navigation: ServerVariables.userHome },
     { name: "About", navigation:'#'},
     { name: "Contact", navigation: "#" },
     { name: "Artists", navigation: "#" },
@@ -37,7 +37,7 @@ const Navbar = () => {
     dispatch(logoutUser());
   };
   const userNavigation = [
-    { name: "Your Profile", navigation: "#" },
+    { name: "Your Profile", navigation: ServerVariables.userProfile },
     { name: "Settings", navigation: "#" },
     { name: "Logout", navigation: "#" },
   ];
@@ -104,7 +104,7 @@ const Navbar = () => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src={`http://localhost:5000/profile/${user.profile}`}
+                          src={`http://localhost:5000/userProfile/${user.profile}`}
                           alt=""
                         />
                       </Menu.Button>

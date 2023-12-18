@@ -1,6 +1,5 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ArtistRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { ServerVariables } from "../../util/ServerVariables";
@@ -21,15 +20,15 @@ function AddPost() {
 
   const handleForm = async (e) => {
     e.preventDefault();
-    if (!title || !description || !preview ||!image) {
+    if (!image) {
       setError("All fields are required");
       setTimeout(() => {
         setError("");
       }, 2000);
       return;
     }
-   
 
+    const data = new FormData();
     if (image) {
       if (image.type.startsWith("image")) {
         data.append("post", image);
@@ -40,7 +39,7 @@ function AddPost() {
         }, 2000);
         return;
       }
-    } 
+    }
     data.append("title", title);
     data.append("description", description);
     dispatch(showLoading());
@@ -56,21 +55,13 @@ function AddPost() {
       } else {
         toast.success(res.data.error);
       }
-    })
+    });
   };
 
-  const addcropImg  = (file)=>{
-    setImage(file)
-  }
+  const addCropImg = (file) => {
+    setImage(file);
+  };
 
-  // const handlePreview = (e) => {
-  //   console.log(e.target.files);
-  //   if (e.target.files.length === 0) {
-  //     return setPreview(null);
-  //   }
-  //   const url = URL.createObjectURL(e.target.files[0]);
-  //   setPreview(url);
-  // };
   return (
     <>
       <ArtistNavbar />
@@ -112,21 +103,7 @@ function AddPost() {
                 />
               </div>
 
-              <ImageCrop onNewImageUrl={addcropImg}/>
-
-              {/* {preview && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-600">
-                    Preview Image
-                  </label>
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="mt-2 w-full border rounded-md"
-                    style={{ maxHeight: "400px" }}
-                  />
-                </div>
-              )} */}
+              <ImageCrop onNewImageUrl={addCropImg} />
 
               {error && <p className="text-red-600">{error}</p>}
 

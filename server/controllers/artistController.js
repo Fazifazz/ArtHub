@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken"),
   Artist = require("../models/artist/artistModel"),
   Plan = require("../models/admin/planModel"),
   Category = require("../models/admin/categoryModel"),
+  Post = require("../models/artist/postModel"),
   catchAsync = require("../util/catchAsync"),
   crypto = require("crypto"),
   Razorpay = require("razorpay"),
@@ -219,14 +220,16 @@ exports.subscribePlan = catchAsync(async (req, res) => {
 exports.uploadPost = catchAsync(async (req, res) => {
   const { title, description, artistPost } = req.body;
   const artistId = req.artistId;
-  const newPost = {
+  const newPost = await Post.create({
     title,
     description,
-    image: artistPost,
-  };
+    postedBy:artistId,
+    image:artistPost
+  })
+   
   const updatedArtist = await Artist.findByIdAndUpdate(
     { _id: artistId },
-    { $push: { posts: newPost } },
+    { $push: { posts: newPost._id } },
     { new: true }
   );
 
@@ -237,9 +240,7 @@ exports.uploadPost = catchAsync(async (req, res) => {
 });
 
 exports.getMyPosts = catchAsync(async (req, res) => {
-  const artist = await Artist.findOne({ _id: req.artistId });
-
-  const posts = artist.posts;
+  const posts = await Post.find({postedBy:req.artistId})
   if (posts) {
     return res.status(200).json({ success: "ok", posts });
   }
@@ -248,9 +249,10 @@ exports.getMyPosts = catchAsync(async (req, res) => {
 
 exports.deletePost = catchAsync(async (req, res) => {
   const { id } = req.body;
+  await Post.findByIdAndDelete(id)
   const artist = await Artist.findByIdAndUpdate(
     req.artistId,
-    { $pull: { posts: { _id: id } } },
+    { $pull: { posts: id } },
     { new: true }
   );
 

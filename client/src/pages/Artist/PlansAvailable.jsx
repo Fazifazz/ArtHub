@@ -4,8 +4,6 @@ import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import { ArtistRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
-import toast from "react-hot-toast";
-import { ServerVariables } from "../../util/ServerVariables";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 

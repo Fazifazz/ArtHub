@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken"),
   otpTemplate = require("../util/otpTemplate"),
   User = require("../models/user/userModel"),
   Artist = require("../models/artist/artistModel"),
+  Post = require("../models/artist/postModel"),
   catchAsync = require("../util/catchAsync"),
   Mail = require("../util/otpMailer");
 
@@ -154,57 +155,101 @@ exports.updatePassword = catchAsync(async (req, res) => {
 });
 
 exports.getAllPosts = catchAsync(async (req, res) => {
-  const artistPosts = await Artist.aggregate([
-    {
-      $unwind: "$posts", // Deconstructs the posts array
-    },
-    {
-      $project: {
-        _id: 0, // Exclude the _id field
-        artistId: "$_id", // Include the artistId field
-        artistName: "$name", // Include the artistName field (replace with the actual field name)
-        post: "$posts",
-        profile: "$profile", // Include the post field
+  const artistPosts = await Post.find({})
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile", // Replace 'User' with the actual model name for the user
       },
-    },
-  ]);
+    })
+    .populate("postedBy");
+  // console.log(artistPosts[0].comments[0].postedBy.name)
   if (artistPosts) {
     return res.status(200).json({ success: "ok", artistPosts });
   }
   return res.status(200).json({ error: "failed" });
 });
 
+exports.updateUserProfile = catchAsync(async (req, res) => {
+  const { name, mobile } = req.body;
+  if (req.body.userProfile) {
+    const updatedUser = await User.findByIdAndUpdate(
+      { _id: req.userId },
+      {
+        $set: {
+          name,
+          mobile,
+          profile: req.body.userProfile,
+        },
+      },
+      { new: true }
+    );
+    if (updatedUser) {
+      return res
+        .status(200)
+        .json({ success: "profile updated successfully", updatedUser });
+    }
+  }
+  if (!req.body.userProfile) {
+    const updatedUser = await User.findByIdAndUpdate(
+      { _id: req.userId },
+      {
+        $set: {
+          name,
+          mobile,
+        },
+      },
+      { new: true }
+    );
+    if (updatedUser) {
+      return res
+        .status(200)
+        .json({ success: "profile updated successfully", updatedUser });
+    }
+  }
+  return res.status(200).json({ error: "profile updating failed" });
+});
+
 exports.likePost = catchAsync(async (req, res) => {
-  const { id, artistId } = req.body;
-
-  const artist = await Artist.findById(artistId);
-
-  if (!artist) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Artist not found" });
-  }
-
-  const postIndex = artist.posts.findIndex(
-    (post) => post._id.toString() === id
+  const { id } = req.body;
+  const updatedPost = await Post.findByIdAndUpdate(
+    id,
+    { $push: { likes: req.userId } },
+    { new: true }
   );
-
-  if (postIndex === -1) {
-    return res.status(404).json({ success: false, message: "Post not found" });
+  if (updatedPost) {
+    return res.status(200).json({ success: "ok" });
   }
+  return res.status(200).json({ error: "failed" });
+});
 
-  const alreadyLikedIndex = artist.posts[postIndex].likes.findIndex(
-    (like) => like.user.toString() === req.userId
+exports.unLikePost = catchAsync(async (req, res) => {
+  const { id } = req.body;
+  const updatedPost = await Post.findByIdAndUpdate(
+    id,
+    { $pull: { likes: req.userId } },
+    { new: true }
   );
-
-  if (alreadyLikedIndex !== -1) {
-    // Unlike the post
-    artist.posts[postIndex].likes.splice(alreadyLikedIndex, 1);
-  } else {
-    // Like the post
-    artist.posts[postIndex].likes.push({ user: req.userId});
+  if (updatedPost) {
+    return res.status(200).json({ success: "ok" });
   }
+  return res.status(200).json({ error: "failed" });
+});
 
-  await artist.save();
-  res.status(200).json({ success: true });
+exports.comment = catchAsync(async (req, res) => {
+  const newComment = {
+    text: req.body.text,
+    postedBy: req.userId,
+  };
+  const updatedPost = await Post.findByIdAndUpdate(
+    req.body.postId,
+    { $push: { comments: newComment } },
+    { new: true }
+  ).populate("postedBy");
+  if (updatedPost) {
+    return res.status(200).json({ success: "ok" });
+  }
+  return res.status(200).json({ error: "failed" });
 });

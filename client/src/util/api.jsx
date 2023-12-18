@@ -8,6 +8,9 @@ export const apiEndPoints = {
     updatePassword:'/api/user/updatePassword',
     getAllPosts:'/api/user/getAllPosts',
     likePost:'/api/user/likePost',
+    unLikePost:'/api/user/unLikePost',
+    comment:'/api/user/comment',
+    updateUserProfile:'/api/user/updateUserProfile',
 
     //artist endpoints
     postArtistVerifyLogin:'/api/artist/artistVerifyLogin',

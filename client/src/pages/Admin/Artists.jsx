@@ -170,7 +170,7 @@ const Artists = () => {
                               >
                                 <img
                                   className="h-8 w-8 rounded-full mr-2 "
-                                  src={`http://localhost:5000/profile/${artist.profile}`}
+                                  src={`http://localhost:5000/artistProfile/${artist.profile}`}
                                   alt=""
                                 />
                               </div>

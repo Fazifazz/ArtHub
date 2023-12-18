@@ -13,7 +13,8 @@ function ImageCrop({onNewImageUrl}) {
     }
   }
 
-  const getCropData = async () => {
+  const getCropData = async (e) => {
+    e.preventDefault()
     if (cropper) {
       const file = await fetch(cropper.getCroppedCanvas().toDataURL())
         .then((res) => res.blob())
@@ -64,7 +65,7 @@ function ImageCrop({onNewImageUrl}) {
       {avatarUrl && <button className="mb-2 w-10 bg-yellow-500" onClick={getCropData}>crop</button>}
 
       {preview && (
-        <div className="card mt-2">
+        <div className="card mt-2 mb-4">
           <div className="card-header text-[#E0CDB6]">Preview</div>
           <div className="card-body">
             <div className="d-flex justify-content-center">
@@ -72,9 +73,9 @@ function ImageCrop({onNewImageUrl}) {
                 src={preview}
                 className="preview"
                 style={{
-                  maxWidth: "500px",
+                  maxWidth: "200px",
                   objectFit: "cover",
-                  maxHeight: "400px",
+                  maxHeight: "300px",
                 }}
               />
             </div>

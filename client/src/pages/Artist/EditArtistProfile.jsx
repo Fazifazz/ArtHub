@@ -34,10 +34,12 @@ function EditArtistProfile() {
     initialValues: {
       name: artist.name,
       mobile: artist.mobile,
-      experience: artist.YearOfExperience?artist.YearOfExperience:0,
-      worksDone: artist.worksDone?artist.worksDone:0,
-      interest: artist.interest?artist.interest:'Not Given',
-      qualification: artist.educationalQualifications?artist.educationalQualifications:'Not Given',
+      experience: artist.YearOfExperience ? artist.YearOfExperience : 0,
+      worksDone: artist.worksDone ? artist.worksDone : 0,
+      interest: artist.interest ? artist.interest : "Not Given",
+      qualification: artist.educationalQualifications
+        ? artist.educationalQualifications
+        : "Not Given",
       language: artist.communicationLangauge,
       category: artist.category,
     },
@@ -119,7 +121,7 @@ function EditArtistProfile() {
             src={
               selectedImage
                 ? URL.createObjectURL(selectedImage)
-                : `http://localhost:5000/profile/${artist.profile}`
+                : `http://localhost:5000/artistProfile/${artist.profile}`
             }
             alt=""
           />
@@ -135,7 +137,6 @@ function EditArtistProfile() {
                   className="mt-1 p-2 w-28 border rounded-md"
                   onChange={(e) => setSelectedImage(e.target.files[0])}
                 />
-                {/* <EditIcon  /> */}
               </p>
             </div>
             <div className="border-b border-gray-900/10 pb-12">
@@ -357,6 +358,9 @@ function EditArtistProfile() {
                 className="bg-yellow-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
                 Update
+              </button>
+              <button className="bg-gray-800 hover:bg-blue-700 ml-2 mt-3 w-26 text-white font-bold py-2 px-4 rounded" onClick={()=>navigate(ServerVariables.artistProfile)}>
+                Back
               </button>
             </div>
           </form>

@@ -107,7 +107,7 @@ const ArtistNavbar = () => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src={`http://localhost:5000/artistPosts/${artist.profile}`}
+                          src={`http://localhost:5000/artistProfile/${artist.profile}`}
                           alt=""
                         />
                       </Menu.Button>

@@ -3,7 +3,7 @@ export const ServerVariables = {
     Landing : '/',
 
 
-    //userroutes
+    //userRoutes
     Login: "/login",
     Register: "/register",
     verifyOtp:'/verifyOtp',
@@ -13,6 +13,8 @@ export const ServerVariables = {
     changePassword:'/changePassword',
     artistPosts:'/artistPosts',
     addPost:'/addPost',
+    userProfile:'/userProfile',
+    editUserProfile:'/editUserProfile',
     
 
     //ArtistRoutes
@@ -24,7 +26,6 @@ export const ServerVariables = {
     forgetArtistOtp:'/forgetArtistOtp',
     artistChangePassword:'/artistChangePassword',
     plansAvailable:'/plansAvailable',
-    razorpayCheckout:'/razorpayCheckout',
     successPage:'/successPage',
     artistProfile:'/artistProfile',
     editArtistProfile:'/editArtistProfile',

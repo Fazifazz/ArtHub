@@ -8,7 +8,7 @@ const user = axios.create({baseURL:URL.BASE_URL})
 export const userRequest = async({ ...options }) => {
     // the Authorization header 
     user.defaults.headers.common.Authorization = `Bearer ${localStorage.getItem(
-      "token"
+      "UserToken"
     )}`;
     // callback functions for handling responses and errors.
     const onSuccess = (response) => response;

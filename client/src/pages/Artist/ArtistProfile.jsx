@@ -8,17 +8,17 @@ import { ServerVariables } from "../../util/ServerVariables";
 
 const ArtistProfile = () => {
   const { artist } = useSelector((state) => state.ArtistAuth);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <>
       <ArtistNavbar />
-      <div className="bg-gray-100 font-sans min-h-screen w-full flex flex-row justify-center items-center">
+      <div className="bg-gray-100 font-sans min-h-screen w-full  flex flex-row justify-center items-center">
         {/* Increase width and height of the outer div */}
-        <div className="card w-96 h-96 mx-auto bg-gray-300 text-grey-800 shadow-xl hover:shadow">
+        <div className="card w-96 h-100 mx-auto  bg-gray-300  text-grey-800 shadow-xl hover:shadow">
           <img
             className="w-36 mx-auto rounded-full -mt-20 border-2 border-gray-800 "
-            src={`http://localhost:5000/profile/${artist.profile}`}
+            src={`http://localhost:5000/artistProfile/${artist.profile}`}
             alt=""
           />
           <div className="uppercase text-center mt-2 text-3xl font-medium">
@@ -52,17 +52,35 @@ const ArtistProfile = () => {
                 : "Not Given"}
             </p>
             <p>communicationLangauge: {artist.communicationLangauge}</p>
-            <p className="font-semibold">Mobile:{" "}{artist.mobile}</p>
+            <p className="font-semibold">Email: {artist.email}</p>
+            <p className="font-semibold">Mobile: {artist.mobile}</p>
           </div>
-          <hr className="mt-8" />
-          <div className="flex p-4 justify-center">
-            <p className="font-bold text-center">
-              {artist.Followers.length} Followers
-            </p>
+          {/* <hr className="mt-8 bg-gray-800" /> */}
+          <div className="w-full mt-8 border border-gray-700"></div>
+          <div className="flex p-4">
+            <div className="w-1/2 text-center">
+              <span className="font-black">
+                {artist?.followers?.length ? artist?.followers?.length : 0}{" "}
+                Followers
+              </span>
+            </div>
+            <div className="w-0 border border-gray-800"></div>
+            <div className="w-1/2 text-center">
+              <span
+                className="font-black"
+                onClick={() => navigate(ServerVariables.artistPosts)}
+              >
+                {artist?.posts?.length ? artist?.posts?.length : 0} Posts
+              </span>
+            </div>
           </div>
+
           <div className="flex justify-center">
-            <p className="font-bold text-center" onClick={()=>navigate(ServerVariables.editArtistProfile)}>
-              <EditIcon/>
+            <p
+              className="font-bold text-center"
+              onClick={() => navigate(ServerVariables.editArtistProfile)}
+            >
+              <EditIcon />
             </p>
           </div>
         </div>

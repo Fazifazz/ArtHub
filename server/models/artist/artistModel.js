@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const { ObjectId } = mongoose.Schema.Types;
 const artistSchema = new mongoose.Schema(
   {
     name: {
@@ -24,7 +24,7 @@ const artistSchema = new mongoose.Schema(
       type: Number,
     },
     YearOfExperience: {
-      type: Number,
+      type: String,
     },
     otp: {
       code: {
@@ -35,7 +35,7 @@ const artistSchema = new mongoose.Schema(
       },
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: ObjectId,
       ref: "category",
     },
     field: {
@@ -78,7 +78,7 @@ const artistSchema = new mongoose.Schema(
       default: false,
     },
     currentPlan: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: ObjectId,
       ref: "plan",
     },
     planStatus: {
@@ -93,50 +93,8 @@ const artistSchema = new mongoose.Schema(
       type: String,
       default: "avatar.png",
     },
-    Followers: {
-      type: Array,
-    },
-    posts: [
-      {
-        title: {
-          type: String,
-          required: true,
-        },
-        description: {
-          type: String,
-          required: true,
-        },
-        image: {
-          type: String,
-          required: true,
-        },
-        likes: [
-          {
-            user: {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "user", // Assuming there is a User model
-            },
-            count: {
-              type: Number,
-              defualt: 0,
-            },
-          },
-        ],
-        comments: [
-          {
-            user: {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "user", // Assuming there is a User model
-            },
-            text: String,
-            createdAt: {
-              type: Date,
-              default: Date.now,
-            },
-          },
-        ],
-      },
-    ],
+    followers: [{ type: ObjectId, ref: "user" } ],
+    posts: [{ type: ObjectId, ref: "post" } ],
   },
   {
     timestamps: true,
