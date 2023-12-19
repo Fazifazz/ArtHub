@@ -35,7 +35,7 @@ exports.verifyAdmin = catchAsync(async (req, res) => {
     return res.json({ error: "incorrect password" });
   }
   const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "7d",
   });
 
   return res.status(200).json({ success: "Admin Login Successfull",token,admin });

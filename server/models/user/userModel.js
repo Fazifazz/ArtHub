@@ -1,54 +1,51 @@
-const mongoose = require("mongoose");
-const {ObjectId} = mongoose.Schema.Types
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique:true
-    },
-
-    password: {
-      type: String,
-      required: true,
-    },
-    mobile: {
-      type: Number,
-      required: true,
-    },
-    otp: {
-      code:{
-        type:String,
+const mongoose = require("mongoose"),
+  { ObjectId } = mongoose.Schema.Types,
+  userSchema = new mongoose.Schema(
+    {
+      name: {
+        type: String,
+        required: true,
       },
-      generatedAt:{
-        type:Date
-      }
-    },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    isBlocked: {
-      type: Boolean,
-      default: false,
-    },
-    profile: {
-      type: String,
-      default: "avatar.png",
-    },
-    Following: {
-      type: Array,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+      email: {
+        type: String,
+        required: true,
+        unique: true,
+      },
 
-const userModel = mongoose.model("user", userSchema);
+      password: {
+        type: String,
+        required: true,
+      },
+      mobile: {
+        type: Number,
+        required: true,
+      },
+      otp: {
+        code: {
+          type: String,
+        },
+        generatedAt: {
+          type: Date,
+        },
+      },
+      isVerified: {
+        type: Boolean,
+        default: false,
+      },
+      isBlocked: {
+        type: Boolean,
+        default: false,
+      },
+      profile: {
+        type: String,
+        default: "avatar.png",
+      },
+      followings: [{ type: ObjectId, ref: "artist" }],
+    },
+    {
+      timestamps: true,
+    }
+  ),
+  userModel = mongoose.model("user", userSchema);
 
 module.exports = userModel;

@@ -1,17 +1,14 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import EditIcon from "../../components/icons/EditIcon";
-import ArtistNavbar from "../../components/ArtistNav";
-import { useNavigate } from "react-router-dom";
-import { ServerVariables } from "../../util/ServerVariables";
+import AdminNavbar from "../../components/AdminNav";
+import { useLocation } from "react-router-dom";
+import MyButton from "../../components/MyButton";
 
-const ArtistProfile = () => {
-  const { artist } = useSelector((state) => state.ArtistAuth);
-  const navigate = useNavigate();
-
+function ArtistView() {
+  const location = useLocation();
+  const artist = location.state ? location.state.artist : "";
   return (
     <>
-      <ArtistNavbar />
+      <AdminNavbar />
       <div className="bg-gray-100 font-sans min-h-screen w-full  flex flex-row justify-center items-center">
         {/* Increase width and height of the outer div */}
         <div className="card w-96 h-100 mx-auto  bg-gray-300  text-grey-800 shadow-xl hover:shadow">
@@ -53,39 +50,12 @@ const ArtistProfile = () => {
             <p>communicationLangauge: {artist.communicationLangauge}</p>
             <p className="font-semibold">Email: {artist.email}</p>
             <p className="font-semibold">Mobile: {artist.mobile}</p>
-          </div>
-          {/* <hr className="mt-8 bg-gray-800" /> */}
-          <div className="w-full mt-8 border border-gray-700"></div>
-          <div className="flex p-4">
-            <div className="w-1/2 text-center">
-              <span className="font-black">
-                {artist?.followers?.length && artist?.followers?.length}{" "}
-                Followers
-              </span>
-            </div>
-            <div className="w-0 border border-gray-800"></div>
-            <div className="w-1/2 text-center">
-              <span
-                className="font-black"
-                onClick={() => navigate(ServerVariables.artistPosts)}
-              >
-                {artist?.posts?.length ? artist?.posts?.length : 0} Posts
-              </span>
-            </div>
-          </div>
-
-          <div className="flex justify-center">
-            <p
-              className="font-bold text-center"
-              onClick={() => navigate(ServerVariables.editArtistProfile)}
-            >
-              <EditIcon />
-            </p>
+          <button className="mt-4 bg-gray-800 text-white rounded w-11 mb-2" onClick={()=>window.history.back()}>Back</button>
           </div>
         </div>
       </div>
     </>
   );
-};
+}
 
-export default ArtistProfile;
+export default ArtistView;

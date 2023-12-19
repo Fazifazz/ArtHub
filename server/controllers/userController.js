@@ -85,7 +85,7 @@ exports.verifyLogin = catchAsync(async (req, res) => {
     return res.json({ error: "sorry,you are not verified!, sign up again" });
   }
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "7d",
   });
   return res.status(200).json({ success: "Login Successfull", token, user });
 });
@@ -250,6 +250,54 @@ exports.comment = catchAsync(async (req, res) => {
   ).populate("postedBy");
   if (updatedPost) {
     return res.status(200).json({ success: "ok" });
+  }
+  return res.status(200).json({ error: "failed" });
+});
+
+exports.followArtist = catchAsync(async (req, res) => {
+  const { artistId } = req.body;
+  const updatedArtist = await Artist.findByIdAndUpdate(
+    artistId,
+    { $push: { followers: req.userId } },
+    { new: true }
+  );
+  const updatedUser = await User.findByIdAndUpdate(
+    req.userId,
+    { $push: { followings: artistId } },
+    { new: true }
+  );
+  if (updatedArtist && updatedUser) {
+    return res.status(200).json({ success: "ok",updatedUser,updatedArtist });
+  }
+  return res.status(200).json({ error: "failed" });
+}); 
+
+exports.unFollowArtist = catchAsync(async (req, res) => {
+  const { artistId } = req.body;
+  const updatedArtist = await Artist.findByIdAndUpdate(
+    artistId,
+    { $pull: { followers: req.userId } },
+    { new: true }
+  );
+  const updatedUser = await User.findByIdAndUpdate(
+    req.userId,
+    { $pull: { followings: artistId } },
+    { new: true }
+  );
+  if (updatedArtist && updatedUser) {
+    return res.status(200).json({ success: "ok",updatedUser,updatedArtist });
+  }
+  return res.status(200).json({ error: "failed" });
+});
+
+exports.getAllArtists = catchAsync(async (req, res) => {
+  const artists = await Artist.find({
+    isApproved: true,
+    isBlocked: false,
+    isVerified: true,
+  });
+  if (artists) {
+    return res.status(200).json({ success: "ok", artists });
   }
   return res.status(200).json({ error: "failed" });
 });

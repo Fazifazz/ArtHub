@@ -16,25 +16,25 @@ function UserProfile() {
     <div className="card w-96 h-96 mx-auto bg-gray-300 text-grey-800 shadow-xl hover:shadow">
           <img
             className="w-36 mx-auto rounded-full -mt-20 border-2 border-gray-800 "
-            src={`http://localhost:5000/userProfile/${user.profile}`}
+            src={`http://localhost:5000/userProfile/${user?.profile}`}
             alt=""
           />
           <div className="uppercase text-center mt-2 text-3xl font-medium">
             {user.name}
           </div>
           <div className="uppercase text-center mt-2 font-semibold text-sm">
-            <h2>Email:  {user.email}</h2>
+            <h2>Email:  {user?.email}</h2>
           </div>
           <div className="text-center font-normal text-lg"></div>
           <div className="uppercase text-center mt-2 font-semibold text-sm">
-            <h2>Mobile: {user.mobile} </h2>
+            <h2>Mobile: {user?.mobile} </h2>
           </div>
           <div className="text-center font-normal text-lg"></div>
          
           <hr className="mt-8" />
           <div className="flex p-4 justify-center">
             <p className="font-bold text-center">
-              {user.Following.length} Following
+              {user?.followings?.length} Following
             </p>
           </div>
           <div className="flex justify-center">

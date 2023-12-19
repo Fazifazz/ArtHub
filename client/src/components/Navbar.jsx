@@ -29,7 +29,7 @@ const Navbar = () => {
     { name: "Home", navigation: ServerVariables.userHome },
     { name: "About", navigation:'#'},
     { name: "Contact", navigation: "#" },
-    { name: "Artists", navigation: "#" },
+    { name: "Artists", navigation: ServerVariables.showArtists },
     { name: "Reports", navigation: "#" },
   ];
 

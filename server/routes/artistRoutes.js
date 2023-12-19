@@ -1,7 +1,7 @@
 const express = require("express"),
   artistRouter = express.Router(),
   artistController = require("../controllers/artistController"),
-  artistAuthMiddleware = require('../middlewares/artistAuth'),
+  artistAuthMiddleware = require('../middlewares/Auth/artistAuth'),
   upload = require('../middlewares/imageUpload/cropImage')
 
 artistRouter

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { PlusIcon, TrashIcon,HeartIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, TrashIcon,HeartIcon, } from "@heroicons/react/24/outline";
 import ArtistNavbar from "../../components/ArtistNav";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
@@ -9,6 +9,7 @@ import { ArtistRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { FaComment } from "react-icons/fa";
 
 const PostCard = ({ post, onDelete }) => {
   return (
@@ -26,6 +27,10 @@ const PostCard = ({ post, onDelete }) => {
           <p className="text-gray-800">
             {post.likes?.length} Likes{" "}
             <HeartIcon className="w-6 h-6 text-red-600 fill-red-600" />
+          </p>
+          <p className="text-gray-800">
+            {post.comments?.length} Comments{" "}
+            <FaComment size={20}/>
           </p>
           <button
             className="bg-red-500 text-white p-2 rounded-full hover:bg-red-700"

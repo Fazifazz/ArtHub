@@ -8,10 +8,13 @@ import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { ServerVariables } from "../../util/ServerVariables";
 
 const Artists = () => {
   const [artists, setArtists] = useState([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -109,6 +112,8 @@ const Artists = () => {
         });
     }
   };
+
+
 
   return (
     <>
@@ -208,7 +213,7 @@ const Artists = () => {
                                 <div>
                                   <button
                                     className="bg-blue-500 text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10 mr-1"
-                                    onClick=""
+                                    onClick={()=>navigate(ServerVariables.ViewArtist,{state:{artist:artist}})}
                                   >
                                     View
                                   </button>

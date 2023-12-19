@@ -11,6 +11,9 @@ export const apiEndPoints = {
     unLikePost:'/api/user/unLikePost',
     comment:'/api/user/comment',
     updateUserProfile:'/api/user/updateUserProfile',
+    getAllArtists:'/api/user/getAllArtists',
+    followArtist:'/api/user/followArtist',
+    unFollowArtist:'/api/user/unFollowArtist',
 
     //artist endpoints
     postArtistVerifyLogin:'/api/artist/artistVerifyLogin',

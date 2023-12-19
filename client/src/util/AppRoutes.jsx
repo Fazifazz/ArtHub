@@ -42,6 +42,8 @@ import ArtistProfile from "../pages/Artist/ArtistProfile";
 import EditArtistProfile from "../pages/Artist/EditArtistProfile";
 import UserProfile from "../pages/User/UserProfile";
 import EditUserProfile from "../pages/User/EditUserProfile";
+import ArtistView from "../pages/Admin/ArtistView";
+import ShowArtists from "../pages/User/ShowArtists";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -94,6 +96,7 @@ function AppRoutes() {
           <Route path={ServerVariables.userHome} element={<UserHome />} />
           <Route path={ServerVariables.userProfile} element={<UserProfile />} />
           <Route path={ServerVariables.editUserProfile} element={<EditUserProfile />} />
+          <Route path={ServerVariables.showArtists} element={<ShowArtists />} />
         </Route>
 
 
@@ -131,6 +134,7 @@ function AppRoutes() {
         <Route path={ServerVariables.AddPlan} element={<AddPlan />} />
         <Route path={ServerVariables.Editplan} element={<EditPlan />} />
         <Route path={ServerVariables.Artists} element={<Artists />} />
+        <Route path={ServerVariables.ViewArtist} element={<ArtistView />} />
         </Route>
       </Routes>
     </div>

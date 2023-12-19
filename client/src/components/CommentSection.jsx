@@ -1,9 +1,12 @@
 // CommentSection.jsx
-import React, { useState } from 'react';
-import { FaComment, FaTelegram } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaTelegram } from 'react-icons/fa';
 
 const CommentSection = ({ postId, comments, addComment }) => {
   const [newComment, setNewComment] = useState('');
+  useEffect(()=>{
+    console.log(comments)
+  })
 
   const handleAddComment = () => {
     if (newComment.trim() !== '') {
@@ -25,12 +28,12 @@ const CommentSection = ({ postId, comments, addComment }) => {
               />
               <div className="flex-grow">
                 <small className="text-black font-semibold">
-                  {comment.postedBy.name}
+                  {comment?.postedBy?.name}
                 </small>{' '}
                 <small>{comment.text}</small>
               </div>
               <small className='text-gray-500 ml-4'>
-                {new Date(comment.createdAt).toLocaleString()}
+                {new Date(comment?.createdAt).toLocaleString()}
               </small>
             </div>
           ))

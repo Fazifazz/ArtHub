@@ -15,6 +15,7 @@ export const ServerVariables = {
     addPost:'/addPost',
     userProfile:'/userProfile',
     editUserProfile:'/editUserProfile',
+    showArtists:'/showArtists',
     
 
     //ArtistRoutes
@@ -42,4 +43,5 @@ export const ServerVariables = {
     AddPlan:'/addPlan',
     Editplan:'/editPlan',
     Artists:'/artists',
+    ViewArtist:'/ViewArtist',
 }

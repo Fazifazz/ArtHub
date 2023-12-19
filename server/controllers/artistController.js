@@ -146,7 +146,7 @@ exports.verifyLogin = catchAsync(async (req, res) => {
     return res.json({ error: "sorry,you are not verified!, sign up again" });
   }
   const token = jwt.sign({ id: artist._id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "7d",
   });
   return res.status(200).json({ success: "Login Successfull", token, artist });
 });
