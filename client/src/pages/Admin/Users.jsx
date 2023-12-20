@@ -8,27 +8,85 @@ import Swal from "sweetalert2";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import toast from "react-hot-toast";
+import DataTable from "react-data-table-component";
+import ReactPaginate from "react-paginate";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const [filterData, setFilterData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const dispatch = useDispatch();
-  
+
+  const cols = [
+    {
+      name: "Sl",
+      selector: (row, index) => index + 1,
+      sortable: true,
+    },
+    {
+      name: "profile",
+      selector: (row) => (
+        <img
+          className="h-10 w-10 rounded-full"
+          src={`http://localhost:5000/userProfile/${row?.profile}`}
+          alt="image"
+        />
+      ),
+    },
+    {
+      name: "Name",
+      selector: (row) => row.name,
+      sortable: true,
+    },
+    {
+      name: "Mobile",
+      selector: (row) => row.mobile,
+      sortable: true,
+    },
+    {
+      name: "Email",
+      selector: (row) => row.email,
+      sortable: true,
+    },
+    {
+      name: "Verified",
+      selector: (row) => (row.isVerified ? "yes" : "No"),
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      selector: (row) => (
+        <button
+          className={`${
+            row.isBlocked ? "bg-red-500" : "bg-green-500"
+          } text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10`}
+          onClick={() => {
+            blockUser(row._id);
+          }}
+        >
+          {row.isBlocked ? "blocked" : "Block"}
+        </button>
+      ),
+    },
+  ];
+
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [currentPage]);
 
   const getUsers = async () => {
     dispatch(showLoading());
     adminRequest({
-      url: apiEndPoints.showUsers,
+      url: `${apiEndPoints.showUsers}?page=${currentPage + 1}`,
       method: "get",
     })
       .then((res) => {
         dispatch(hideLoading());
         if (res.data.success) {
           setUsers(res.data.users);
+          setFilterData(res.data.users);
+          setPageCount(res.data.totalPages);
         }
       })
       .catch((error) => {
@@ -56,20 +114,36 @@ const Users = () => {
         url: apiEndPoints.blockUser,
         method: "post",
         data: { id: id },
-      }).then((res) => {
-        dispatch(hideLoading());
-        if (res.data.success) {
-          toast.success(res.data.success);
-          getUsers();
-        } else {
-          toast.error(res.data.error);
-        }
-      }).catch((err) => {
-        dispatch(hideLoading());
-        toast.error("something went wrong");
-        console.log(err.message);
-      });
+      })
+        .then((res) => {
+          dispatch(hideLoading());
+          if (res.data.success) {
+            toast.success(res.data.success);
+            getUsers();
+          } else {
+            toast.error(res.data.error);
+          }
+        })
+        .catch((err) => {
+          dispatch(hideLoading());
+          toast.error("something went wrong");
+          console.log(err.message);
+        });
     }
+  };
+
+  const handleFilter = (e) => {
+    const newData = filterData?.filter(
+      (item) =>
+        item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        item.email.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        item.mobile.toString().includes(e.target.value)
+    );
+    setUsers(newData);
+  };
+
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage.selected); // Update current page when page is changed
   };
 
   return (
@@ -77,94 +151,56 @@ const Users = () => {
       <AdminNavbar />
       <div className="min-h-full">
         <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-0">
               USERS
             </h1>
-            <div className="flex items-center">
+            <div className="relative flex items-center mt-4 sm:mt-0">
               <input
                 type="text"
                 placeholder="Search..."
                 className="border p-2 mr-2"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleFilter}
               />
             </div>
           </div>
         </header>
         <main>
-          <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+        <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             {/* Your content */}
             <div className="overflow-x-auto">
-              <table className="min-w-full bg-gray-100 border border-gray-300">
-                <thead className="bg-gray-400">
-                  <tr>
-                    <th className="border-b p-4">Sl No:</th>
-                    <th className="border-b p-4">profile</th>
-                    <th className="border-b p-4">Name</th>
-                    <th className="border-b p-4">Mobile</th>
-                    <th className="border-b p-4">Email</th>
-                    <th className="border-b p-4">Verified</th>
-                    <th className="border-b p-4">Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {users.length ? (
-                    users
-                      .filter((item) => {
-                        return searchTerm.toLowerCase() === ""
-                          ? item
-                          : item.name.toLowerCase().includes(searchTerm) ||
-                              item.mobile.toString().includes(searchTerm) ||
-                              item.email.toLowerCase().includes(searchTerm);
-                      })
-                      .map((user, index) => {
-                        return (
-                          <tr key={user._id}>
-                            <td className="border-b p-4 text-center">
-                              {index + 1}
-                            </td>
-                            <td className="border-b p-4 text-center">
-                              <div
-                                className="h-10 w-10 rounded-full"
-                                alt="image"
-                              >
-                                <UserCircleIcon />
-                              </div>
-                            </td>
-                            <td className="border-b p-4 text-center">
-                              {user.name}
-                            </td>
-                            <td className="border-b p-4 text-center">
-                              {user.mobile}
-                            </td>
-                            <td className="border-b p-4 text-center">
-                              {user.email}
-                            </td>
-                            <td className="border-b p-4 text-center">
-                              {user.isVerified?'Yes':'No'}
-                            </td>
-                            <td className="text-center">
-                              <button
-                                className={`${
-                                  user.isBlocked ? "bg-green-500" : "bg-red-500"
-                                } text-white px-2 py-1 rounded-full w-20 md:w-24 h-8 md:h-10`}
-                                onClick={() => {
-                                  blockUser(user._id);
-                                }}
-                              >
-                                {user.isBlocked ? "Blocked" : "Block"}
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })
-                  ) : (
-                    <h1 className="text-center text-red-600">No user found</h1>
-                  )}
-                </tbody>
-              </table>
+              <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <DataTable
+                      columns={cols}
+                      data={users}
+                      className="min-w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+              <ReactPaginate
+                previousLabel={
+                  <i className="fas fa-chevron-left text-black"></i>
+                }
+                nextLabel={<i className="fas fa-chevron-right text-black"></i>}
+                breakLabel={<span className="hidden sm:inline">...</span>}
+                pageCount={pageCount}
+                marginPagesDisplayed={3}
+                pageRangeDisplayed={2}
+                onPageChange={handlePageChange}
+                containerClassName="flex justify-center mt-4"
+                pageClassName="mx-2"
+                pageLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500 text-black"
+                previousClassName="mr-2"
+                previousLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                nextClassName="ml-2"
+                nextLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                breakClassName="mx-2"
+                breakLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                activeClassName="text-blue-500 font-bold bg-blue-200"
+              />
             </div>
           </div>
         </main>

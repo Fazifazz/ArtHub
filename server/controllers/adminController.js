@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
-const jwt =  require('jsonwebtoken')
-const cookies = require('cookie-parser')
+const jwt = require("jsonwebtoken");
+const cookies = require("cookie-parser");
 const User = require("../models/user/userModel");
 const Category = require("../models/admin/categoryModel");
 const Admin = require("../models/admin/adminModel");
@@ -38,14 +38,28 @@ exports.verifyAdmin = catchAsync(async (req, res) => {
     expiresIn: "7d",
   });
 
-  return res.status(200).json({ success: "Admin Login Successfull",token,admin });
+  return res
+    .status(200)
+    .json({ success: "Admin Login Successfull", token, admin });
 });
 
 exports.getUsers = catchAsync(async (req, res) => {
-  const users = await User.find({}).sort({ createdAt: -1 });
-  return res.status(200).json({ success: "ok", users });
-});
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 2;
+  const totalUsers = await User.countDocuments();
+  const totalPages = Math.ceil(totalUsers / pageSize);
 
+  const users = await User.find({})
+    .skip((page - 1) * pageSize)
+    .limit(pageSize);
+
+  return res.status(200).json({
+    success: "ok",
+    users,
+    currentPage: page,
+    totalPages,
+  });
+});
 
 exports.blockUser = catchAsync(async (req, res) => {
   const user = await User.findById(req.body.id);
@@ -64,11 +78,21 @@ exports.blockUser = catchAsync(async (req, res) => {
 });
 
 exports.showCategories = catchAsync(async (req, res) => {
-  const categories = await Category.find({}).sort({ createdAt: -1 });;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 2;
+  const totalCategories = await Category.countDocuments();
+  const totalPages = Math.ceil(totalCategories / pageSize);
+
+  const categories = await Category.find({})
+    .skip((page - 1) * pageSize)
+    .limit(pageSize);
   if (categories) {
-    return res.status(200).json({ success: "ok", categories });
-  } else {
-    return res.json({ error: "error in get categories" });
+    return res.status(200).json({
+      success: "ok",
+      categories,
+      currentPage: page,
+      totalPages,
+    });
   }
 });
 
@@ -135,7 +159,7 @@ exports.updateCategory = catchAsync(async (req, res) => {
 //plans
 
 exports.showPlans = catchAsync(async (req, res) => {
-  const plans = await Plan.find({}).sort({ createdAt: -1 });;
+  const plans = await Plan.find({}).sort({ createdAt: -1 });
   if (plans) {
     res.status(200).json({ success: "ok", plans });
   }
@@ -217,20 +241,33 @@ exports.updatePlan = catchAsync(async (req, res) => {
 //Artists
 
 exports.showArtists = catchAsync(async (req, res) => {
-  const artists = await Artist.find({}).sort({ createdAt: -1 });;
-  return res.status(200).json({ success: "ok", artists });
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 2;
+  const totalArtists = await Artist.countDocuments();
+  const totalPages = Math.ceil(totalArtists / pageSize);
+
+  const artists = await Artist.find({})
+    .skip((page - 1) * pageSize)
+    .limit(pageSize);
+
+  return res.status(200).json({
+    success: "ok",
+    artists,
+    currentPage: page,
+    totalPages,
+  });
 });
 
-exports.approveArtist  = catchAsync(async (req,res)=>{
-  const {id} = req.body;
-  const artist = await Artist.findOne({_id:id})
-  if(artist){
-     artist.isApproved=true;
-     await artist.save()
-     return res.status(200).json({success:`${artist.name} has approved`}) 
-  } 
-  return res.json({error:'Approval failed'})
-})
+exports.approveArtist = catchAsync(async (req, res) => {
+  const { id } = req.body;
+  const artist = await Artist.findOne({ _id: id });
+  if (artist) {
+    artist.isApproved = true;
+    await artist.save();
+    return res.status(200).json({ success: `${artist.name} has approved` });
+  }
+  return res.json({ error: "Approval failed" });
+});
 
 exports.blockArtist = catchAsync(async (req, res) => {
   const artist = await Artist.findById(req.body.id);

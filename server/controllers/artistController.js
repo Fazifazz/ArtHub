@@ -94,7 +94,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
       return res.json({ error: "otp is invalid" });
     }
   } else {
-    return res.json({ error: "otp expired" });
+    return res.json({ error: "otp expired!" });
   }
 });
 

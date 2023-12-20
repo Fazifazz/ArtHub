@@ -54,16 +54,19 @@ exports.verifyOtp = catchAsync(async (req, res) => {
     return res.json({ error: "please enter otp" });
   }
   const user = await User.findOne({ email: req.body.email });
+  const generatedAt = new Date(user.otp.generatedAt).getTime();
+  if (Date.now() - generatedAt <= 30 * 1000) {
   if (req.body.otp === user.otp.code) {
-    await User.findOneAndUpdate(
-      { email: req.body.email },
-      { $set: { isVerified: true } }
-    );
+    user.isVerified = true
+    user.otp.code = ""
+    await user.save()
     return res
       .status(200)
       .json({ success: "Otp verified successfully", email: req.body.email });
   } else {
     return res.json({ error: "otp is invalid" });
+  }}else{
+    return res.json({ error: "otp expired!" });
   }
 });
 
