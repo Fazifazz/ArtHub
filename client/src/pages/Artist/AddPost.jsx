@@ -49,6 +49,10 @@ function AddPost() {
       data: data,
     }).then((res) => {
       dispatch(hideLoading());
+      if(res.data.expired){
+        toast.error(res.data.expired)
+        return navigate(ServerVariables.plansAvailable)
+      }
       if (res.data.success) {
         toast.success(res.data.success);
         navigate(ServerVariables.artistPosts);

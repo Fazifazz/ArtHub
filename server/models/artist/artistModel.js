@@ -77,27 +77,28 @@ const artistSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isSubscribed: {
+      type: Boolean,
+      default: false,
+    },
     subscription: {
-      plan: {
+      transactionId: {
+        type: String,
+      },
+      currentPlan: {
         type: ObjectId,
         ref: "plan",
       },
-      status: {
-        type: String,
-        enum: ["active", "expired", "canceled"],
-        default: "expired",
-      },
       expiresAt: {
         type: Date,
-        
       },
     },
     profile: {
       type: String,
       default: "avatar.png",
     },
-    followers: [{ type: ObjectId, ref: "user" } ],
-    posts: [{ type: ObjectId, ref: "post" } ],
+    followers: [{ type: ObjectId, ref: "user" }],
+    posts: [{ type: ObjectId, ref: "post" }],
   },
   {
     timestamps: true,

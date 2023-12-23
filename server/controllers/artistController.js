@@ -310,7 +310,6 @@ exports.editArtistProfile = catchAsync(async (req, res) => {
 
 exports.subscriptionPayment = catchAsync(async (req, res) => {
   const { planId } = req.body;
-
   // Fetch plan details from your database based on planId
   const plan = await Plan.findById(planId);
 
@@ -320,7 +319,7 @@ exports.subscriptionPayment = catchAsync(async (req, res) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: `http://localhost:5000/api/artist/successPayment/${planId}`,
+      return_url: `http://localhost:5000/api/artist/successPayment?planId=${planId}&artistId=${req.artistId}`,
       cancel_url: "http://localhost:5000/api/artist/errorPayment",
     },
     transactions: [
@@ -361,8 +360,9 @@ exports.subscriptionPayment = catchAsync(async (req, res) => {
 exports.showSuccessPage = catchAsync(async (req, res) => {
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
-  const { planId } = req.params;
- const plan  = await Plan.findById(planId)
+  const { planId, artistId } = req.query;
+  const plan = await Plan.findById(planId);
+  const artist = await Artist.findById(artistId);
   const execute_payment_json = {
     payer_id: payerId,
     transactions: [
@@ -378,15 +378,31 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
   paypal.payment.execute(
     paymentId,
     execute_payment_json,
-    function (error, payment) {
+    async function (error, payment) {
       if (error) {
         console.log(error.response);
         throw error;
       } else {
         const response = JSON.stringify(payment);
         const parsedResponse = JSON.parse(response);
+        const transactionId =
+          parsedResponse.transactions[0].related_resources[0].sale.id;
+        const createdAt = new Date();
 
-        const transactionDetails = parsedResponse.transactions[0];
+        artist.subscription = {
+          transactionId: transactionId,
+          currentPlan: planId,
+          expiresAt: new Date(createdAt.getTime() + 3 * 60 * 1000),
+        };
+        artist.isSubscribed = true
+        artist.paymentHistory.push({
+          planName: plan.name,
+          expireDate: new Date(createdAt.getTime() + 3 * 60 * 1000),
+          date: createdAt,
+          price: plan.amount,
+          duration: plan.dayDuaration,
+        });
+        await artist.save();
         return res.redirect("http://localhost:5173/successPage");
       }
     }

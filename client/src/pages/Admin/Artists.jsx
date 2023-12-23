@@ -60,7 +60,7 @@ const Artists = () => {
     },
     {
       name: "Plan status",
-      selector: (row) => row.planStatus,
+      selector: (row) => row.isSubscribed?'Active':'No Plan',
       sortable: true,
     },
     {

@@ -2,7 +2,8 @@ const express = require("express"),
   artistRouter = express.Router(),
   artistController = require("../controllers/artistController"),
   artistAuthMiddleware = require("../middlewares/Auth/artistAuth"),
-  upload = require("../middlewares/imageUpload/cropImage");
+  upload = require("../middlewares/imageUpload/cropImage"),
+  PlanExpired = require("../middlewares/artistPlanExpiryCheck");
 
 artistRouter
   .post("/artistRegister", artistController.register)
@@ -25,12 +26,18 @@ artistRouter
   .post(
     "/uploadPost",
     artistAuthMiddleware,
+    PlanExpired.isPlanExpired,
     upload.uploadArtistPost,
     upload.resizeArtistPost,
     artistController.uploadPost
   )
   .get("/getMyPosts", artistAuthMiddleware, artistController.getMyPosts)
-  .post("/deletePost", artistAuthMiddleware, artistController.deletePost)
+  .post(
+    "/deletePost",
+    artistAuthMiddleware,
+    PlanExpired.isPlanExpired,
+    artistController.deletePost
+  )
   .post(
     "/editArtistProfile",
     artistAuthMiddleware,
@@ -44,7 +51,7 @@ artistRouter
     artistController.replyUserComment
   )
   .post("/deleteReply", artistAuthMiddleware, artistController.deleteReply)
-  .get("/successPayment/:planId", artistController.showSuccessPage)
+  .get("/successPayment", artistController.showSuccessPage)
   .get("/errorPayment", artistController.showErrorPage);
 
 module.exports = artistRouter;
