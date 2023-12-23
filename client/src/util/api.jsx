@@ -14,6 +14,8 @@ export const apiEndPoints = {
     getAllArtists:'/api/user/getAllArtists',
     followArtist:'/api/user/followArtist',
     unFollowArtist:'/api/user/unFollowArtist',
+    getArtistAllposts:'/api/user/getArtistAllposts',
+    getAllBanners:'/api/user/getAllBanners',
 
     //artist endpoints
     postArtistVerifyLogin:'/api/artist/artistVerifyLogin',
@@ -30,6 +32,8 @@ export const apiEndPoints = {
     getMyPosts:'/api/artist/getMyPosts',
     deletePost:'/api/artist/deletePost',
     editArtistProfile:'/api/artist/editArtistProfile',
+    replyUserComment:'/api/artist/replyUserComment',
+    deleteReply:'/api/artist/deleteReply',
 
     //admin endpoints
     postAdminLogin:'/api/admin/postAdminLogin',
@@ -38,15 +42,18 @@ export const apiEndPoints = {
     showCategories:'/api/admin/showCategories',
     postAddCategory:'/api/admin/AddCategory',
     unlistCategory:'/api/admin/deleteCategory',
-    editCategory:'/api/admin/editCategory',
     updateCategory:'/api/admin/updateCategory',
     showPlans:'/api/admin/showPlans',
     postAddPlan:'/api/admin/postAddPlan',
     unlistPlan:'/api/admin/deletePlan',
-    editPlan:'/api/admin/editPlan',
     updatePlan:'/api/admin/updatePlan',
     showArtists:'/api/admin/showArtists',
     approveArtist:'/api/admin/approveArtist',
     blockArtist:'/api/admin/blockArtist',
+    showBanners:'/api/admin/showBanners',
+    addBanner:'/api/admin/addBanner',
+    deleteBanner:'/api/admin/deleteBanner',
+    updateBanner:'/api/admin/updateBanner',
+    getSubscriptionHistory:'/api/admin/getSubscriptionHistory',
 
 }

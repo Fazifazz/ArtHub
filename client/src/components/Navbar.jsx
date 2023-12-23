@@ -27,7 +27,7 @@ const Navbar = () => {
 
   const navigation = [
     { name: "Home", navigation: ServerVariables.userHome },
-    { name: "About", navigation:'#'},
+    { name: "About", navigation:ServerVariables.about},
     { name: "Contact", navigation: "#" },
     { name: "Artists", navigation: ServerVariables.showArtists },
     { name: "Reports", navigation: "#" },

@@ -134,21 +134,7 @@ function Categories() {
     }
   };
 
-  // const handleEdit = async (id) => {
-  //   dispatch(showLoading());
-  //   adminRequest({
-  //     url: apiEndPoints.editCategory,
-  //     method: "post",
-  //     data: { id: id },
-  //   }).then((res) => {
-  //     dispatch(hideLoading());
-  //     if (res.data.success) {
-  //       navigate(ServerVariables.EditCategory, {
-  //         state: { category: res.data.category },
-  //       });
-  //     }
-  //   });
-  // };
+ 
 
   const handleFilter = (e) => {
     const newData = filterData?.filter(

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Cropper from "react-cropper";
 import "cropperjs/dist/cropper.css";
 
@@ -6,6 +6,8 @@ function ImageCrop({onNewImageUrl}) {
   const [avatarUrl, setNewAvatarUrl] = useState();
   const [preview, setPreview] = useState();
   const [cropper, setCropper] = useState();
+
+ 
 
   function getNewAvatarUrl(e) {
     if (e.target.files) {

@@ -36,7 +36,7 @@ const AdminNavbar = () => {
     },
     { name: "Users", navigation: ServerVariables.Users },
     { name: "Artists", navigation: ServerVariables.Artists },
-    { name: "Subscriptions", navigation: "#" },
+    { name: "Banners", navigation: ServerVariables.banners },
     { name: "Fields", navigation: ServerVariables.Categories },
     { name: "Plans", navigation: ServerVariables.Plans },
   ];

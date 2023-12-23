@@ -8,27 +8,91 @@ import { apiEndPoints } from "../../util/api";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
 import toast from "react-hot-toast";
+import DataTable from "react-data-table-component";
+import ReactPaginate from "react-paginate";
 
 function Plans() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [plans, setPlans] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filterData, setFilterData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+
+  const cols = [
+    {
+      name: "Sl",
+      selector: (row, index) => index + 1,
+      sortable: true,
+    },
+
+    {
+      name: "Name",
+      selector: (row) => row.name,
+      sortable: true,
+    },
+
+    {
+      name: "Duaration",
+      selector: (row) => `${row.dayDuaration} days`,
+      sortable: true,
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description,
+      sortable: true,
+    },
+    {
+      name: "Amount",
+      selector: (row) => row.amount,
+      sortable: true,
+    },
+
+    {
+      name: "Actions",
+      selector: (row) => (
+        <>
+          <button
+            className="bg-blue-500 text-white px-2 py-1 rounded-full md:w-14 sm:w-14 h-11 md:h-10 text-sm md:text-base sm:text-lg"
+            onClick={() =>
+              navigate(ServerVariables.Editplan, {
+                state: { plan: row },
+              })
+            }
+          >
+            Edit
+          </button>
+          <button
+            className={`${
+              row.isDeleted ? "bg-red-500" : "bg-green-500"
+            } text-white px-2 py-1 rounded-full w-20 md:w-14 h-8 sm:w-14 md:h-10`}
+            onClick={() => {
+              deletePlan(row._id);
+            }}
+          >
+            {row.isDeleted ? "list" : "unlist"}
+          </button>
+        </>
+      ),
+    },
+  ];
 
   useEffect(() => {
     getPlans();
-  },[]);
+  }, [currentPage]);
 
   const getPlans = async () => {
-    dispatch(showLoading())
+    dispatch(showLoading());
     adminRequest({
-      url: apiEndPoints.showPlans,
+      url: `${apiEndPoints.showPlans}?page=${currentPage + 1}`,
       method: "get",
     })
       .then((res) => {
         dispatch(hideLoading());
         if (res.data.success) {
           setPlans(res.data.plans);
+          setFilterData(res.data.plans);
+          setPageCount(res.data.totalPages);
         } else {
           toast.error(res.data.error);
         }
@@ -70,38 +134,35 @@ function Plans() {
     }
   };
 
-  const handleEdit = async (id) => {
-    dispatch(showLoading());
-    adminRequest({
-      url: apiEndPoints.editPlan,
-      method: "post",
-      data: { id: id },
-    }).then((res) => {
-      dispatch(hideLoading());
-      if (res.data.success) {
-        navigate(ServerVariables.Editplan, {
-          state: { plan: res.data.plan },
-        });
-      }
-    });
+  const handleFilter = (e) => {
+    const newData = filterData?.filter(
+      (item) =>
+        item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        item.type.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        item.description.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setPlans(newData);
+  };
+
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage.selected); // Update current page when page is changed
   };
 
   return (
     <>
       <AdminNavbar />
       <div className="min-h-full">
-        <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+      <header className="bg-white shadow">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-0">
               PLANS
             </h1>
-            <div className="flex items-center">
+            <div className="relative flex items-center mt-4 sm:mt-0">
               <input
                 type="text"
                 placeholder="Search..."
                 className="border p-2 mr-2"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={handleFilter}
               />
             </div>
             <button
@@ -117,75 +178,38 @@ function Plans() {
           <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             {/* Your content */}
             <div className="overflow-x-auto">
-              <table className="min-w-full bg-gray-100 border border-gray-300">
-                <thead className="bg-gray-400">
-                  <tr>
-                    <th className="border-b p-4">Sl No:</th>
-                    <th className="border-b p-4">Name</th>
-                    <th className="border-b p-4">Type</th>
-                    <th className="border-b p-4">Description</th>
-                    <th className="border-b p-4">Amount</th>
-                    <th className="border-b p-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {plans.length ? (
-                    plans
-                      .filter((item) => {
-                        return searchTerm.toLowerCase() === ""
-                          ? item
-                          : item.name.toLowerCase().includes(searchTerm) ||
-                              item.type.toLowerCase().includes(searchTerm) ||
-                              item.description
-                                .toLowerCase()
-                                .includes(searchTerm);
-                      })
-                      .map((plan, index) => {
-                        return (
-                          <tr key={plan._id}>
-                            <td className="border-b p-4 text-center">
-                              {index + 1}
-                            </td>
-
-                            <td className="border-b p-4 text-center">
-                              {plan.name}
-                            </td>
-                            <td className="border-b p-4 text-center">
-                              {plan.type}
-                            </td>
-                            <td className="border-b p-4 text-center">
-                              {plan.description}
-                            </td>
-                            <td className="border-b p-4 text-center">
-                              {plan.amount}
-                            </td>
-                            <td className="text-center">
-                              <button
-                                className="bg-blue-500 text-white px-2 py-1 rounded-full w-20 md:w-20 h-6 md:h-10"
-                                onClick={() => handleEdit(plan._id)}
-                              >
-                                Edit
-                              </button>
-
-                              <button
-                                className={`${
-                                  plan.isDeleted ? "bg-green-500" : "bg-red-500"
-                                } text-white px-2 py-1 rounded-full w-20 md:w-20 h-6 md:h-10`}
-                                onClick={() => {
-                                  deletePlan(plan._id);
-                                }}
-                              >
-                                {plan.isDeleted ? "Unlisted" : "Delete"}
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })
-                  ) : (
-                    <h1 className="text-center text-red-600">No plan found</h1>
-                  )}
-                </tbody>
-              </table>
+              <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <DataTable
+                      columns={cols}
+                      data={plans}
+                      className="min-w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+              <ReactPaginate
+                previousLabel={
+                  <i className="fas fa-chevron-left text-black"></i>
+                }
+                nextLabel={<i className="fas fa-chevron-right text-black"></i>}
+                breakLabel={<span className="hidden sm:inline">...</span>}
+                pageCount={pageCount}
+                marginPagesDisplayed={3}
+                pageRangeDisplayed={2}
+                onPageChange={handlePageChange}
+                containerClassName="flex justify-center mt-4"
+                pageClassName="mx-2"
+                pageLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500 text-black"
+                previousClassName="mr-2"
+                previousLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                nextClassName="ml-2"
+                nextLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                breakClassName="mx-2"
+                breakLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                activeClassName="text-blue-500 font-bold bg-blue-200"
+              />
             </div>
           </div>
         </main>

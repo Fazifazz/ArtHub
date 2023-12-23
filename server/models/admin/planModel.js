@@ -7,7 +7,7 @@ const planSchema = new mongoose.Schema(
       required: true,
     },
     type: {
-      type: String,
+      type: Number,
       required: true,
     },
     description: {
@@ -21,6 +21,10 @@ const planSchema = new mongoose.Schema(
     isDeleted: {
       type: Boolean,
       default: false,
+    },
+    dayDuaration:{
+      type:Number,
+      required:true
     },
   },
   {

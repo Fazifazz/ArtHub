@@ -1,6 +1,7 @@
 export const ServerVariables = {
     //landing
     Landing : '/',
+    about : '/about',
 
 
     //userRoutes
@@ -16,6 +17,7 @@ export const ServerVariables = {
     userProfile:'/userProfile',
     editUserProfile:'/editUserProfile',
     showArtists:'/showArtists',
+    viewArtistDetails:'/viewArtistDetails',
     
 
     //ArtistRoutes
@@ -28,6 +30,7 @@ export const ServerVariables = {
     artistChangePassword:'/artistChangePassword',
     plansAvailable:'/plansAvailable',
     successPage:'/successPage',
+    errorPage:'/errorPage',
     artistProfile:'/artistProfile',
     editArtistProfile:'/editArtistProfile',
 
@@ -44,4 +47,8 @@ export const ServerVariables = {
     Editplan:'/editPlan',
     Artists:'/artists',
     ViewArtist:'/ViewArtist',
+    banners:'/banners',
+    addBanner:'/addBanner',
+    editBanner:'/editBanner',
+    subscriptionPlanHistory:'/subscriptionPlanHistory',
 }

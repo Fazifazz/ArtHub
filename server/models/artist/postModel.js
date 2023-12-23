@@ -29,6 +29,21 @@ const postSchema = new mongoose.Schema(
           type: ObjectId,
           ref: "user",
         },
+        replies: [
+          {
+            postedBy: {
+              type: ObjectId,
+              ref: "artist",
+            },
+            reply: {
+              type: String,
+            },
+            createdAt: {
+              type: Date,
+              default: Date.now,
+            },
+          },
+        ],
         text: String,
         createdAt: {
           type: Date,

@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { FaThumbsUp, FaComment } from "react-icons/fa";
+import { FaComment, FaHeart } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { hideLoading, showLoading } from "../redux/AlertSlice";
 import { userRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import CommentSection from "./CommentSection";
 import { useNavigate } from "react-router-dom";
-import { updateUser } from "../redux/AuthSlice";
+import { logoutUser, updateUser } from "../redux/AuthSlice";
 import { updateArtist } from "../redux/ArtistAuthSlice";
 import toast from "react-hot-toast";
+import { ServerVariables } from "../util/ServerVariables";
+import AddCommentModal from "./AddCommentModal";
 
 const PostCard = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [artistPosts, setArtistPosts] = useState([]);
   const { user } = useSelector((state) => state.Auth);
   const [showComments, setShowComments] = useState(false);
@@ -28,7 +30,11 @@ const PostCard = () => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data?.success) {
-        setArtistPosts(res.data?.artistPosts);
+        return setArtistPosts(res.data?.artistPosts);
+      }
+      if (res.data.error === "blocked") {
+        toast.error('You are blocked by the Admin!')
+        return dispatch(logoutUser())
       }
     });
   };
@@ -105,7 +111,7 @@ const PostCard = () => {
         if (res.data?.success) {
           dispatch(updateUser(res.data.updatedUser));
           dispatch(updateArtist(res.data.updatedArtist));
-          getAllPosts()
+          getAllPosts();
           return;
         }
         return toast.error(res.data.error);
@@ -132,16 +138,38 @@ const PostCard = () => {
                     <img
                       className="h-8 w-8 rounded-full mr-2"
                       src={`http://localhost:5000/artistProfile/${post?.postedBy?.profile}`}
+                      onClick={() =>
+                        navigate(ServerVariables.viewArtistDetails, {
+                          state: { artist: post?.postedBy },
+                        })
+                      }
                       alt=""
                     />
-                    <p className="uppercase text-xl font-semibold ">
+                    <p
+                      className="uppercase text-xl font-semibold "
+                      onClick={() =>
+                        navigate(ServerVariables.viewArtistDetails, {
+                          state: { artist: post?.postedBy },
+                        })
+                      }
+                    >
                       {post?.postedBy?.name}
                     </p>
-                    {user?.followings?.includes(post.postedBy._id)?<button className="bg-gray-500 w-20 text-center hover:bg-gray-600  rounded text-white" onClick={()=>handleUnFollow(post.postedBy._id)}>
-                      Following
-                    </button>:<button className="bg-gray-800 w-20 text-center hover:bg-gray-950 rounded text-white" onClick={()=>handleFollow(post.postedBy._id)}>
-                      Follow
-                    </button>}
+                    {user?.followings?.includes(post.postedBy._id) ? (
+                      <button
+                        className="bg-gray-500 w-20 text-center hover:bg-gray-600  rounded text-white"
+                        onClick={() => handleUnFollow(post.postedBy._id)}
+                      >
+                        Following
+                      </button>
+                    ) : (
+                      <button
+                        className="bg-gray-800 w-20 text-center hover:bg-gray-950 rounded text-white"
+                        onClick={() => handleFollow(post.postedBy._id)}
+                      >
+                        Follow
+                      </button>
+                    )}
                   </div>
                   {/* Horizontal Line */}
                   <div className="border-t border-gray-300 my-2"></div>
@@ -163,12 +191,11 @@ const PostCard = () => {
                       {post.likes.includes(user._id) ? (
                         <button
                           onClick={() => handleUnLikePost(post._id)}
-                          className="flex items-center space-x-1 text-blue-500"
+                          className="flex items-center space-x-1 text-red-600"
                         >
-                          <FaThumbsUp size={20} />
+                          <FaHeart size={20} />
                           <span>
-                            {post?.likes?.length && post?.likes?.length}{" "}
-                            Likes
+                            {post?.likes?.length && post?.likes?.length} Likes
                           </span>
                         </button>
                       ) : (
@@ -176,10 +203,9 @@ const PostCard = () => {
                           onClick={() => handleLikePost(post._id)}
                           className="flex items-center space-x-1 text-gray-500"
                         >
-                          <FaThumbsUp size={20} />
+                          <FaHeart size={20} />
                           <span>
-                          {post?.likes?.length && post?.likes?.length}{" "}
-                            Likes
+                            {post?.likes?.length && post?.likes?.length} Likes
                           </span>
                         </button>
                       )}
@@ -200,6 +226,7 @@ const PostCard = () => {
                       postId={post._id}
                       comments={post.comments}
                       addComment={addComment}
+                      artist={post.postedBy}
                     />
                   )}
                 </div>

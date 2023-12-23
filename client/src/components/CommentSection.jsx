@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaTelegram } from 'react-icons/fa';
 
-const CommentSection = ({ postId, comments, addComment }) => {
+const CommentSection = ({ postId, comments, addComment,artist }) => {
   const [newComment, setNewComment] = useState('');
   useEffect(()=>{
     console.log(comments)
@@ -44,14 +44,14 @@ const CommentSection = ({ postId, comments, addComment }) => {
       <form onSubmit={(e) => e.preventDefault()}>
         <div className="flex items-center">
           <input
-            className="placeholder-black-500 w-full border-2 border-gray-400 rounded"
+            className="placeholder-black-500 w-full p-2 border-2  rounded-full"
             type="text"
-            placeholder="add a comment..."
+            placeholder="  add a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
           />
           <button type="button" onClick={handleAddComment}>
-            <FaTelegram size={30} fill='gray-800' />
+            <FaTelegram size={30} fill='gray-600' />
           </button>
         </div>
       </form>

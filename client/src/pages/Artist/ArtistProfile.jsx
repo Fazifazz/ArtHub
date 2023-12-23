@@ -69,7 +69,7 @@ const ArtistProfile = () => {
                 className="font-black"
                 onClick={() => navigate(ServerVariables.artistPosts)}
               >
-                {artist?.posts?.length ? artist?.posts?.length : 0} Posts
+                {artist?.posts?.length && artist?.posts?.length} Posts
               </span>
             </div>
           </div>

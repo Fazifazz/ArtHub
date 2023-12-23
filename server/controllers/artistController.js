@@ -9,12 +9,13 @@ const jwt = require("jsonwebtoken"),
   Post = require("../models/artist/postModel"),
   catchAsync = require("../util/catchAsync"),
   crypto = require("crypto"),
-  Razorpay = require("razorpay"),
-  Mail = require("../util/otpMailer");
+  Mail = require("../util/otpMailer"),
+  paypal = require("paypal-rest-sdk");
 
-var razorpay = new Razorpay({
-  key_id: process.env.KEY_ID,
-  key_secret: process.env.KEY_SECRET,
+paypal.configure({
+  mode: "sandbox",
+  client_id: process.env.PAYPAL_CLIENT_ID,
+  client_secret: process.env.PAYPAL_SECRET_ID,
 });
 
 exports.getCategories = catchAsync(async (req, res) => {
@@ -78,8 +79,6 @@ exports.register = catchAsync(async (req, res) => {
   }
 });
 
-
-
 exports.verifyOtp = catchAsync(async (req, res) => {
   const { otp, email } = req.body;
   const artist = await Artist.findOne({ email: email });
@@ -89,7 +88,9 @@ exports.verifyOtp = catchAsync(async (req, res) => {
       artist.isVerified = true;
       artist.otp.code = "";
       await artist.save();
-      return res.status(200).json({ success: "artist registered successfully" });
+      return res
+        .status(200)
+        .json({ success: "artist registered successfully" });
     } else {
       return res.json({ error: "otp is invalid" });
     }
@@ -195,38 +196,16 @@ exports.getPlansAvailable = catchAsync(async (req, res) => {
   }
 });
 
-exports.subscribePlan = catchAsync(async (req, res) => {
-  const { id } = req.body;
-  const artistId = req.artistId;
-  const artist = await Artist.findById(artistId);
-  const plan = await Plan.findById(id);
-
-  if (!plan) {
-    return res.status(200).json({ error: "plan not found" });
-  }
-  const planPrice = plan.amount * 100;
-  const options = {
-    amount: planPrice, // Amount in paise
-    currency: "INR",
-    receipt: crypto.randomBytes(4).toString("hex"),
-  };
-
-  const order = await razorpay.orders.create(options);
-  return res
-    .status(200)
-    .json({ success: "ok", order, key_id: process.env.KEY_ID, artist });
-});
-
 exports.uploadPost = catchAsync(async (req, res) => {
   const { title, description, artistPost } = req.body;
   const artistId = req.artistId;
   const newPost = await Post.create({
     title,
     description,
-    postedBy:artistId,
-    image:artistPost
-  })
-   
+    postedBy: artistId,
+    image: artistPost,
+  });
+
   const updatedArtist = await Artist.findByIdAndUpdate(
     { _id: artistId },
     { $push: { posts: newPost._id } },
@@ -240,7 +219,16 @@ exports.uploadPost = catchAsync(async (req, res) => {
 });
 
 exports.getMyPosts = catchAsync(async (req, res) => {
-  const posts = await Post.find({postedBy:req.artistId})
+  const posts = await Post.find({ postedBy: req.artistId })
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile", // Replace 'User' with the actual model name for the user
+      },
+    })
+    .populate("postedBy");
   if (posts) {
     return res.status(200).json({ success: "ok", posts });
   }
@@ -249,7 +237,7 @@ exports.getMyPosts = catchAsync(async (req, res) => {
 
 exports.deletePost = catchAsync(async (req, res) => {
   const { id } = req.body;
-  await Post.findByIdAndDelete(id)
+  await Post.findByIdAndDelete(id);
   const artist = await Artist.findByIdAndUpdate(
     req.artistId,
     { $pull: { posts: id } },
@@ -318,4 +306,137 @@ exports.editArtistProfile = catchAsync(async (req, res) => {
       .json({ success: "profile updated successfully", updatedArtist });
   }
   return res.status(200).json({ error: "profile updating failed" });
+});
+
+exports.subscriptionPayment = catchAsync(async (req, res) => {
+  const { planId } = req.body;
+
+  // Fetch plan details from your database based on planId
+  const plan = await Plan.findById(planId);
+
+  const create_payment_json = {
+    intent: "sale",
+    payer: {
+      payment_method: "paypal",
+    },
+    redirect_urls: {
+      return_url: `http://localhost:5000/api/artist/successPayment/${planId}`,
+      cancel_url: "http://localhost:5000/api/artist/errorPayment",
+    },
+    transactions: [
+      {
+        item_list: {
+          items: [
+            {
+              name: plan.name,
+              sku: plan._id,
+              price: plan.amount.toFixed(2),
+              currency: "USD",
+              quantity: 1,
+            },
+          ],
+        },
+        amount: {
+          currency: "USD",
+          total: plan.amount.toFixed(2),
+        },
+        description: plan.description,
+      },
+    ],
+  };
+
+  paypal.payment.create(create_payment_json, (error, payment) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Error creating PayPal payment" });
+    } else {
+      const approvalUrl = payment.links.find(
+        (link) => link.rel === "approval_url"
+      ).href;
+      res.json({ success: "approvalUrl sented", approvalUrl });
+    }
+  });
+});
+
+exports.showSuccessPage = catchAsync(async (req, res) => {
+  const payerId = req.query.PayerID;
+  const paymentId = req.query.paymentId;
+  const { planId } = req.params;
+ const plan  = await Plan.findById(planId)
+  const execute_payment_json = {
+    payer_id: payerId,
+    transactions: [
+      {
+        amount: {
+          currency: "USD",
+          total: plan.amount,
+        },
+      },
+    ],
+  };
+
+  paypal.payment.execute(
+    paymentId,
+    execute_payment_json,
+    function (error, payment) {
+      if (error) {
+        console.log(error.response);
+        throw error;
+      } else {
+        const response = JSON.stringify(payment);
+        const parsedResponse = JSON.parse(response);
+
+        const transactionDetails = parsedResponse.transactions[0];
+        return res.redirect("http://localhost:5173/successPage");
+      }
+    }
+  );
+});
+
+exports.showErrorPage = catchAsync(async (req, res) => {
+  console.log("payment failed!");
+  return res.redirect("http://localhost:5173/errorPage");
+});
+
+exports.replyUserComment = catchAsync(async (req, res) => {
+  const { postId, commentId, reply } = req.body;
+  const artist = await Artist.findById(req.artistId);
+  const post = await Post.findById(postId).populate({
+    path: "comments",
+    populate: {
+      path: "postedBy",
+      select: "name profile", // Replace 'User' with the actual model name for the user
+    },
+  });
+  const comment = post.comments.id(commentId);
+  comment.replies.push({
+    reply: reply,
+    postedBy: artist._id,
+  });
+
+  await post.save();
+  return res
+    .status(200)
+    .json({ success: "reply added", comments: post.comments });
+});
+
+exports.deleteReply = catchAsync(async (req, res) => {
+  const { replyId, postId, commentId } = req.body;
+  const post = await Post.findById(postId)
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile", // Replace 'User' with the actual model name for the user
+      },
+    })
+    .populate("postedBy");
+  const comment = post.comments.id(commentId);
+  comment.replies.pull(replyId);
+  await post.save();
+  return res.status(200).json({
+    success: "reply deleted",
+    post: post,
+    reply: comment.replies.id(replyId),
+  });
 });

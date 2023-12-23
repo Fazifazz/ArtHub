@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken"),
   User = require("../models/user/userModel"),
   Artist = require("../models/artist/artistModel"),
   Post = require("../models/artist/postModel"),
+  Banner = require("../models/admin/BannerModel"),
   catchAsync = require("../util/catchAsync"),
   Mail = require("../util/otpMailer");
 
@@ -56,16 +57,17 @@ exports.verifyOtp = catchAsync(async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
   const generatedAt = new Date(user.otp.generatedAt).getTime();
   if (Date.now() - generatedAt <= 30 * 1000) {
-  if (req.body.otp === user.otp.code) {
-    user.isVerified = true
-    user.otp.code = ""
-    await user.save()
-    return res
-      .status(200)
-      .json({ success: "Otp verified successfully", email: req.body.email });
+    if (req.body.otp === user.otp.code) {
+      user.isVerified = true;
+      user.otp.code = "";
+      await user.save();
+      return res
+        .status(200)
+        .json({ success: "Otp verified successfully", email: req.body.email });
+    } else {
+      return res.json({ error: "otp is invalid" });
+    }
   } else {
-    return res.json({ error: "otp is invalid" });
-  }}else{
     return res.json({ error: "otp expired!" });
   }
 });
@@ -270,10 +272,10 @@ exports.followArtist = catchAsync(async (req, res) => {
     { new: true }
   );
   if (updatedArtist && updatedUser) {
-    return res.status(200).json({ success: "ok",updatedUser,updatedArtist });
+    return res.status(200).json({ success: "ok", updatedUser, updatedArtist });
   }
   return res.status(200).json({ error: "failed" });
-}); 
+});
 
 exports.unFollowArtist = catchAsync(async (req, res) => {
   const { artistId } = req.body;
@@ -288,7 +290,7 @@ exports.unFollowArtist = catchAsync(async (req, res) => {
     { new: true }
   );
   if (updatedArtist && updatedUser) {
-    return res.status(200).json({ success: "ok",updatedUser,updatedArtist });
+    return res.status(200).json({ success: "ok", updatedUser, updatedArtist });
   }
   return res.status(200).json({ error: "failed" });
 });
@@ -302,5 +304,22 @@ exports.getAllArtists = catchAsync(async (req, res) => {
   if (artists) {
     return res.status(200).json({ success: "ok", artists });
   }
-  return res.status(200).json({ error: "failed" });
+  return res.status(200).json({ error: "failed to fetching artists" });
 });
+
+exports.getArtistAllposts = catchAsync(async (req, res) => {
+  const posts = await Post.find({ postedBy: req.body.artistId });
+  if (posts) {
+    return res.status(200).json({ success: "ok", posts });
+  }
+  return res.status(200).json({ error: "failed to fetching artist posts" });
+});
+
+
+exports.getAllBanners = catchAsync(async(req,res)=>{
+  const banners = await  Banner.find({isDeleted:false}).sort({createdAt:-1})
+  if(banners){
+    return res.status(200).json({success:'ok',banners})
+  }
+  return res.json({error:'failed to get banners'})
+})

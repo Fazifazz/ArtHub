@@ -48,48 +48,15 @@ const SubscriptionPlans = () => {
       ArtistRequest({
         url: apiEndPoints.subscribePlan,
         method: "post",
-        data: { id },
-      }).then((res) => {
-        dispatch(hideLoading());
-        if (res.data?.success) {
-          const options = {
-            key: res.data.keyId,
-            amount: res.data.order.amount,
-            currency: "INR",
-            name: "ArtHub",
-            description: "Subscription Payment",
-            order_id: res.data.order.id,
-            handler: function (response) {
-              const transactionId = response.razorpay_payment_id;
-              const orderId = response.razorpay_order_id;
-              const signature = response.razorpay_signature;
-              console.log(transactionId);
-      
-              // Handle successful payment
-              console.log(response);
-              console.log("success");
-      
-              // // Redirect to a thank you page or handle order confirmation
-              window.location.href = `/razorpay/CreateOrder?orderId=${order.id}&transactionId=${transactionId}`;
-              // navigate(ServerVariables.successPage)
-            },
-            "prefill": {
-              "name": "Gaurav Kumar", //your customer's name
-              "email": "gaurav.kumar@example.com",
-              "contact": "9000090000"
-            },
-            "notes": {
-              "address": "Razorpay Corporate Office"
-            },
-            theme: {
-              color: "bg-red-300",
-            },
-          };
-      
-          const rzp = new window.Razorpay(options);
-          rzp.open();
+        data: { planId:id },
+      }).then((res)=>{
+        dispatch(hideLoading())
+        if(res.data.success){
+          console.log(res.data.payment)
+          console.log(res.data.approvalUrl)
+          window.location.href = res.data.approvalUrl;
         }
-      });
+      })
     }
   };
 

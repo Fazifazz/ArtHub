@@ -6,7 +6,7 @@ module.exports = async (req, res, next) => {
     const tokenWithoutQuotes = req.headers["authorization"]?.split(" ")[1];
     const artistToken = tokenWithoutQuotes.replace(/"/g, "");
     if (!artistToken) {
-      return res.json({
+      return res.json({ 
         error: "No token provided",
       });
     }

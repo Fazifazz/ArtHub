@@ -4,7 +4,7 @@ const User = require('../../models/user/userModel'),
 exports.isUserBlocked = catchAsync(async(req,res,next)=>{
     const user = await User.findById(req.userId)
     if(user.isBlocked){
-        return 
+        return res.json({error:'blocked'})
     }else{
         next()
     }

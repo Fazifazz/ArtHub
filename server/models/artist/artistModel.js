@@ -77,17 +77,20 @@ const artistSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    currentPlan: {
-      type: ObjectId,
-      ref: "plan",
-    },
-    planStatus: {
-      type: String,
-      default: "No plan",
-    },
-    isSubscribed: {
-      type: Boolean,
-      default: false,
+    subscription: {
+      plan: {
+        type: ObjectId,
+        ref: "plan",
+      },
+      status: {
+        type: String,
+        enum: ["active", "expired", "canceled"],
+        default: "expired",
+      },
+      expiresAt: {
+        type: Date,
+        
+      },
     },
     profile: {
       type: String,

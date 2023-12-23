@@ -1,3 +1,4 @@
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookies = require("cookie-parser");
@@ -5,21 +6,16 @@ const User = require("../models/user/userModel");
 const Category = require("../models/admin/categoryModel");
 const Admin = require("../models/admin/adminModel");
 const Plan = require("../models/admin/planModel");
+const Banner = require("../models/admin/BannerModel");
 const Artist = require("../models/artist/artistModel");
 const catchAsync = require("../util/catchAsync");
+const paypal = require("paypal-rest-sdk");
 
-// exports.adminLogin = catchAsync(async(req,res)=>{
-//   const {email,password}  = req.body;
-//   const hashPassword = await bcrypt.hash(password,10)
-//   const admin =  new Admin({
-//     email:email,
-//     password:hashPassword
-//   }).save()
-//   if(admin){
-//     return res.status(200).json({success:'Admin Login Successfull'})
-//   }
-//   return res.json({error:'Admin login Failed'})
-// })
+paypal.configure({
+  mode: "sandbox",
+  client_id: process.env.PAYPAL_CLIENT_ID,
+  client_secret: process.env.PAYPAL_SECRET_ID,
+});
 
 exports.verifyAdmin = catchAsync(async (req, res) => {
   const { email, password } = req.body;
@@ -125,14 +121,6 @@ exports.deleteCategory = catchAsync(async (req, res) => {
   }
 });
 
-exports.editCategory = catchAsync(async (req, res) => {
-  const category = await Category.findById({ _id: req.body.id });
-  if (category) {
-    return res.status(200).json({ success: "ok", category });
-  }
-  return res.json({ error: "error" });
-});
-
 exports.updateCategory = catchAsync(async (req, res) => {
   const { name, description, id } = req.body;
   const category = await Category.findById(id);
@@ -159,23 +147,48 @@ exports.updateCategory = catchAsync(async (req, res) => {
 //plans
 
 exports.showPlans = catchAsync(async (req, res) => {
-  const plans = await Plan.find({}).sort({ createdAt: -1 });
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 2;
+  const totalPlans = await Plan.countDocuments();
+  const totalPages = Math.ceil(totalPlans / pageSize);
+
+  const plans = await Plan.find({})
+    .skip((page - 1) * pageSize)
+    .limit(pageSize);
   if (plans) {
-    res.status(200).json({ success: "ok", plans });
+    return res.status(200).json({
+      success: "ok",
+      plans,
+      currentPage: page,
+      totalPages,
+    });
   }
 });
 
 exports.addPlan = catchAsync(async (req, res) => {
   const { name, type, description, amount } = req.body;
-  const sameName = await Plan.findOne({ name: new RegExp(name, "i") });
-  if (sameName) {
-    return res.json({ error: "plan name already exists" });
+  let dayDuaration;
+  if (name === "weekly") {
+    dayDuaration = type * 7;
   }
+  if (name === "monthly") {
+    dayDuaration = type * 28;
+  }
+  if (name === "yearly") {
+    dayDuaration = type * 365;
+  }
+
+  const sameDayDuaration = await Plan.findOne({ dayDuaration: dayDuaration });
+  if (sameDayDuaration) {
+    return res.json({ error: "plan already exists" });
+  }
+
   const newPlan = await Plan.create({
     name,
     type,
     description,
     amount,
+    dayDuaration: dayDuaration,
   });
   if (newPlan) {
     return res.status(200).json({ success: `plan added successfully` });
@@ -200,23 +213,28 @@ exports.deletePlan = catchAsync(async (req, res) => {
   return res.json({ error: "error in updating" });
 });
 
-exports.editPlan = catchAsync(async (req, res) => {
-  const plan = await Plan.findById({ _id: req.body.id });
-  if (plan) {
-    return res.status(200).json({ success: "ok", plan });
-  }
-  return res.json({ error: "error" });
-});
-
 exports.updatePlan = catchAsync(async (req, res) => {
   const { name, type, amount, description, id } = req.body;
   const plan = await Plan.findById(id);
+  let dayDuaration;
+  if (name === "weekly") {
+    dayDuaration = type * 7;
+  }
+  if (name === "monthly") {
+    dayDuaration = type * 28;
+  }
+  if (name === "yearly") {
+    dayDuaration = type * 365;
+  }
   const duplicatePlans = await Plan.find({
-    name: { $ne: plan.name, $regex: new RegExp("^" + name + "$", "i") },
+    $and: [
+      { dayDuaration: dayDuaration },
+      { dayDuaration: { $ne: plan.dayDuaration } },
+    ],
   });
 
   if (duplicatePlans.length) {
-    return res.json({ error: "plan name already exists" });
+    return res.json({ error: "plan already exists" });
   }
   const updatedPlan = await Plan.findByIdAndUpdate(
     { _id: id },
@@ -226,6 +244,7 @@ exports.updatePlan = catchAsync(async (req, res) => {
         type: type,
         amount: amount,
         description: description,
+        dayDuaration,
       },
     }
   );
@@ -283,4 +302,81 @@ exports.blockArtist = catchAsync(async (req, res) => {
     return res.status(200).json({ success: `${artist.name} has unblocked` });
   }
   return res.json({ error: "error in updating" });
+});
+
+exports.getSubscriptionHistory = catchAsync(async (req, res) => {
+  console.log("hy");
+});
+
+//banners
+
+exports.addBanner = catchAsync(async (req, res) => {
+  const { title, description, bannerImage } = req.body;
+  const newBanner = await Banner.create({
+    title,
+    description,
+    image: bannerImage,
+  });
+  if (newBanner) {
+    return res
+      .status(200)
+      .json({ success: `${title} banner added successfully` });
+  }
+  return res.status(200).json({ error: "failed in adding banner" });
+});
+
+exports.showBanners = catchAsync(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 2;
+  const totalBanners = await Banner.countDocuments();
+  const totalPages = Math.ceil(totalBanners / pageSize);
+
+  const banners = await Banner.find({})
+    .skip((page - 1) * pageSize)
+    .limit(pageSize);
+  if (banners) {
+    return res.status(200).json({
+      success: "ok",
+      banners,
+      currentPage: page,
+      totalPages,
+    });
+  }
+});
+
+exports.deleteBanner = catchAsync(async (req, res) => {
+  const banner = await Banner.findById(req.body.id);
+  const updatedBanner = await Banner.findOneAndUpdate(
+    { _id: req.body.id },
+    { $set: { isDeleted: !banner.isDeleted } },
+    { new: true }
+  );
+  if (updatedBanner.isDeleted) {
+    return res
+      .status(200)
+      .json({ success: `${banner.title} banner has unlisted` });
+  }
+  if (!updatedBanner.isDeleted) {
+    return res
+      .status(200)
+      .json({ success: `${banner.title} banner has listed` });
+  }
+  return res.json({ error: "error in updating" });
+});
+
+exports.updateBanner = catchAsync(async (req, res) => {
+  const { title, description, bannerImage, bannerId } = req.body;
+  const updatedBanner = await Banner.findByIdAndUpdate(bannerId, {
+    $set: {
+      title,
+      description,
+      image: bannerImage,
+    },
+  });
+  if (updatedBanner) {
+    return res
+      .status(200)
+      .json({ success: `${title} banner updated successfully` });
+  }
+  return res.status(200).json({ error: "failed in updating banner" });
 });
