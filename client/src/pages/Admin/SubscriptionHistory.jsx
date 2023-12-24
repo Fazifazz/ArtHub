@@ -3,64 +3,129 @@ import { adminRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
+import DataTable from "react-data-table-component";
+import ReactPaginate from "react-paginate";
 
 function SubscriptionHistory() {
-  const [payments, setPayments] = useState([]);
+  const [paymentsHistory, setPaymentsHistory] = useState([]);
   const dispatch = useDispatch();
+  // const [filterData, setFilterData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+
+  const cols = [
+    {
+      name: "Sl",
+      selector: (row, index) => index + 1,
+      sortable: true,
+    },
+    {
+      name: "date",
+      selector: (row) => new Date(row.paymentHistory.date).toLocaleString(),
+      sortable: true,
+    },
+
+    {
+      name: "Artist (mobile)",
+      selector: (row) => `${row.name}(${row.mobile})`,
+      sortable: true,
+    },
+    {
+      name: "Plan name",
+      selector: (row) => row.paymentHistory.planName,
+      sortable: true,
+    },
+    {
+      name: "Amount",
+      selector: (row) => row.paymentHistory.price,
+      sortable: true,
+    },
+    {
+      name: "plan Expiry date",
+      selector: (row) =>
+        new Date(row.paymentHistory.expireDate).toLocaleString(),
+      sortable: true,
+    },
+  ];
 
   useEffect(() => {
     getHistory();
-  },[]);
+  }, [currentPage]);
 
   const getHistory = async () => {
     dispatch(showLoading());
     adminRequest({
-      url: apiEndPoints.getSubscriptionHistory,
+      url: `${apiEndPoints.getSubscriptionHistory}?page=${currentPage + 1}`,
+      // url:apiEndPoints.getSubscriptionHistory,
       method: "get",
     }).then((res) => {
       dispatch(hideLoading());
-      if(res?.data?.success){
-        setPayments(res?.data?.payments)
+      if (res?.data?.success) {
+        setPaymentsHistory(res.data.payments);
+        setPageCount(res.data.totalPages);
       }
     });
   };
+
+  // const handleFilter = (e) => {
+  //   const newData = filterData?.filter(
+  //     (item) =>
+  //       item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+  //       item.type.toLowerCase().includes(e.target.value.toLowerCase()) ||
+  //       item.description.toLowerCase().includes(e.target.value.toLowerCase())
+  //   );
+  //   setPlans(newData);
+  // };
+
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage.selected); // Update current page when page is changed
+  };
+
   return (
     <>
       <div className="container mx-auto mt-8">
-        <h2 className="text-2xl font-bold mb-4">Payment History</h2>
-        <div className="bg-white shadow-md rounded-md overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Transaction ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                {/* Add more columns as needed */}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {payments.map((payment) => (
-                <tr key={payment.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{payment.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {payment.transactions[0].amount.total}{" "}
-                    {payment.transactions[0].amount.currency}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {payment.state}
-                  </td>
-                  {/* Add more columns as needed */}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <main>
+          <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+            {/* Your content */}
+            <div className="overflow-x-auto">
+              <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <h1 className="uppercase text-slate-600 font-bold mb-4">
+                      Subscription History
+                    </h1>
+                    <DataTable
+                      columns={cols}
+                      data={paymentsHistory}
+                      className="min-w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+              <ReactPaginate
+                previousLabel={
+                  <i className="fas fa-chevron-left text-black"></i>
+                }
+                nextLabel={<i className="fas fa-chevron-right text-black"></i>}
+                breakLabel={<span className="hidden sm:inline">...</span>}
+                pageCount={pageCount}
+                marginPagesDisplayed={3}
+                pageRangeDisplayed={2}
+                onPageChange={handlePageChange}
+                containerClassName="flex justify-center mt-4"
+                pageClassName="mx-2"
+                pageLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500 text-black"
+                previousClassName="mr-2"
+                previousLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                nextClassName="ml-2"
+                nextLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                breakClassName="mx-2"
+                breakLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+                activeClassName="text-blue-500 font-bold bg-blue-200"
+              />
+            </div>
+          </div>
+        </main>
       </div>
     </>
   );

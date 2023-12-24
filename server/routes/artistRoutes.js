@@ -46,6 +46,11 @@ artistRouter
     artistController.editArtistProfile
   )
   .post(
+    "/getPostComments",
+    artistAuthMiddleware,
+    artistController.getPostComments
+  )
+  .post(
     "/replyUserComment",
     artistAuthMiddleware,
     artistController.replyUserComment

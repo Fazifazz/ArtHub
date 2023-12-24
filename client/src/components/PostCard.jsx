@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideLoading, showLoading } from "../redux/AlertSlice";
 import { userRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
-import CommentSection from "./CommentSection";
+import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import { logoutUser, updateUser } from "../redux/AuthSlice";
 import { updateArtist } from "../redux/ArtistAuthSlice";
@@ -17,7 +17,31 @@ const PostCard = () => {
   const navigate = useNavigate();
   const [artistPosts, setArtistPosts] = useState([]);
   const { user } = useSelector((state) => state.Auth);
-  const [showComments, setShowComments] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = (postId) => {
+    setSelectedPostId(postId);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const customStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.0)",
+    },
+    content: {
+      top: "30%",
+      left: "50%",
+      right: "auto",
+      bottom: "30%",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
   useEffect(() => {
     getAllPosts();
   }, []);
@@ -30,11 +54,12 @@ const PostCard = () => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data?.success) {
+        console.log("posts", res.data.artistPosts);
         return setArtistPosts(res.data?.artistPosts);
       }
       if (res.data.error === "blocked") {
-        toast.error('You are blocked by the Admin!')
-        return dispatch(logoutUser())
+        toast.error("You are blocked by the Admin!");
+        return dispatch(logoutUser());
       }
     });
   };
@@ -127,7 +152,7 @@ const PostCard = () => {
     <>
       <div className="flex flex-col items-center justify-center mt-10">
         <div className="w-full max-w-md">
-          {artistPosts.length
+          {artistPosts?.length
             ? artistPosts.map((post) => (
                 <div
                   key={post._id}
@@ -211,24 +236,27 @@ const PostCard = () => {
                       )}
                       <button
                         className="flex items-center space-x-1 text-gray-500"
-                        onClick={() => setShowComments(!showComments)}
+                        onClick={() => openModal(post._id)}
                       >
                         <FaComment size={20} />
-                        <span onClick={() => setShowComments(true)}>
-                          {post?.comments?.length && post?.comments?.length}{" "}
-                          Comments
-                        </span>
+                        <span>{post?.comments?.length} Comments</span>
                       </button>
                     </div>
                   </div>
-                  {showComments && (
-                    <CommentSection
-                      postId={post._id}
-                      comments={post.comments}
+                  <Modal
+                    isOpen={isModalOpen}
+                    onRequestClose={closeModal}
+                    ariaHideApp={false}
+                    style={customStyles}
+                  >
+                    <AddCommentModal
+                      isOpen={isModalOpen}
+                      closeModal={closeModal}
+                      postId={selectedPostId}
                       addComment={addComment}
-                      artist={post.postedBy}
+                      artistPosts={artistPosts}
                     />
-                  )}
+                  </Modal>
                 </div>
               ))
             : "No posts available"}

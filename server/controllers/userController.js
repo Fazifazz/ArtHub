@@ -300,6 +300,7 @@ exports.getAllArtists = catchAsync(async (req, res) => {
     isApproved: true,
     isBlocked: false,
     isVerified: true,
+    // isSubscribed:true
   });
   if (artists) {
     return res.status(200).json({ success: "ok", artists });
@@ -308,7 +309,14 @@ exports.getAllArtists = catchAsync(async (req, res) => {
 });
 
 exports.getArtistAllposts = catchAsync(async (req, res) => {
-  const posts = await Post.find({ postedBy: req.body.artistId });
+  const posts = await Post.find({ postedBy: req.body.artistId }).populate({
+    path: "comments",
+    populate: {
+      path: "postedBy",
+      select: "name profile", // Replace 'User' with the actual model name for the user
+    },
+  })
+  .populate("postedBy");
   if (posts) {
     return res.status(200).json({ success: "ok", posts });
   }

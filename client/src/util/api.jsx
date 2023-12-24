@@ -32,6 +32,7 @@ export const apiEndPoints = {
     getMyPosts:'/api/artist/getMyPosts',
     deletePost:'/api/artist/deletePost',
     editArtistProfile:'/api/artist/editArtistProfile',
+    getPostComments:'/api/artist/getPostComments',
     replyUserComment:'/api/artist/replyUserComment',
     deleteReply:'/api/artist/deleteReply',
 

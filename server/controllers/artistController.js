@@ -394,7 +394,7 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
           currentPlan: planId,
           expiresAt: new Date(createdAt.getTime() + 3 * 60 * 1000),
         };
-        artist.isSubscribed = true
+        artist.isSubscribed = true;
         artist.paymentHistory.push({
           planName: plan.name,
           expireDate: new Date(createdAt.getTime() + 3 * 60 * 1000),
@@ -414,6 +414,21 @@ exports.showErrorPage = catchAsync(async (req, res) => {
   return res.redirect("http://localhost:5173/errorPage");
 });
 
+exports.getPostComments = catchAsync(async (req,res)=>{
+  const post  =  await Post.findById(req.body.postId).populate({
+    path: "comments",
+    populate: {
+      path: "postedBy",
+      select: "name profile", // Replace 'User' with the actual model name for the user
+    },
+  })
+  .populate("postedBy");
+  const comments = post.comments
+  if(comments?.length){
+   res.status(200).json({success:'ok',comments})
+  }
+})
+
 exports.replyUserComment = catchAsync(async (req, res) => {
   const { postId, commentId, reply } = req.body;
   const artist = await Artist.findById(req.artistId);
@@ -423,7 +438,8 @@ exports.replyUserComment = catchAsync(async (req, res) => {
       path: "postedBy",
       select: "name profile", // Replace 'User' with the actual model name for the user
     },
-  });
+  })
+  .populate("postedBy");
   const comment = post.comments.id(commentId);
   comment.replies.push({
     reply: reply,
@@ -447,9 +463,11 @@ exports.deleteReply = catchAsync(async (req, res) => {
       },
     })
     .populate("postedBy");
+
   const comment = post.comments.id(commentId);
   comment.replies.pull(replyId);
   await post.save();
+
   return res.status(200).json({
     success: "reply deleted",
     post: post,

@@ -1,8 +1,32 @@
 // Dashboard.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AdminNavbar from "../../components/AdminNav";
+import SubscriptionHistory from "./SubscriptionHistory";
+import { useDispatch } from "react-redux";
+import { hideLoading, showLoading } from "../../redux/AlertSlice";
+import { adminRequest } from "../../Helper/instance";
+import { apiEndPoints } from "../../util/api";
 
 const Dashboard = () => {
+  // const [paymentsHistory, setPaymentsHistory] = useState([]);
+  // const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   getHistory();
+  // }, []);
+  // const getHistory = async () => {
+  //   dispatch(showLoading());
+  //   adminRequest({
+  //     url: apiEndPoints.getSubscriptionHistory,
+  //     method: "get",
+  //   }).then((res) => {
+  //     dispatch(hideLoading());
+  //     if (res?.data?.success) {
+  //       console.log("payments", res?.data?.payments);
+  //       setPaymentsHistory(res?.data?.payments);
+  //     }
+  //   });
+  // };
   return (
     <>
       <AdminNavbar />
@@ -15,21 +39,7 @@ const Dashboard = () => {
           </div>
         </header>
         <main>
-          <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-            {/* content */}
-            <div className="flex items-center justify-center h-screen bg-gray-100">
-              <div className="bg-black text-white p-8 rounded shadow-md w-96 text-center">
-                <img
-                  src="/images/userImages/hub1.png"
-                  alt="Logo"
-                  className="h-28 w-44 mx-auto"
-                />
-                <h2 className="text-2xl font-bold mb-6">
-                  Welcome to Admin page
-                </h2>
-              </div>
-            </div>
-          </div>
+          <SubscriptionHistory />
         </main>
       </div>
     </>

@@ -15,12 +15,28 @@ import CommentModal from "../../components/CommentModal";
 
 const PostCard = ({ post, onDelete }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [comments,setComments] = useState(post.comments)
+
+  const getComments = async(postId)=>{
+    ArtistRequest({
+      url:apiEndPoints.getPostComments,
+      method:'post',
+      data:{postId}
+    }).then((res)=>{
+      if(res.data?.success){
+        return setComments(res.data.comments)
+      }
+      toast.error('something went wrong')
+    })
+  }
 
   const openModal = () => {
+    getComments(post._id)
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
+    getComments(post._id)
     setIsModalOpen(false);
   };
 
@@ -34,7 +50,6 @@ const PostCard = ({ post, onDelete }) => {
       transform: "translate(-50%, -50%)",
     },
   };
-
 
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 relative">
@@ -53,7 +68,7 @@ const PostCard = ({ post, onDelete }) => {
             <HeartIcon className="w-6 h-6 text-red-600 fill-red-600" />
           </p>
           <p className="text-gray-800 cursor-pointer" onClick={openModal}>
-            {post.comments?.length} Comments <FaComment size={20} />
+            {comments?.length} Comments <FaComment size={20} />
           </p>
           <button
             className="bg-red-500 text-white p-2 rounded-full hover:bg-red-700"
@@ -74,9 +89,8 @@ const PostCard = ({ post, onDelete }) => {
         <CommentModal
           isOpen={isModalOpen}
           closeModal={closeModal}
-          Comments={post.comments}
+          Comments={comments}
           post={post}
-          // Pass any additional props or states as needed
         />
       </Modal>
     </div>
@@ -127,9 +141,9 @@ const PostPage = () => {
       })
         .then((res) => {
           dispatch(hideLoading());
-          if(res.data.expired){
-            toast.error(res.data.expired)
-            return navigate(ServerVariables.plansAvailable)
+          if (res.data.expired) {
+            toast.error(res.data.expired);
+            return navigate(ServerVariables.plansAvailable);
           }
           if (res.data.success) {
             toast.success(res.data.success);
@@ -186,7 +200,13 @@ const PostPage = () => {
             <NewPostButton onClick={() => navigate(ServerVariables.addPost)} />
           </>
         )}
-        {posts.length > 0 && <PostList posts={posts} onDelete={handleDelete} />}
+        {posts.length > 0 && (
+          <PostList
+            posts={posts}
+            onDelete={handleDelete}
+            onGetPosts={getPosts}
+          />
+        )}
         {posts.length > 0 && (
           <NewPostButton onClick={() => navigate(ServerVariables.addPost)} />
         )}

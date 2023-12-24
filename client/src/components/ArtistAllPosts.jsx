@@ -6,9 +6,48 @@ import { userRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import toast from "react-hot-toast";
 import { FaComment, FaHeart } from "react-icons/fa";
+import Modal from "react-modal";
+import AddCommentModal from "./AddCommentModal";
 
 const PostCard = ({ post, onLike, onUnLike }) => {
   const { user } = useSelector((state) => state.Auth);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const customStyles = {
+    content: {
+      top: "30%",
+      left: "50%",
+      right: "auto",
+      bottom: "30%",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
+  
+  
+
+  const AddComment = async (text, postId) => {
+    dispatch(showLoading())
+    userRequest({
+      url: apiEndPoints.comment,
+      method: "post",
+      data: { text, postId },
+    }).then((res) => {
+      dispatch(hideLoading());
+      if (res.data.success) {
+        alert('comment added')
+      }
+    });
+  };
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 relative">
       <img
@@ -41,12 +80,27 @@ const PostCard = ({ post, onLike, onUnLike }) => {
             )}
             <button className="flex items-center space-x-1 text-gray-500">
               <FaComment size={20} />
-              <span>
+              <span onClick={openModal}>
                 {post?.comments?.length && post?.comments?.length} Comments
               </span>
             </button>
           </div>
         </div>
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          ariaHideApp={false}
+          style={customStyles}
+        >
+          {/* Use the CommentModal component */}
+          <AddCommentModal
+            isOpen={isModalOpen}
+            closeModal={closeModal}
+            addComment={AddComment}
+            post={post}
+            postId={post._id}
+          />
+        </Modal>
       </div>
     </div>
   );

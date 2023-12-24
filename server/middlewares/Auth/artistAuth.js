@@ -22,7 +22,7 @@ module.exports = async (req, res, next) => {
             error: "Authentication failed",
           });
         }
-        req.artistId = decoded?.id; // Assuming 'id' is the correct field in your token
+        req.artistId = decoded?.id; 
         next();
       }
     );

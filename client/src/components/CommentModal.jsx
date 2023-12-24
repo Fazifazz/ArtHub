@@ -10,7 +10,6 @@ import Reply from "./Reply";
 const CommentModal = ({ isOpen, closeModal, Comments, post }) => {
   const [replyText, setReplyText] = useState("");
   const [activeReplyCommentId, setActiveReplyCommentId] = useState(null);
-  const { artist } = useSelector((state) => state.ArtistAuth);
   const [comments, setComments] = useState(Comments);
   const dispatch = useDispatch();
 
@@ -38,7 +37,6 @@ const CommentModal = ({ isOpen, closeModal, Comments, post }) => {
       .then((response) => {
         dispatch(hideLoading());
         setComments(response.data.comments);
-        console.log(response.data);
       })
       .catch((error) => {
         console.error(error);
@@ -73,7 +71,6 @@ const CommentModal = ({ isOpen, closeModal, Comments, post }) => {
       }}
     >
       <div className="mt-4 mb-2">
-        <img src="" alt="" />
         <img
           className="w-full h-42 object-cover"
           src={`http://localhost:5000/artistPosts/${post.image}`}

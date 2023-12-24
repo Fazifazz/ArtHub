@@ -11,7 +11,6 @@ const Reply = ({ Reply, Post, comment }) => {
   const [reply, setReply] = useState(Reply);
   const [isReply, setIsReply] = useState(true);
   const [post, setPost] = useState(Post);
-  console.log("post", post);
 
   const deleteReplyhandler = (replyId, postId, commentId) => {
     dispatch(showLoading());
