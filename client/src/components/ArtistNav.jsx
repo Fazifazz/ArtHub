@@ -1,5 +1,11 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon,ChatBubbleLeftRightIcon,PhotoIcon, } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  BellIcon,
+  XMarkIcon,
+  ChatBubbleLeftRightIcon,
+  PhotoIcon,
+} from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
@@ -8,11 +14,11 @@ import { logoutArtist } from "../redux/ArtistAuthSlice";
 
 const ArtistNavbar = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const [activeItem, setActiveItem] = useState('Home')
+  const dispatch = useDispatch();
+  const [activeItem, setActiveItem] = useState("Home");
   const location = useLocation();
 
-  const {artist}  = useSelector((state)=>state.ArtistAuth)
+  const { artist } = useSelector((state) => state.ArtistAuth);
 
   useEffect(() => {
     if (location.state) {
@@ -24,26 +30,25 @@ const ArtistNavbar = () => {
   const user = {
     name: "Mohamed fasil p",
     email: "fazzfasi7@gmail.com",
-    imageUrl:"/images/adminImages/pyphoto1.jpg"  };
+    imageUrl: "/images/adminImages/pyphoto1.jpg",
+  };
 
   const navigation = [
-    { name: "Home", navigation: ServerVariables.ArtistHome},
-    { name: "About", navigation: "#"},
-    { name: "plans", navigation: ServerVariables.plansAvailable},
-    { name: "My Posts", navigation:ServerVariables.artistPosts},
-    { name: "Contact", navigation: "#"},
+    { name: "Home", navigation: ServerVariables.ArtistHome },
+    { name: "About", navigation: "#" },
+    { name: "plans", navigation: ServerVariables.plansAvailable },
+    { name: "My Posts", navigation: ServerVariables.artistPosts },
+    { name: "Contact", navigation: "#" },
   ];
 
-  const handleLogout = async()=>{
-    dispatch(logoutArtist())
-  }
+  const handleLogout = async () => {
+    dispatch(logoutArtist());
+  };
   const userNavigation = [
-    { name: "Your Profile", navigation: ServerVariables.artistProfile},
+    { name: "Your Profile", navigation: ServerVariables.artistProfile },
     { name: "Settings", navigation: "#" },
     { name: "Logout", navigation: "#" },
   ];
-
- 
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
@@ -57,14 +62,18 @@ const ArtistNavbar = () => {
             <div className="flex h-16 items-center justify-between">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                 <PhotoIcon/>
+                  <PhotoIcon />
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
                     {navigation.map((item) => (
                       <a
                         key={item.name}
-                        onClick={() => navigate(item.navigation,{state:{data:item.name}})}
+                        onClick={() =>
+                          navigate(item.navigation, {
+                            state: { data: item.name },
+                          })
+                        }
                         className={
                           item.name === activeItem
                             ? "bg-blue-900 text-white rounded-md px-3 py-2 text-sm font-medium"
@@ -96,7 +105,10 @@ const ArtistNavbar = () => {
                   >
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">View notifications</span>
-                    <ChatBubbleLeftRightIcon className="h-6 w-6" aria-hidden="true" />
+                    <ChatBubbleLeftRightIcon
+                      className="h-6 w-6"
+                      aria-hidden="true"
+                    />
                   </button>
 
                   {/* Profile dropdown */}
@@ -126,7 +138,11 @@ const ArtistNavbar = () => {
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <a
-                               onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
+                                onClick={() =>
+                                  item.name === "Logout"
+                                    ? handleLogout()
+                                    : navigate(item.navigation)
+                                }
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
                                   "block px-4 py-2 text-sm text-gray-700"
@@ -164,7 +180,7 @@ const ArtistNavbar = () => {
                   key={item.name}
                   as="a"
                   onClick={() => {
-                    navigate(item.navigation,{state:{data:item.name}});
+                    navigate(item.navigation, { state: { data: item.name } });
                   }}
                   className={
                     item.name === activeItem
@@ -185,7 +201,7 @@ const ArtistNavbar = () => {
                     src={user.imageUrl}
                     alt=""
                   /> */}
-                  <PhotoIcon/>
+                  <PhotoIcon />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">
@@ -209,7 +225,11 @@ const ArtistNavbar = () => {
                   <Disclosure.Button
                     key={item.name}
                     as="a"
-                    onClick={() =>item.name==='Logout'?handleLogout():navigate(item.navigation)}
+                    onClick={() =>
+                      item.name === "Logout"
+                        ? handleLogout()
+                        : navigate(item.navigation)
+                    }
                     className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                   >
                     {item.name}

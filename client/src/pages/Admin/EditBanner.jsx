@@ -15,38 +15,47 @@ function EditBanner() {
   const [title, setTitle] = useState(banner?.title);
   const [description, setDescription] = useState(banner?.description);
   const [error, setError] = useState("");
-  const [preview, setPreview] = useState(banner?.image);
+  const [preview, setPreview] = useState(banner?.image || null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  // const [bannerUrl,setBannerUrl] = useState('')
 
   const addCropImg = (file) => {
-    setPreview(file);
+    setPreview(file || banner?.image || null);
   };
+  
 
   const handleUpdateBanner = async (e) => {
     e.preventDefault();
-    if (!preview || !title || !description) {
+    if (!title || !description) {
       setError("All fields are required");
       setTimeout(() => {
         setError("");
       }, 2000);
       return;
     }
+  
     const data = new FormData();
     if (preview) {
-      if (preview.type.startsWith("image")) {
-        data.append("banner", preview);
+      if (preview instanceof File) {
+        if (preview.type && preview.type.startsWith("image")) {
+          data.append("banner", preview);
+        } else {
+          setError("Only images are allowed to upload");
+          setTimeout(() => {
+            setError("");
+          }, 2000);
+          return;
+        }
       } else {
-        setError("Only images are allowed to upload");
-        setTimeout(() => {
-          setError("");
-        }, 2000);
-        return;
+        // If preview is a URL, send it as a string
+        data.append("bannerUrl", preview);
       }
     }
     data.append("title", title);
     data.append("bannerId", banner._id);
     data.append("description", description);
+  
     dispatch(showLoading());
     adminRequest({
       url: apiEndPoints.updateBanner,
@@ -62,6 +71,7 @@ function EditBanner() {
       }
     });
   };
+  
 
   return (
     <>
@@ -111,6 +121,7 @@ function EditBanner() {
                     <div className="d-flex justify-content-center">
                       <img
                         src={`http://localhost:5000/banners/${preview}`}
+                        // src={URL.revokeObjectURL(banner?.bannerUrl)}
                         className="preview"
                         style={{
                           maxWidth: "200px",

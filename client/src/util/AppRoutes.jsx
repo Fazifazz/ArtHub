@@ -52,6 +52,7 @@ import Banners from "../pages/Admin/Banners";
 import AddBanner from "../pages/Admin/AddBanner";
 import EditBanner from "../pages/Admin/EditBanner";
 import AboutPage from "../components/AboutPage";
+import ErrorPage from "../pages/404ErrorPage";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -89,6 +90,7 @@ function AppRoutes() {
 
       <Routes>
         <Route path={ServerVariables.Landing} element={<LandingPage />} />
+        <Route path="*" element={<ErrorPage />} />
 
         {/* user routes */}
         <Route element={<IsLoggedOutUser />}>
@@ -96,60 +98,109 @@ function AppRoutes() {
           <Route path={ServerVariables.Register} element={<Register />} />
           <Route path={ServerVariables.verifyEmail} element={<VerifyEmail />} />
           <Route path={ServerVariables.forgetOtp} element={<ForgetOtp />} />
-          <Route path={ServerVariables.changePassword} element={<ChangePassword />} />
-          <Route path={ServerVariables.verifyOtp} element={<OtpVerification />}/>
+          <Route
+            path={ServerVariables.changePassword}
+            element={<ChangePassword />}
+          />
+          <Route
+            path={ServerVariables.verifyOtp}
+            element={<OtpVerification />}
+          />
         </Route>
 
         <Route element={<IsLoggedUser />}>
           <Route path={ServerVariables.userHome} element={<UserHome />} />
           <Route path={ServerVariables.userProfile} element={<UserProfile />} />
-          <Route path={ServerVariables.editUserProfile} element={<EditUserProfile />} />
+          <Route
+            path={ServerVariables.editUserProfile}
+            element={<EditUserProfile />}
+          />
           <Route path={ServerVariables.showArtists} element={<ShowArtists />} />
-          <Route path={ServerVariables.viewArtistDetails} element={<ViewArtistDetails />} />
+          <Route
+            path={ServerVariables.viewArtistDetails}
+            element={<ViewArtistDetails />}
+          />
           <Route path={ServerVariables.about} element={<AboutPage />} />
         </Route>
 
-
         {/*artist routes */}
-        <Route element={<IsArtistLoggedOut/>}>
-        <Route path={ServerVariables.ArtistLogin} element={<ArtistLogin />} />
-        <Route path={ServerVariables.ArtistRegister} element={<ArtistRegister />}/>
-        <Route path={ServerVariables.ArtistVerifyOtp} element={<ArtistOtp />} />
-        <Route path={ServerVariables.artistVerifyEmail} element={<ArtistVerifyEmail />} />
-        <Route path={ServerVariables.forgetArtistOtp} element={<ArtistForgetOtp />} />
-        <Route path={ServerVariables.artistChangePassword} element={<ArtistChangePassword />} />
+        <Route element={<IsArtistLoggedOut />}>
+          <Route path={ServerVariables.ArtistLogin} element={<ArtistLogin />} />
+          <Route
+            path={ServerVariables.ArtistRegister}
+            element={<ArtistRegister />}
+          />
+          <Route
+            path={ServerVariables.ArtistVerifyOtp}
+            element={<ArtistOtp />}
+          />
+          <Route
+            path={ServerVariables.artistVerifyEmail}
+            element={<ArtistVerifyEmail />}
+          />
+          <Route
+            path={ServerVariables.forgetArtistOtp}
+            element={<ArtistForgetOtp />}
+          />
+          <Route
+            path={ServerVariables.artistChangePassword}
+            element={<ArtistChangePassword />}
+          />
         </Route>
-        <Route element={<IsArtistLogged/>}>
-        <Route path={ServerVariables.ArtistHome} element={<ArtistHome />} />
-        <Route path={ServerVariables.plansAvailable} element={<SubscriptionPlans />} />
-        <Route path={ServerVariables.successPage} element={<PaymentSuccessPage />} />
-        <Route path={ServerVariables.errorPage} element={<PaymentFailPage />} />
-        <Route path={ServerVariables.artistPosts} element={<PostPage />} />
-        <Route path={ServerVariables.addPost} element={<AddPost />} />
-        <Route path={ServerVariables.artistProfile} element={<ArtistProfile />} />
-        <Route path={ServerVariables.editArtistProfile} element={<EditArtistProfile />} />
+        <Route element={<IsArtistLogged />}>
+          <Route path={ServerVariables.ArtistHome} element={<ArtistHome />} />
+          <Route
+            path={ServerVariables.plansAvailable}
+            element={<SubscriptionPlans />}
+          />
+          <Route
+            path={ServerVariables.successPage}
+            element={<PaymentSuccessPage />}
+          />
+          <Route
+            path={ServerVariables.errorPage}
+            element={<PaymentFailPage />}
+          />
+          <Route path={ServerVariables.artistPosts} element={<PostPage />} />
+          <Route path={ServerVariables.addPost} element={<AddPost />} />
+          <Route
+            path={ServerVariables.artistProfile}
+            element={<ArtistProfile />}
+          />
+          <Route
+            path={ServerVariables.editArtistProfile}
+            element={<EditArtistProfile />}
+          />
         </Route>
-
 
         {/* admin routes */}
-        <Route element={<IsAdminLoggedOut/>} >
-        <Route path={ServerVariables.AdminLogin} element={<AdminLogin />} />
+        <Route element={<IsAdminLoggedOut />}>
+          <Route path={ServerVariables.AdminLogin} element={<AdminLogin />} />
         </Route>
-        <Route element={<IsAdminLogged/>}>
-        <Route path={ServerVariables.AdminDashboard} element={<Dashboard />} />
-        <Route path={ServerVariables.Users} element={<Users />} />
-        <Route path={ServerVariables.Categories} element={<Categories />} />
-        <Route path={ServerVariables.AddCategory} element={<AddCategory />} />
-        <Route path={ServerVariables.EditCategory} element={<EditCategory />} />
-        <Route path={ServerVariables.Plans} element={<Plans />} />
-        <Route path={ServerVariables.AddPlan} element={<AddPlan />} />
-        <Route path={ServerVariables.Editplan} element={<EditPlan />} />
-        <Route path={ServerVariables.Artists} element={<Artists />} />
-        <Route path={ServerVariables.ViewArtist} element={<ArtistView />} />
-        <Route path={ServerVariables.banners} element={<Banners />} />
-        <Route path={ServerVariables.addBanner} element={<AddBanner />} />
-        <Route path={ServerVariables.editBanner} element={<EditBanner />} />
-        <Route path={ServerVariables.subscriptionPlanHistory} element={<SubscriptionHistory />} />
+        <Route element={<IsAdminLogged />}>
+          <Route
+            path={ServerVariables.AdminDashboard}
+            element={<Dashboard />}
+          />
+          <Route path={ServerVariables.Users} element={<Users />} />
+          <Route path={ServerVariables.Categories} element={<Categories />} />
+          <Route path={ServerVariables.AddCategory} element={<AddCategory />} />
+          <Route
+            path={ServerVariables.EditCategory}
+            element={<EditCategory />}
+          />
+          <Route path={ServerVariables.Plans} element={<Plans />} />
+          <Route path={ServerVariables.AddPlan} element={<AddPlan />} />
+          <Route path={ServerVariables.Editplan} element={<EditPlan />} />
+          <Route path={ServerVariables.Artists} element={<Artists />} />
+          <Route path={ServerVariables.ViewArtist} element={<ArtistView />} />
+          <Route path={ServerVariables.banners} element={<Banners />} />
+          <Route path={ServerVariables.addBanner} element={<AddBanner />} />
+          <Route path={ServerVariables.editBanner} element={<EditBanner />} />
+          <Route
+            path={ServerVariables.subscriptionPlanHistory}
+            element={<SubscriptionHistory />}
+          />
         </Route>
       </Routes>
     </div>

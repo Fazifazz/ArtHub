@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken"),
   randomString = require("randomstring"),
   otpTemplate = require("../util/otpTemplate"),
   Artist = require("../models/artist/artistModel"),
+  PlansHistory = require("../models/admin/subscriptionHistoryModel"),
   Plan = require("../models/admin/planModel"),
   Category = require("../models/admin/categoryModel"),
   Post = require("../models/artist/postModel"),
@@ -191,9 +192,15 @@ exports.updatePassword = catchAsync(async (req, res) => {
 
 exports.getPlansAvailable = catchAsync(async (req, res) => {
   const plans = await Plan.find({ isDeleted: false });
-  if (plans) {
-    return res.status(200).json({ success: "ok", plans });
+  const artist = await Artist.findById(req?.artistId)
+  let currentPlan= null
+  currentPlan = await Plan.findById(artist.subscription.currentPlan)
+  if(currentPlan){
+    currentPlan =  currentPlan.toObject();
+    currentPlan.expiresOn = artist?.subscription?.expiresAt.toDateString()
   }
+ 
+    return res.status(200).json({ success: "ok", plans,currentPlan });
 });
 
 exports.uploadPost = catchAsync(async (req, res) => {
@@ -387,22 +394,30 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
         const parsedResponse = JSON.parse(response);
         const transactionId =
           parsedResponse.transactions[0].related_resources[0].sale.id;
-        const createdAt = new Date();
+        const currentDate = new Date();
 
         artist.subscription = {
           transactionId: transactionId,
           currentPlan: planId,
-          expiresAt: new Date(createdAt.getTime() + 3 * 60 * 1000),
+          expiresAt: new Date(currentDate.getTime() + 10 * 60 * 1000),
+          // expiresAt = new Date(currentDate.getTime() + (plan.dayDuaration) * 24 * 60 * 60 * 1000);
         };
         artist.isSubscribed = true;
         artist.paymentHistory.push({
           planName: plan.name,
-          expireDate: new Date(createdAt.getTime() + 3 * 60 * 1000),
-          date: createdAt,
+          expireDate: new Date(currentDate.getTime() + 10 * 60 * 1000),
+          date: currentDate,
           price: plan.amount,
           duration: plan.dayDuaration,
         });
         await artist.save();
+        await PlansHistory.create({
+          plan: plan._id,
+          artist: artistId,
+          date:currentDate,
+          transactionId: transactionId,
+          expireDate: new Date(currentDate.getTime() + 10 * 60 * 1000),
+        });
         return res.redirect("http://localhost:5173/successPage");
       }
     }
@@ -414,32 +429,34 @@ exports.showErrorPage = catchAsync(async (req, res) => {
   return res.redirect("http://localhost:5173/errorPage");
 });
 
-exports.getPostComments = catchAsync(async (req,res)=>{
-  const post  =  await Post.findById(req.body.postId).populate({
-    path: "comments",
-    populate: {
-      path: "postedBy",
-      select: "name profile", // Replace 'User' with the actual model name for the user
-    },
-  })
-  .populate("postedBy");
-  const comments = post.comments
-  if(comments?.length){
-   res.status(200).json({success:'ok',comments})
+exports.getPostComments = catchAsync(async (req, res) => {
+  const post = await Post.findById(req.body.postId)
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile",
+      },
+    })
+    .populate("postedBy");
+  const comments = post.comments;
+  if (comments?.length) {
+    res.status(200).json({ success: "ok", comments });
   }
-})
+});
 
 exports.replyUserComment = catchAsync(async (req, res) => {
   const { postId, commentId, reply } = req.body;
   const artist = await Artist.findById(req.artistId);
-  const post = await Post.findById(postId).populate({
-    path: "comments",
-    populate: {
-      path: "postedBy",
-      select: "name profile", // Replace 'User' with the actual model name for the user
-    },
-  })
-  .populate("postedBy");
+  const post = await Post.findById(postId)
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile",
+      },
+    })
+    .populate("postedBy");
   const comment = post.comments.id(commentId);
   comment.replies.push({
     reply: reply,

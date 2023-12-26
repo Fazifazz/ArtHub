@@ -60,7 +60,7 @@ const Artists = () => {
     },
     {
       name: "Plan status",
-      selector: (row) => row.isSubscribed?'Active':'No Plan',
+      selector: (row) => (row.isSubscribed ? "Active" : "No Plan"),
       sortable: true,
     },
     {
@@ -110,7 +110,7 @@ const Artists = () => {
           setArtists(res.data.artists);
           setFilterData(res.data.artists);
           setPageCount(res.data.totalPages);
-          console.log(res.data.totalPages)
+          console.log(res.data.totalPages);
         } else {
           toast.error(res.data.error);
         }

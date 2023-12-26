@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {  useState } from "react";
 import {  userRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { useFormik } from "formik";
@@ -9,7 +9,7 @@ import { ServerVariables } from "../../util/ServerVariables";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Navbar from "../../components/Navbar";
-import { updateUser } from "../../redux/AuthSlice";
+import { logoutUser, updateUser } from "../../redux/AuthSlice";
 
 function EditUserProfile() {
   const { user } = useSelector((state) => state.Auth);

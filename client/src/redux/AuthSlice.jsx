@@ -78,6 +78,7 @@ export const {
   loginSuccess,
   loginReject,
   updateUser,
+  BlockUser,
   logoutUser,
 } = AuthSlice.actions;
 export default AuthSlice.reducer;

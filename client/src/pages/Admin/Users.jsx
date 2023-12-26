@@ -10,6 +10,7 @@ import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import toast from "react-hot-toast";
 import DataTable from "react-data-table-component";
 import ReactPaginate from "react-paginate";
+import { logoutUser } from "../../redux/AuthSlice";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -118,6 +119,7 @@ const Users = () => {
         .then((res) => {
           dispatch(hideLoading());
           if (res.data.success) {
+            dispatch(logoutUser());
             toast.success(res.data.success);
             getUsers();
           } else {
@@ -151,8 +153,8 @@ const Users = () => {
       <AdminNavbar />
       <div className="min-h-full">
         <header className="bg-white shadow">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-0">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-0">
               USERS
             </h1>
             <div className="relative flex items-center mt-4 sm:mt-0">
@@ -166,7 +168,7 @@ const Users = () => {
           </div>
         </header>
         <main>
-        <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+          <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             {/* Your content */}
             <div className="overflow-x-auto">
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

@@ -9,10 +9,27 @@ import { FaComment, FaHeart } from "react-icons/fa";
 import Modal from "react-modal";
 import AddCommentModal from "./AddCommentModal";
 
-const PostCard = ({ post, onLike, onUnLike }) => {
+const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
   const { user } = useSelector((state) => state.Auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [comments, setComments] = useState(post.comments);
   const dispatch = useDispatch();
+
+  // const getComments = async (postId) => {
+    
+  //   userRequest({
+  //     url: apiEndPoints.getComments,
+  //     method: "post",
+  //     data: { postId },
+  //   }).then((res) => {
+  //     if (res.data?.success) {
+  //       // setComments(res.data.comments);
+        
+  //       return  
+  //     }
+  //     toast.error("something went wrong");
+  //   });
+  // };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -32,11 +49,9 @@ const PostCard = ({ post, onLike, onUnLike }) => {
       transform: "translate(-50%, -50%)",
     },
   };
-  
-  
 
   const AddComment = async (text, postId) => {
-    dispatch(showLoading())
+    dispatch(showLoading());
     userRequest({
       url: apiEndPoints.comment,
       method: "post",
@@ -44,7 +59,8 @@ const PostCard = ({ post, onLike, onUnLike }) => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data.success) {
-        alert('comment added')
+        getPosts()
+        setIsModalOpen(false)
       }
     });
   };
@@ -92,7 +108,6 @@ const PostCard = ({ post, onLike, onUnLike }) => {
           ariaHideApp={false}
           style={customStyles}
         >
-          {/* Use the CommentModal component */}
           <AddCommentModal
             isOpen={isModalOpen}
             closeModal={closeModal}
@@ -106,7 +121,7 @@ const PostCard = ({ post, onLike, onUnLike }) => {
   );
 };
 
-const PostList = ({ posts, onLike, onUnLike }) => {
+const PostList = ({ posts, onLike, onUnLike,getPosts }) => {
   return (
     <div className="flex flex-wrap justify-center">
       {posts.map((post) => (
@@ -115,6 +130,7 @@ const PostList = ({ posts, onLike, onUnLike }) => {
           post={post}
           onLike={onLike}
           onUnLike={onUnLike}
+          getPosts={getPosts}
         />
       ))}
     </div>
@@ -189,6 +205,7 @@ const ArtistAllPosts = ({ artistId }) => {
             posts={posts}
             onLike={handleLikePost}
             onUnLike={handleUnLikePost}
+            getPosts={getPosts}
           />
         )}
       </div>

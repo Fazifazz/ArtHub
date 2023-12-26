@@ -54,7 +54,6 @@ const PostCard = () => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data?.success) {
-        console.log("posts", res.data.artistPosts);
         return setArtistPosts(res.data?.artistPosts);
       }
       if (res.data.error === "blocked") {

@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const SubscriptionPlans = () => {
   const [plans, setPlans] = useState([]);
+  const [currentPlan, setCurrentPlan] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -24,9 +25,10 @@ const SubscriptionPlans = () => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data.success) {
-        return setPlans(res.data?.plans);
+        setCurrentPlan(res?.data?.currentPlan);
+        setPlans(res.data?.plans);
       } else {
-        return setPlans([]);
+        setPlans([]);
       }
     });
   };
@@ -48,31 +50,55 @@ const SubscriptionPlans = () => {
       ArtistRequest({
         url: apiEndPoints.subscribePlan,
         method: "post",
-        data: { planId:id },
-      }).then((res)=>{
-        dispatch(hideLoading())
-        if(res.data.success){
-          console.log(res.data.payment)
-          console.log(res.data.approvalUrl)
+        data: { planId: id },
+      }).then((res) => {
+        dispatch(hideLoading());
+        if (res.data.success) {
+          console.log(res.data.payment);
+          console.log(res.data.approvalUrl);
           window.location.href = res.data.approvalUrl;
         }
-      })
+      });
     }
   };
-
-
-
 
   return (
     <>
       <ArtistNavbar />
       <div className="min-h-screen bg-black-100 flex items-center justify-center">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {currentPlan?(
+          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 text-center">
+            <h1 className="text-xl font-semibold mb-4 text-green-500">
+              My Current Plan
+            </h1>
+            <h2 className="text-xl font-semibold mb-4">
+              {currentPlan?.name}
+            </h2>
+
+            <h3 className="text-yellow-500 mb-4">
+            ₹{currentPlan.amount.toFixed()}
+            </h3>
+            <h3 className="text-red-500 mb-4">
+              Expires on: {currentPlan?.expiresOn}
+            </h3>
+          </div>
+          ):(
+          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-150 text-center">
+              <h2 className="text-xl font-semibold mb-4 text-red-500">
+                No Current Plan
+              </h2>
+
+              <h3 className="text-yellow-500 mb-4">
+                Please subscribe a new Plan.....!
+              </h3>
+            </div> 
+           )} 
           {plans.length ? (
             plans.map((plan, index) => (
               <div
                 key={index}
-                className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105"
+                className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 text-center"
               >
                 <h2 className="text-xl font-semibold mb-4">{plan.name}</h2>
                 <h3 className="text-yellow-500 mb-4">

@@ -51,6 +51,7 @@ exports.register = catchAsync(async (req, res) => {
 });
 
 exports.verifyOtp = catchAsync(async (req, res) => {
+  console.log(req.body.otp)
   if (!req.body.otp) {
     return res.json({ error: "please enter otp" });
   }
@@ -60,6 +61,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
     if (req.body.otp === user.otp.code) {
       user.isVerified = true;
       user.otp.code = "";
+      user.otp.generatedAt = null
       await user.save();
       return res
         .status(200)
@@ -330,4 +332,19 @@ exports.getAllBanners = catchAsync(async(req,res)=>{
     return res.status(200).json({success:'ok',banners})
   }
   return res.json({error:'failed to get banners'})
+})
+
+exports.getComments = catchAsync(async (req,res)=>{
+  const post  =  await Post.findById(req.body.postId).populate({
+    path: "comments",
+    populate: {
+      path: "postedBy",
+      select: "name profile", // Replace 'User' with the actual model name for the user
+    },
+  })
+  .populate("postedBy");
+  const comments = post.comments
+  if(comments?.length){
+   res.status(200).json({success:'ok',comments})
+  }
 })

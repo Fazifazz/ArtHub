@@ -1,12 +1,13 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const Artist = require("../../models/artist/artistModel");
 
 module.exports = async (req, res, next) => {
   try {
     const tokenWithoutQuotes = req.headers["authorization"]?.split(" ")[1];
     const artistToken = tokenWithoutQuotes.replace(/"/g, "");
     if (!artistToken) {
-      return res.json({ 
+      return res.json({
         error: "No token provided",
       });
     }
@@ -15,14 +16,24 @@ module.exports = async (req, res, next) => {
       artistToken,
       process.env.JWT_SECRET,
       { ignoreExpiration: true },
-      (err, decoded) => {
+      async (err, decoded) => {
         if (err) {
           console.log(err.message);
           return res.json({
             error: "Authentication failed",
           });
         }
-        req.artistId = decoded?.id; 
+        req.artistId = decoded?.id;
+        const artist = await Artist.findById(req.artistId);
+        const currentDate = new Date();
+        if (artist.subscription.transactionId) {
+          if (artist.subscription.expiresAt < currentDate) {
+            await Artist.updateOne(
+              { _id: artist._id },
+              { $set: { isSubscribed: false }, $unset: { subscription: 1 } }
+            );
+          }
+        }
         next();
       }
     );

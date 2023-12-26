@@ -85,7 +85,7 @@ const AddCommentModal = ({
                 </div>
                 {comment.replies?.length ? (
                   <div className="ml-8 mt-2">
-                    <h4 className="text-slate-400 mb-1 ml-6">Replies</h4>
+                    <h4 className="text-slate-400 mb-1 ml-6">Artist Replies</h4>
                     {comment.replies.map((reply) => (
                       <ShowReplies
                         key={reply?._id}

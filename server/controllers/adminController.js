@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const cookies = require("cookie-parser");
 const User = require("../models/user/userModel");
 const Category = require("../models/admin/categoryModel");
+const PlansHistory = require("../models/admin/subscriptionHistoryModel");
 const Admin = require("../models/admin/adminModel");
 const Plan = require("../models/admin/planModel");
 const Banner = require("../models/admin/BannerModel");
@@ -47,7 +48,8 @@ exports.getUsers = catchAsync(async (req, res) => {
 
   const users = await User.find({})
     .skip((page - 1) * pageSize)
-    .limit(pageSize).sort({createdAt:-1});
+    .limit(pageSize)
+    .sort({ createdAt: -1 });
 
   return res.status(200).json({
     success: "ok",
@@ -65,10 +67,14 @@ exports.blockUser = catchAsync(async (req, res) => {
     { new: true }
   );
   if (updatedUser.isBlocked) {
-    return res.status(200).json({ success: `${user.name} has blocked` });
+    return res
+      .status(200)
+      .json({ success: `${user.name} has blocked`, updatedUser });
   }
   if (!updatedUser.isBlocked) {
-    return res.status(200).json({ success: `${user.name} has unblocked` });
+    return res
+      .status(200)
+      .json({ success: `${user.name} has unblocked`, updatedUser });
   }
   return res.json({ error: "error in updating" });
 });
@@ -81,7 +87,8 @@ exports.showCategories = catchAsync(async (req, res) => {
 
   const categories = await Category.find({})
     .skip((page - 1) * pageSize)
-    .limit(pageSize).sort({createdAt:-1});
+    .limit(pageSize)
+    .sort({ createdAt: -1 });
   if (categories) {
     return res.status(200).json({
       success: "ok",
@@ -154,7 +161,8 @@ exports.showPlans = catchAsync(async (req, res) => {
 
   const plans = await Plan.find({})
     .skip((page - 1) * pageSize)
-    .limit(pageSize).sort({createdAt:-1});
+    .limit(pageSize)
+    .sort({ createdAt: -1 });
   if (plans) {
     return res.status(200).json({
       success: "ok",
@@ -267,7 +275,8 @@ exports.showArtists = catchAsync(async (req, res) => {
 
   const artists = await Artist.find({})
     .skip((page - 1) * pageSize)
-    .limit(pageSize).sort({createdAt:-1});
+    .limit(pageSize)
+    .sort({ createdAt: -1 });
 
   return res.status(200).json({
     success: "ok",
@@ -296,57 +305,35 @@ exports.blockArtist = catchAsync(async (req, res) => {
     { new: true }
   );
   if (updatedArtist.isBlocked) {
-    return res.status(200).json({ success: `${artist.name} has blocked` });
+    return res
+      .status(200)
+      .json({ success: `${artist.name} has blocked`, updatedArtist });
   }
   if (!updatedArtist.isBlocked) {
-    return res.status(200).json({ success: `${artist.name} has unblocked` });
+    return res
+      .status(200)
+      .json({ success: `${artist.name} has unblocked`, updatedArtist });
   }
   return res.json({ error: "error in updating" });
 });
 
 exports.getSubscriptionHistory = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const pageSize = 2; 
-  const skip = (page - 1) * pageSize;
+  const pageSize = 3;
+  const SubscriptionHistory = await PlansHistory.countDocuments();
+  const totalPages = Math.ceil(SubscriptionHistory / pageSize);
 
-  const artists = await Artist.aggregate([
-    {
-      $project: {
-        name: 1,
-        email: 1,
-        mobile: 1,
-        profile: 1,
-        paymentHistory: 1,
-      },
-    },
-    {
-      $unwind: {
-        path: "$paymentHistory",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-    {
-      $match: {
-        paymentHistory: { $exists: true },
-      },
-    },
-    {
-      $skip: skip,
-    },
-    {
-      $limit: pageSize,
-    },
-  ]);
+  const histories = await PlansHistory.find({})
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
+    .sort({ createdAt: -1 })
+    .populate("plan artist");
 
-  const totalArtists = await Artist.countDocuments({
-    'paymentHistory': { $exists: true },
-  });
-
-  res.status(200).json({
+  return res.status(200).json({
     success: "ok",
-    payments: artists,
+    payments: histories,
     currentPage: page,
-    totalPages: Math.ceil(totalArtists / pageSize),
+    totalPages,
   });
 });
 

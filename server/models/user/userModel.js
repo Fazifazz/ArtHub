@@ -26,6 +26,7 @@ const mongoose = require("mongoose"),
         },
         generatedAt: {
           type: Date,
+          default:Date.now()
         },
       },
       isVerified: {

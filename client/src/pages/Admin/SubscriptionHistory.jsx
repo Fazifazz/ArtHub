@@ -9,7 +9,7 @@ import ReactPaginate from "react-paginate";
 function SubscriptionHistory() {
   const [paymentsHistory, setPaymentsHistory] = useState([]);
   const dispatch = useDispatch();
-  // const [filterData, setFilterData] = useState([]);
+  const [filterData, setFilterData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
 
@@ -21,29 +21,28 @@ function SubscriptionHistory() {
     },
     {
       name: "date",
-      selector: (row) => new Date(row.paymentHistory.date).toLocaleString(),
+      selector: (row) => new Date(row?.date).toLocaleString(),
       sortable: true,
     },
 
     {
       name: "Artist (mobile)",
-      selector: (row) => `${row.name}(${row.mobile})`,
+      selector: (row) => `${row?.artist?.name}(${row?.artist?.mobile})`,
       sortable: true,
     },
     {
       name: "Plan name",
-      selector: (row) => row.paymentHistory.planName,
+      selector: (row) => row?.plan?.name,
       sortable: true,
     },
     {
       name: "Amount",
-      selector: (row) => row.paymentHistory.price,
+      selector: (row) => row?.plan?.amount,
       sortable: true,
     },
     {
       name: "plan Expiry date",
-      selector: (row) =>
-        new Date(row.paymentHistory.expireDate).toLocaleString(),
+      selector: (row) => new Date(row?.expireDate).toLocaleString(),
       sortable: true,
     },
   ];
@@ -56,26 +55,27 @@ function SubscriptionHistory() {
     dispatch(showLoading());
     adminRequest({
       url: `${apiEndPoints.getSubscriptionHistory}?page=${currentPage + 1}`,
-      // url:apiEndPoints.getSubscriptionHistory,
       method: "get",
     }).then((res) => {
       dispatch(hideLoading());
       if (res?.data?.success) {
         setPaymentsHistory(res.data.payments);
-        setPageCount(res.data.totalPages);
+        setFilterData(res?.data?.payments);
+        setPageCount(res?.data?.totalPages);
       }
     });
   };
 
-  // const handleFilter = (e) => {
-  //   const newData = filterData?.filter(
-  //     (item) =>
-  //       item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
-  //       item.type.toLowerCase().includes(e.target.value.toLowerCase()) ||
-  //       item.description.toLowerCase().includes(e.target.value.toLowerCase())
-  //   );
-  //   setPlans(newData);
-  // };
+  const handleFilter = (e) => {
+    const newData = filterData?.filter(
+      (item) =>
+        item.artist.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        item.artist.mobile.toString().includes(e.target.value) ||
+        item.plan.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        item.plan.amount.toString().includes(e.target.value)
+    );
+    setPaymentsHistory(newData);
+  };
 
   const handlePageChange = (selectedPage) => {
     setCurrentPage(selectedPage.selected); // Update current page when page is changed
@@ -91,9 +91,19 @@ function SubscriptionHistory() {
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                   <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                    <h1 className="uppercase text-slate-600 font-bold mb-4">
-                      Subscription History
-                    </h1>
+                    <div className="flex justify-between mb-5">
+                      <h1 className="uppercase text-slate-600 font-bold mb-4">
+                        Subscription History
+                      </h1>
+                      <div className="relative flex items-center mt-4 sm:mt-0">
+                        <input
+                          type="text"
+                          placeholder="Search..."
+                          className="border p-2 mr-2"
+                          onChange={handleFilter}
+                        />
+                      </div>
+                    </div>
                     <DataTable
                       columns={cols}
                       data={paymentsHistory}
