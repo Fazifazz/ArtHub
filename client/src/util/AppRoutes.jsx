@@ -53,6 +53,9 @@ import AddBanner from "../pages/Admin/AddBanner";
 import EditBanner from "../pages/Admin/EditBanner";
 import AboutPage from "../components/AboutPage";
 import ErrorPage from "../pages/404ErrorPage";
+import ChatWithArtist from "../pages/User/Chat";
+import ArtistChatPage from "../pages/Artist/ArtistChatPage";
+import ArtistNotification from "../pages/Artist/ArtistNotification";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -121,6 +124,7 @@ function AppRoutes() {
             element={<ViewArtistDetails />}
           />
           <Route path={ServerVariables.about} element={<AboutPage />} />
+          <Route path={ServerVariables.chatWithArtist} element={<ChatWithArtist />} />
         </Route>
 
         {/*artist routes */}
@@ -170,6 +174,14 @@ function AppRoutes() {
           <Route
             path={ServerVariables.editArtistProfile}
             element={<EditArtistProfile />}
+          />
+          <Route
+            path={ServerVariables.artistChatPage}
+            element={<ArtistChatPage />}
+          />
+          <Route
+            path={ServerVariables.artistNotifications}
+            element={<ArtistNotification />}
           />
         </Route>
 

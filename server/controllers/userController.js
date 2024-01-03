@@ -50,8 +50,15 @@ exports.register = catchAsync(async (req, res) => {
   }
 });
 
+exports.getCurrentUser = catchAsync(async (req, res) => {
+  const currentUser = await User.findById(req.userId);
+  if (currentUser.isBlocked) {
+    return res.json({ error: "You are blocked by admin", currentUser });
+  }
+  return res.status(200).json({success:'ok'})
+});
+
 exports.verifyOtp = catchAsync(async (req, res) => {
-  console.log(req.body.otp)
   if (!req.body.otp) {
     return res.json({ error: "please enter otp" });
   }
@@ -61,7 +68,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
     if (req.body.otp === user.otp.code) {
       user.isVerified = true;
       user.otp.code = "";
-      user.otp.generatedAt = null
+      user.otp.generatedAt = null;
       await user.save();
       return res
         .status(200)
@@ -94,6 +101,7 @@ exports.verifyLogin = catchAsync(async (req, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
+  console.log(user.role);
   return res.status(200).json({ success: "Login Successfull", token, user });
 });
 
@@ -142,7 +150,7 @@ exports.forgetVerifyEmail = catchAsync(async (req, res) => {
     await Mail.sendMail(options);
     await User.findOneAndUpdate(
       { email: email },
-      { $set: { otp: { code: newOtp } } },
+      { $set: { otp: { code: newOtp, generatedAt: Date.now() } } },
       { new: true }
     );
     return res.status(200).json({ success: "otp sended to your Email", email });
@@ -311,40 +319,63 @@ exports.getAllArtists = catchAsync(async (req, res) => {
 });
 
 exports.getArtistAllposts = catchAsync(async (req, res) => {
-  const posts = await Post.find({ postedBy: req.body.artistId }).populate({
-    path: "comments",
-    populate: {
-      path: "postedBy",
-      select: "name profile", // Replace 'User' with the actual model name for the user
-    },
-  })
-  .populate("postedBy");
+  const posts = await Post.find({ postedBy: req.body.artistId })
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile", // Replace 'User' with the actual model name for the user
+      },
+    })
+    .populate("postedBy");
   if (posts) {
     return res.status(200).json({ success: "ok", posts });
   }
   return res.status(200).json({ error: "failed to fetching artist posts" });
 });
 
-
-exports.getAllBanners = catchAsync(async(req,res)=>{
-  const banners = await  Banner.find({isDeleted:false}).sort({createdAt:-1})
-  if(banners){
-    return res.status(200).json({success:'ok',banners})
+exports.getAllBanners = catchAsync(async (req, res) => {
+  const banners = await Banner.find({ isDeleted: false }).sort({
+    createdAt: -1,
+  });
+  if (banners) {
+    return res.status(200).json({ success: "ok", banners });
   }
-  return res.json({error:'failed to get banners'})
+  return res.json({ error: "failed to get banners" });
+});
+
+exports.getComments = catchAsync(async (req, res) => {
+  const post = await Post.findById(req.body.postId)
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile", // Replace 'User' with the actual model name for the user
+      },
+    })
+    .populate("postedBy");
+  const comments = post.comments;
+  if (comments?.length) {
+    res.status(200).json({ success: "ok", comments });
+  }
+});
+
+
+exports.getArtistFollowers = catchAsync(async(req,res)=>{
+  const artist = await Artist.findById(req.body.artistId).populate('followers')
+  const followers = artist.followers
+  if(followers.length){
+    return res.status(200).json({success:'ok',followers})
+  }
+  return res.status(200).json({error:'No followers found'})
 })
 
-exports.getComments = catchAsync(async (req,res)=>{
-  const post  =  await Post.findById(req.body.postId).populate({
-    path: "comments",
-    populate: {
-      path: "postedBy",
-      select: "name profile", // Replace 'User' with the actual model name for the user
-    },
-  })
-  .populate("postedBy");
-  const comments = post.comments
-  if(comments?.length){
-   res.status(200).json({success:'ok',comments})
+exports.getUserFollowings = catchAsync(async(req,res)=>{
+  const user = await User.findById(req.userId).populate('followings')
+  const followings = user.followings
+  if(followings.length){
+    return res.status(200).json({success:'ok',followings})
   }
+  return res.status(200).json({error:'No followings found'})
 })
+

@@ -1,6 +1,7 @@
 const express = require("express"),
   userRouter = express.Router(),
   userController = require("../controllers/userController"),
+  chatController = require("../controllers/chatController"),
   userAuth = require('../middlewares/Auth/userAuth'),
   {isUserBlocked} = require('../middlewares/blockMiddleware/isUserBlocked')
   upload = require('../middlewares/imageUpload/cropImage');
@@ -12,7 +13,7 @@ userRouter
   .post("/verifyLogin", userController.verifyLogin)
   .post("/verifyEmail", userController.forgetVerifyEmail)
   .post("/updatePassword", userController.updatePassword)
-  .get("/getAllPosts",userAuth,isUserBlocked,userController.getAllPosts)
+  .get("/getAllPosts",userAuth,userController.getAllPosts)
   .post("/updateUserProfile",userAuth,upload.uploadUserProfile,upload.resizeUserProfile, userController.updateUserProfile)
   .post("/likePost",userAuth, userController.likePost)
   .post("/unLikePost",userAuth, userController.unLikePost)
@@ -23,5 +24,15 @@ userRouter
   .post('/getArtistAllposts',userAuth,userController.getArtistAllposts)
   .get('/getAllBanners',userAuth,userController.getAllBanners)
   .post('/getComments',userAuth,userController.getComments)
+  .get('/getCurrentUser',userAuth,userController.getCurrentUser)
+  .post('/getArtistFollowers',userAuth,userController.getArtistFollowers)
+  .get('/getUserFollowings',userAuth,userController.getUserFollowings)
+
+  //chat
+  .get('/getArtistsFollowed',userAuth,chatController.getArtistsUserFollow) 
+  .post('/getChatMessages',userAuth,chatController.getChatMessages) 
+  .post('/sendNewMessage',userAuth,chatController.sendNewMessage) 
+
 
 module.exports = userRouter;
+ 

@@ -1,6 +1,7 @@
 const express = require("express"),
   artistRouter = express.Router(),
   artistController = require("../controllers/artistController"),
+  chatController = require("../controllers/chatController"),
   artistAuthMiddleware = require("../middlewares/Auth/artistAuth"),
   upload = require("../middlewares/imageUpload/cropImage"),
   PlanExpired = require("../middlewares/artistPlanExpiryCheck");
@@ -56,7 +57,28 @@ artistRouter
     artistController.replyUserComment
   )
   .post("/deleteReply", artistAuthMiddleware, artistController.deleteReply)
-  .get("/successPayment", artistController.showSuccessPage)
-  .get("/errorPayment", artistController.showErrorPage);
+  .get(
+    "/successPayment",
+    artistAuthMiddleware,
+    artistController.showSuccessPage
+  )
+  .get("/errorPayment", artistAuthMiddleware, artistController.showErrorPage)
+
+  //chat
+  .get(
+    "/getAllMessagedUsers",
+    artistAuthMiddleware,
+    chatController.getUserChatList
+  )
+  .post(
+    "/getPrevMessages",
+    artistAuthMiddleware,
+    chatController.artistGetRoom
+  )
+  .post(
+    "/sendArtistNewMsg",
+    artistAuthMiddleware,
+    chatController.artistNewMessage
+  )
 
 module.exports = artistRouter;

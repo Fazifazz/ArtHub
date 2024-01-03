@@ -27,10 +27,10 @@ const ArtistNavbar = () => {
     }
   });
 
-  const user = {
-    name: "Mohamed fasil p",
-    email: "fazzfasi7@gmail.com",
-    imageUrl: "/images/adminImages/pyphoto1.jpg",
+  const artistData = {
+    name: artist.name,
+    email: artist.email,
+    imageUrl: `http://localhost:5000/artistProfile/${artist.profile}`,
   };
 
   const navigation = [
@@ -38,7 +38,7 @@ const ArtistNavbar = () => {
     { name: "About", navigation: "#" },
     { name: "plans", navigation: ServerVariables.plansAvailable },
     { name: "My Posts", navigation: ServerVariables.artistPosts },
-    { name: "Contact", navigation: "#" },
+    { name: "Chats", navigation: ServerVariables.artistChatPage },
   ];
 
   const handleLogout = async () => {
@@ -94,21 +94,23 @@ const ArtistNavbar = () => {
                   <button
                     type="button"
                     className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                    onClick={()=>navigate(ServerVariables.artistChatPage)}
                   >
                     <span className="absolute -inset-1.5" />
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  >
-                    <span className="absolute -inset-1.5" />
-                    <span className="sr-only">View notifications</span>
+                    <span className="sr-only">View Chats</span>
                     <ChatBubbleLeftRightIcon
                       className="h-6 w-6"
                       aria-hidden="true"
                     />
+                  </button>
+                  <button
+                    type="button"
+                    className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                    onClick={()=>navigate(ServerVariables.artistNotifications)}
+                  >
+                    <span className="absolute -inset-1.5" />
+                    <span className="sr-only">View notifications</span>
+                    <BellIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
 
                   {/* Profile dropdown */}
@@ -196,24 +198,36 @@ const ArtistNavbar = () => {
             <div className="border-t border-gray-700 pb-3 pt-4">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  {/* <img
+                  <img
                     className="h-10 w-10 rounded-full"
-                    src={user.imageUrl}
+                    src={artistData?.imageUrl}
                     alt=""
-                  /> */}
-                  <PhotoIcon />
+                  />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">
-                    {user.name}
+                    {artistData?.name}
                   </div>
                   <div className="text-sm font-medium leading-none text-gray-400">
-                    {user.email}
+                    {artistData?.email}
                   </div>
                 </div>
                 <button
+                    type="button"
+                    className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                    onClick={()=>navigate(ServerVariables.artistChatPage)}
+                  >
+                    <span className="absolute -inset-1.5" />
+                    <span className="sr-only">View Chats</span>
+                    <ChatBubbleLeftRightIcon
+                      className="h-6 w-6"
+                      aria-hidden="true"
+                    />
+                  </button>
+                <button
                   type="button"
                   className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  onClick={()=>navigate(ServerVariables.artistNotifications)}
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>

@@ -6,6 +6,10 @@ const mongoose = require("mongoose"),
         type: String,
         required: true,
       },
+      role: {
+        type: String,
+        default: 'user',
+      },
       email: {
         type: String,
         required: true,

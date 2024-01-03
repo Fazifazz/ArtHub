@@ -4,7 +4,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
 
 function IsLoggedOutUser() {
-  const { token, user } = useSelector((state) => state.Auth);
+  const { token} = useSelector((state) => state.Auth);
 
   // Check if the token exists and user is not blocked
   const isUserAuthenticated = token

@@ -14,6 +14,8 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 app.use(express.static(path.join(__dirname, 'public')))
+const http = require("http").createServer(app)
+const intializeSocket =  require('./sockets/chatSocket')
 
 // //user
 const userRoute = require("./routes/userRoutes");
@@ -29,6 +31,9 @@ const adminRoutes = require("./routes/adminRoutes");
 app.use("/api/admin", adminRoutes);
 
 const port = process.env.PORT;
-app.listen(port, () => {
-  console.log("Server Started!");
-});
+const server = http.listen(port, () => {
+  console.log("server running");
+})
+
+
+intializeSocket(server)

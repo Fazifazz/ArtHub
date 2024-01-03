@@ -82,16 +82,20 @@ exports.register = catchAsync(async (req, res) => {
 
 exports.verifyOtp = catchAsync(async (req, res) => {
   const { otp, email } = req.body;
+  if (!otp) {
+    return res.json({ error: "please enter otp" });
+  }
   const artist = await Artist.findOne({ email: email });
   const generatedAt = new Date(artist.otp.generatedAt).getTime();
   if (Date.now() - generatedAt <= 30 * 1000) {
     if (otp === artist.otp.code) {
       artist.isVerified = true;
       artist.otp.code = "";
+      artist.otp.generatedAt = null;
       await artist.save();
       return res
         .status(200)
-        .json({ success: "artist registered successfully" });
+        .json({ success: "Otp verified successfully" ,email });
     } else {
       return res.json({ error: "otp is invalid" });
     }
@@ -156,7 +160,6 @@ exports.verifyLogin = catchAsync(async (req, res) => {
 exports.forgetVerifyEmail = catchAsync(async (req, res) => {
   const { email } = req.body;
   const artist = await Artist.findOne({ email: email });
-  console.log(artist);
   const newOtp = randomString.generate({
     length: 4,
     charset: "numeric",
@@ -171,7 +174,7 @@ exports.forgetVerifyEmail = catchAsync(async (req, res) => {
     await Mail.sendMail(options);
     await Artist.findOneAndUpdate(
       { email: email },
-      { $set: { otp: { code: newOtp } } },
+      { $set: { otp: { code: newOtp, generatedAt: Date.now() } } },
       { new: true }
     );
     return res.status(200).json({ success: "otp sended to your Email", email });
@@ -181,6 +184,7 @@ exports.forgetVerifyEmail = catchAsync(async (req, res) => {
 exports.updatePassword = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const artist = await Artist.findOne({ email: email });
+  console.log(email,password)
   const hashPassword = await bcrypt.hash(password, 10);
   if (artist) {
     artist.password = hashPassword;

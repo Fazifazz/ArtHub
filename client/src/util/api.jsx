@@ -17,6 +17,14 @@ export const apiEndPoints = {
     getArtistAllposts:'/api/user/getArtistAllposts',
     getAllBanners:'/api/user/getAllBanners',
     getComments:'/api/user/getComments',
+    checkRole:'api/user/checkRole',
+    getCurrentUser:'api/user/getCurrentUser',
+    getArtistFollowers:'api/user/getArtistFollowers',
+    getUserFollowings:'api/user/getUserFollowings',
+    getArtistsFollowed:'api/user/getArtistsFollowed',
+    getChatMessages:'api/user/getChatMessages',
+    sendNewMessage:'api/user/sendNewMessage',
+
 
     //artist endpoints
     postArtistVerifyLogin:'/api/artist/artistVerifyLogin',
@@ -36,6 +44,9 @@ export const apiEndPoints = {
     getPostComments:'/api/artist/getPostComments',
     replyUserComment:'/api/artist/replyUserComment',
     deleteReply:'/api/artist/deleteReply',
+    getAllMessagedUsers:'/api/artist/getAllMessagedUsers',
+    getPrevMessages:'/api/artist/getPrevMessages',
+    sendArtistNewMsg:'/api/artist/sendArtistNewMsg',
 
     //admin endpoints
     postAdminLogin:'/api/admin/postAdminLogin',

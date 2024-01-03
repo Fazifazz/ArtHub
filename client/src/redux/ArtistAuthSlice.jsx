@@ -12,6 +12,7 @@ const initialState = {
   message: "",
   artist: JSON.parse(localStorage.getItem("artistInfo")) || {},
   token: JSON.parse(localStorage.getItem("artistToken")) || null,
+  role : 'admin'
 };
 
 export const ArtistAuthSlice = createSlice({
@@ -30,6 +31,7 @@ export const ArtistAuthSlice = createSlice({
       localStorage.setItem("artistToken", JSON.stringify(action.payload.token));
       state.token = action.payload.token;
       state.message = action.payload.success;
+      state.role = action?.payload?.user?.role
     },
 
     loginReject: (state, action) => {

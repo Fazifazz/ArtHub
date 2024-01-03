@@ -1,10 +1,13 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BellIcon, ChatBubbleLeftRightIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../redux/AuthSlice";
+import { userRequest } from "../Helper/instance";
+import { apiEndPoints } from "../util/api";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -12,25 +15,31 @@ const Navbar = () => {
   const [activeItem, setActiveItem] = useState("Home");
   const location = useLocation();
 
-  const {user} =  useSelector((state)=>state.Auth)
-  
-  
+  const { user } = useSelector((state) => state.Auth);
+
   useEffect(() => {
+    userRequest({
+      url: apiEndPoints.getCurrentUser,
+      method: "get",
+    }).then((res) => {
+      if (res.data.success) {
+        return;
+      }
+      toast.error(res.data.error)
+      dispatch(logoutUser());
+    });
     if (location.state) {
       const { data } = location.state;
       setActiveItem(data);
-      console.log(user)
     }
   });
 
- 
-
   const navigation = [
     { name: "Home", navigation: ServerVariables.userHome },
-    { name: "About", navigation:ServerVariables.about},
+    { name: "About", navigation: ServerVariables.about },
     { name: "Contact", navigation: "#" },
     { name: "Artists", navigation: ServerVariables.showArtists },
-    { name: "Reports", navigation: "#" },
+    { name: "Chats", navigation:ServerVariables.chatWithArtist },
   ];
 
   const handleLogout = async () => {
@@ -87,6 +96,19 @@ const Navbar = () => {
               </div>
               <div className="hidden md:block">
                 <div className="ml-4 flex items-center md:ml-6">
+                <button
+                    type="button"
+                    className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                    onClick={()=>navigate(ServerVariables.chatWithArtist)}
+                  >
+                    <span className="absolute -inset-1.5" />
+                    <span className="sr-only">View Chats</span>
+                    <ChatBubbleLeftRightIcon
+                      className="h-6 w-6"
+                      aria-hidden="true"
+                    />
+                  </button>
+
                   <button
                     type="button"
                     className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -95,6 +117,7 @@ const Navbar = () => {
                     <span className="sr-only">View notifications</span>
                     <BellIcon className="h-6 w-6" aria-hidden="true" />
                   </button>
+
 
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative ml-3">
@@ -183,7 +206,7 @@ const Navbar = () => {
                 <div className="flex-shrink-0">
                   <img
                     className="h-10 w-10 rounded-full"
-                    src={`http://localhost:5000/profile/${user.profile}`}
+                    src={`http://localhost:5000/userProfile/${user.profile}`}
                     alt=""
                   />
                 </div>
@@ -195,6 +218,15 @@ const Navbar = () => {
                     {user.email}
                   </div>
                 </div>
+                <button
+                  type="button"
+                  className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  onClick={()=>navigate(ServerVariables.chatWithArtist)}
+                >
+                  <span className="absolute -inset-1.5" />
+                  <span className="sr-only">View Chats</span>
+                  <ChatBubbleLeftRightIcon className="h-6 w-6" aria-hidden="true" />
+                </button>
                 <button
                   type="button"
                   className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"

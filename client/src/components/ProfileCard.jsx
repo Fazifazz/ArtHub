@@ -1,19 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { apiEndPoints } from "../util/api";
 import { userRequest } from "../Helper/instance";
 import { hideLoading, showLoading } from "../redux/AlertSlice";
 import { updateUser } from "../redux/AuthSlice";
+import Modal from "react-modal";
 import { updateArtist } from "../redux/ArtistAuthSlice";
 import toast from "react-hot-toast";
 import { IoArrowBackCircle } from "react-icons/io5";
+import FollowersModal from "./FollowersModal";
 
 function ProfileCard({ Artist }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.Auth);
   const [artist, setArtist] = useState(Artist);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const customStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.0)",
+    },
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "30%",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
 
   const handleFollow = async (artistId) => {
     dispatch(showLoading());
@@ -65,7 +90,11 @@ function ProfileCard({ Artist }) {
   return (
     <>
       <div className="relative max-w-md mx-auto md:max-w-2xl min-w-0 break-words  w-full mb-6 shadow-lg rounded-xl mt-20 bg-gray-100">
-        <IoArrowBackCircle size={30} fill="gray" onClick={()=>window.history.back()} />
+        <IoArrowBackCircle
+          size={30}
+          fill="gray"
+          onClick={() => window.history.back()}
+        />
         <div className="px-6">
           <div className="flex flex-wrap justify-center">
             <div className="w-full flex justify-center">
@@ -86,7 +115,7 @@ function ProfileCard({ Artist }) {
                   <span className="text-sm text-slate-500">Posts</span>
                 </div>
 
-                <div className="p-3 text-center">
+                <div className="p-3 text-center" onClick={openModal}>
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-500">
                     {artist?.followers?.length}
                   </span>
@@ -152,6 +181,18 @@ function ProfileCard({ Artist }) {
                   )}
                 </a>
               </div>
+              <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                ariaHideApp={false}
+                style={customStyles}
+              >
+                <FollowersModal
+                  isOpen={isModalOpen}
+                  closeModal={closeModal}
+                  artistId={artist._id}
+                />
+              </Modal>
             </div>
           </div>
         </div>

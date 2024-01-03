@@ -4,13 +4,7 @@ const Artist = require("../../models/artist/artistModel");
 
 module.exports = async (req, res, next) => {
   try {
-    const tokenWithoutQuotes = req.headers["authorization"]?.split(" ")[1];
-    const artistToken = tokenWithoutQuotes.replace(/"/g, "");
-    if (!artistToken) {
-      return res.json({
-        error: "No token provided",
-      });
-    }
+    const artistToken = req.headers["authorization"];
 
     jwt.verify(
       artistToken,

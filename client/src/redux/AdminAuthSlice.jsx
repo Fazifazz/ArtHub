@@ -12,6 +12,7 @@ const initialState = {
   message: "",
   admin: JSON.parse(localStorage.getItem("adminInfo")) || {},
   token: JSON.parse(localStorage.getItem("adminToken")) || null,
+  role:'admin'
 };
 
 export const AdminAuthSlice = createSlice({
@@ -30,6 +31,7 @@ export const AdminAuthSlice = createSlice({
       localStorage.setItem("adminToken", JSON.stringify(action.payload.token));
       state.token = action.payload.token;
       state.message = action.payload.success;
+      state.role = 'admin'
     },
 
     loginReject: (state, action) => {

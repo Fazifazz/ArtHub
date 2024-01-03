@@ -6,6 +6,10 @@ const artistSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      default: 'artist',
+    },
     email: {
       type: String,
       required: true,

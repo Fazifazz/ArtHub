@@ -32,7 +32,6 @@ function ArtistVerifyEmail() {
       .then((res) => {
         dispatch(hideLoading());
         if (res.data.success) {
-          console.log(res.data.success)
           navigate(ServerVariables.forgetArtistOtp, {
             state: { email: res.data.email },
           });

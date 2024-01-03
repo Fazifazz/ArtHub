@@ -10,7 +10,7 @@ import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import toast from "react-hot-toast";
 import DataTable from "react-data-table-component";
 import ReactPaginate from "react-paginate";
-import { logoutUser } from "../../redux/AuthSlice";
+import { logoutUser, updateUser } from "../../redux/AuthSlice";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -119,7 +119,7 @@ const Users = () => {
         .then((res) => {
           dispatch(hideLoading());
           if (res.data.success) {
-            dispatch(logoutUser());
+            dispatch(updateUser(res.data.updatedUser));
             toast.success(res.data.success);
             getUsers();
           } else {

@@ -19,38 +19,40 @@ function ArtistChangePassword() {
 
   const updatePassword = async (e) => {
     e.preventDefault();
-    if(!password || !Cpassword){
-       setError('All fields are required')
-       return  setTimeout(()=>{
-            setError('')
-        },2000)
+    if (!password || !Cpassword) {
+      setError("All fields are required");
+      return setTimeout(() => {
+        setError("");
+      }, 2000);
     }
-    if(password.length<6){
-        setError('password must have atleast 6 letters')
-        return  setTimeout(()=>{
-             setError('')
-         },2000)
-     }
-    if(password!==Cpassword){
-        setError('password not match confirm password')
-        return setTimeout(()=>{
-            setError('')
-        },2000)
+    if (password.length < 6) {
+      setError("password must have atleast 6 letters");
+      return setTimeout(() => {
+        setError("");
+      }, 2000);
     }
-    dispatch(showLoading())
+    if (password !== Cpassword) {
+      setError("password not match confirm password");
+      return setTimeout(() => {
+        setError("");
+      }, 2000);
+    }
+    dispatch(showLoading());
     ArtistRequest({
-        url:apiEndPoints.artistUpdatePassword,
-        method:'post',
-        data:{email:email,password:password}
-    }).then((res)=>{
-        dispatch(hideLoading())
-        if(res.data.success){
-            toast.success(res.data.success)
-            navigate(ServerVariables.ArtistLogin)
-        }else{
-        toast.error(res.data.error);
+      url: apiEndPoints.artistUpdatePassword,
+      method: "post",
+      data: { email: email, password: password },
+    })
+      .then((res) => {
+        dispatch(hideLoading());
+        if (res.data.success) {
+          toast.success(res.data.success);
+          navigate(ServerVariables.ArtistLogin);
+        } else {
+          toast.error(res.data.error);
         }
-    }).catch((err) => {
+      })
+      .catch((err) => {
         dispatch(hideLoading());
         toast.error("something went wrong");
         console.log(err.message);
@@ -96,12 +98,12 @@ function ArtistChangePassword() {
           </div>
         </form>
 
-          <a
-            className="text-blue-500 text-center"
-            onClick={() => navigate(ServerVariables.ArtistLogin)}
-          >
-            cancel
-          </a>
+        <a
+          className="text-blue-500 text-center"
+          onClick={() => navigate(ServerVariables.ArtistLogin)}
+        >
+          cancel
+        </a>
       </div>
     </div>
   );

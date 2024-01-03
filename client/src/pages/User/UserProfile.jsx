@@ -1,13 +1,38 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector } from 'react-redux';
 import EditIcon from '../../components/icons/EditIcon';
 import Navbar from '../../components/Navbar';
+import Modal from "react-modal";
 import { ServerVariables } from '../../util/ServerVariables';
 import { useNavigate } from 'react-router-dom';
+import FollowingsModal from '../../components/Followings';
 
 function UserProfile() {
     const { user } = useSelector((state) => state.Auth);
     const navigate = useNavigate()
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const customStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.0)",
+    },
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "30%",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
 
   return (
     <>
@@ -32,7 +57,7 @@ function UserProfile() {
           <div className="text-center font-normal text-lg"></div>
          
           <hr className="mt-8" />
-          <div className="flex p-4 justify-center">
+          <div className="flex p-4 justify-center" onClick={openModal}>
             <p className="font-bold text-center">
               {user?.followings?.length} Following
             </p>
@@ -42,6 +67,17 @@ function UserProfile() {
               <EditIcon/>
             </p>
           </div>
+          <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                ariaHideApp={false}
+                style={customStyles}
+              >
+                <FollowingsModal
+                  isOpen={isModalOpen}
+                  closeModal={closeModal}
+                />
+              </Modal>
        </div>
       </div>
     </>

@@ -6,6 +6,10 @@ const adminSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      default: 'admin',
+    },
     password: {
       type: String,
       required: true,

@@ -13,6 +13,7 @@ import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
+import { updateArtist } from "../../redux/ArtistAuthSlice";
 
 const Artists = () => {
   const [artists, setArtists] = useState([]);
@@ -145,6 +146,7 @@ const Artists = () => {
         .then((res) => {
           dispatch(hideLoading());
           if (res.data.success) {
+            dispatch(updateArtist(res.data.updatedArtist))
             toast.success(res.data.success);
             getArtists();
           } else {
