@@ -19,6 +19,7 @@ export const ServerVariables = {
     showArtists:'/showArtists',
     viewArtistDetails:'/viewArtistDetails',
     chatWithArtist:'/chatWithArtist',
+    userNotifications:'/userNotifications',
     
 
     //ArtistRoutes

@@ -81,4 +81,28 @@ artistRouter
     chatController.artistNewMessage
   )
 
+
+  //notifications
+  .get(
+    "/getArtistNotifications",
+    artistAuthMiddleware,
+    artistController.getArtistNotifications
+  )
+
+  .delete(
+    "/deleteNotification",
+    artistAuthMiddleware,
+    artistController.deleteNotification
+  )
+  .delete(
+    "/clearArtistAllNotifications",
+    artistAuthMiddleware,
+    artistController.clearAllNotification
+  )
+  .get(
+    "/getArtistNotificationCount",
+    artistAuthMiddleware,
+    artistController.getNotificationCount
+  )
+
 module.exports = artistRouter;

@@ -1,22 +1,22 @@
 import React, { useEffect, useState } from "react";
-import ArtistNavbar from "../../components/ArtistNav";
+import Navbar from "../../components/Navbar";
 import { MdClear } from "react-icons/md";
-import { ArtistRequest } from "../../Helper/instance";
+import { userRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
-const ArtistNotification = () => {
+const UserNotification = () => {
   const [notifications, setNotifications] = useState([]);
   const dispatch = useDispatch();
 
   // to check notification
   const getAllNotifications = async () => {
     dispatch(showLoading());
-    ArtistRequest({
-      url: apiEndPoints.getArtistNotifications,
+    userRequest({
+      url: apiEndPoints.getUserAllNotifications,
       method: "get",
     })
       .then((response) => {
@@ -52,8 +52,8 @@ const ArtistNotification = () => {
   };
 
   const clearAllNotifications = () => {
-    ArtistRequest({
-      url:apiEndPoints.clearArtistAllNotifications,
+    userRequest({
+      url:apiEndPoints.clearUserAllNotifications,
       method:'delete',
     }).then((res) => {
       if (res.data.success) {
@@ -68,8 +68,8 @@ const ArtistNotification = () => {
   };
 
   const clearMessage = (notificationId) => {
-    ArtistRequest({
-      url:apiEndPoints.deleteNotification,
+    userRequest({
+      url:apiEndPoints.deleteUserNotification,
       method:'delete',
       data:{notificationId}
     }).then((res) => {
@@ -87,7 +87,7 @@ const ArtistNotification = () => {
 
   return (
     <div>
-      <ArtistNavbar />
+      <Navbar />
       <div className="bg-white min-h-screen">
         <div className="container mx-auto p-4">
           <div className="flex justify-between items-center ">
@@ -144,4 +144,4 @@ const ArtistNotification = () => {
   );
 };
 
-export default ArtistNotification;
+export default UserNotification;

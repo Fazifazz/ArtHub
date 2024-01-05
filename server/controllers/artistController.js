@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken"),
   Plan = require("../models/admin/planModel"),
   Category = require("../models/admin/categoryModel"),
   Post = require("../models/artist/postModel"),
+  Notification = require("../models/artist/notificationModel"),
   catchAsync = require("../util/catchAsync"),
   crypto = require("crypto"),
   Mail = require("../util/otpMailer"),
@@ -95,7 +96,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
       await artist.save();
       return res
         .status(200)
-        .json({ success: "Otp verified successfully" ,email });
+        .json({ success: "Otp verified successfully", email });
     } else {
       return res.json({ error: "otp is invalid" });
     }
@@ -184,7 +185,7 @@ exports.forgetVerifyEmail = catchAsync(async (req, res) => {
 exports.updatePassword = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const artist = await Artist.findOne({ email: email });
-  console.log(email,password)
+  console.log(email, password);
   const hashPassword = await bcrypt.hash(password, 10);
   if (artist) {
     artist.password = hashPassword;
@@ -196,15 +197,15 @@ exports.updatePassword = catchAsync(async (req, res) => {
 
 exports.getPlansAvailable = catchAsync(async (req, res) => {
   const plans = await Plan.find({ isDeleted: false });
-  const artist = await Artist.findById(req?.artistId)
-  let currentPlan= null
-  currentPlan = await Plan.findById(artist.subscription.currentPlan)
-  if(currentPlan){
-    currentPlan =  currentPlan.toObject();
-    currentPlan.expiresOn = artist?.subscription?.expiresAt.toDateString()
+  const artist = await Artist.findById(req?.artistId);
+  let currentPlan = null;
+  currentPlan = await Plan.findById(artist.subscription.currentPlan);
+  if (currentPlan) {
+    currentPlan = currentPlan.toObject();
+    currentPlan.expiresOn = artist?.subscription?.expiresAt.toDateString();
   }
- 
-    return res.status(200).json({ success: "ok", plans,currentPlan });
+
+  return res.status(200).json({ success: "ok", plans, currentPlan });
 });
 
 exports.uploadPost = catchAsync(async (req, res) => {
@@ -418,7 +419,7 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
         await PlansHistory.create({
           plan: plan._id,
           artist: artistId,
-          date:currentDate,
+          date: currentDate,
           transactionId: transactionId,
           expireDate: new Date(currentDate.getTime() + 10 * 60 * 1000),
         });
@@ -468,6 +469,16 @@ exports.replyUserComment = catchAsync(async (req, res) => {
   });
 
   await post.save();
+  // to send notification to user
+  const Notify = { 
+    receiverId: comment.postedBy._id,
+    senderId: req.artistId,
+    relatedPostId:post._id,
+    notificationMessage: `${artist.name} replied '${reply}' to your comment '${comment.text}'`,
+    date: new Date(),
+  };
+  const newNotification = new Notification(Notify);
+  newNotification.save();
   return res
     .status(200)
     .json({ success: "reply added", comments: post.comments });
@@ -494,4 +505,52 @@ exports.deleteReply = catchAsync(async (req, res) => {
     post: post,
     reply: comment.replies.id(replyId),
   });
+});
+
+exports.getArtistNotifications = catchAsync(async (req, res) => {
+  const Id = req.artistId;
+  await Notification.updateMany(
+    { receiverId: Id, seen: false },
+    { $set: { seen: true } }
+  );
+  const notifications = await Notification.find({ receiverId: Id })
+    .sort({
+      date: -1,
+    })
+    .populate("relatedPostId");
+  return res.status(200).json({ notifications, success: true });
+});
+
+exports.getNotificationCount = catchAsync(async (req, res) => {
+  const artistId = req.artistId;
+  const count = await Notification.countDocuments({
+    receiverId: artistId,
+    seen: false,
+  });
+  return res.status(200).json({ success: true, count });
+});
+
+exports.deleteNotification = catchAsync(async (req, res) => {
+  const id = req.body?.notificationId;
+  const deletedNotification = await Notification.findOneAndDelete({ _id: id });
+  if (deletedNotification) {
+    return res
+      .status(200)
+      .json({ success: "deleted notification successfully" });
+  }
+  return res.json({ error: "deleting notification failed" });
+});
+
+exports.clearAllNotification = catchAsync(async (req, res) => {
+  const id = req.artistId;
+  const clearNotifications = await Notification.deleteMany({
+    receiverId: id,
+    seen: true,
+  });
+  if (clearNotifications) {
+    return res
+      .status(200)
+      .json({ success: "All notifications cleared" });
+  }
+  return res.json({ error: "deleting notification failed" });
 });

@@ -84,7 +84,7 @@ const SubscriptionPlans = () => {
             </h3>
           </div>
           ):(
-          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-150 text-center">
+          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 text-center">
               <h2 className="text-xl font-semibold mb-4 text-red-500">
                 No Current Plan
               </h2>

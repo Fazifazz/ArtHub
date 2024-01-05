@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken"),
   otpTemplate = require("../util/otpTemplate"),
   User = require("../models/user/userModel"),
   Artist = require("../models/artist/artistModel"),
+  Notification = require("../models/artist/notificationModel"),
+  ArtistNotificationModel = require("../models/artist/notificationModel"),
   Post = require("../models/artist/postModel"),
   Banner = require("../models/admin/BannerModel"),
   catchAsync = require("../util/catchAsync"),
@@ -55,7 +57,7 @@ exports.getCurrentUser = catchAsync(async (req, res) => {
   if (currentUser.isBlocked) {
     return res.json({ error: "You are blocked by admin", currentUser });
   }
-  return res.status(200).json({success:'ok'})
+  return res.status(200).json({ success: "ok" });
 });
 
 exports.verifyOtp = catchAsync(async (req, res) => {
@@ -229,13 +231,26 @@ exports.updateUserProfile = catchAsync(async (req, res) => {
 
 exports.likePost = catchAsync(async (req, res) => {
   const { id } = req.body;
+  const user = await User.findById(req.userId);
   const updatedPost = await Post.findByIdAndUpdate(
     id,
     { $push: { likes: req.userId } },
     { new: true }
   );
+  // to send notification to artist
+  const Notify = {
+    receiverId: updatedPost.postedBy,
+    senderId: req.userId,
+    relatedPostId:updatedPost._id,
+    notificationMessage: `${user.name} liked your post`,
+    date: new Date(),
+  };
+  const newNotification = new ArtistNotificationModel(Notify);
+  newNotification.save();
   if (updatedPost) {
-    return res.status(200).json({ success: "ok" });
+    return res
+      .status(200)
+      .json({ success: "liked post successfully", updatedPost });
   }
   return res.status(200).json({ error: "failed" });
 });
@@ -247,6 +262,7 @@ exports.unLikePost = catchAsync(async (req, res) => {
     { $pull: { likes: req.userId } },
     { new: true }
   );
+
   if (updatedPost) {
     return res.status(200).json({ success: "ok" });
   }
@@ -258,11 +274,23 @@ exports.comment = catchAsync(async (req, res) => {
     text: req.body.text,
     postedBy: req.userId,
   };
+  const user = await User.findById(req.userId);
   const updatedPost = await Post.findByIdAndUpdate(
     req.body.postId,
     { $push: { comments: newComment } },
     { new: true }
   ).populate("postedBy");
+  // to send notification to artist
+  const Notify = {
+    receiverId: updatedPost.postedBy._id,
+    senderId: req.userId,
+    relatedPostId:updatedPost._id,
+    notificationMessage: `${user.name} commented '${newComment.text}' to your post`,
+    date: new Date(),
+  };
+  const newNotification = new ArtistNotificationModel(Notify);
+  newNotification.save();
+
   if (updatedPost) {
     return res.status(200).json({ success: "ok" });
   }
@@ -276,11 +304,23 @@ exports.followArtist = catchAsync(async (req, res) => {
     { $push: { followers: req.userId } },
     { new: true }
   );
+
   const updatedUser = await User.findByIdAndUpdate(
     req.userId,
     { $push: { followings: artistId } },
     { new: true }
   );
+
+  // to send notification to artist
+  const Notify = {
+    receiverId: artistId,
+    senderId: req.userId,
+    notificationMessage: `${updatedUser.name} started following you`,
+    date: new Date(),
+  };
+  const newNotification = new ArtistNotificationModel(Notify);
+  newNotification.save();
+
   if (updatedArtist && updatedUser) {
     return res.status(200).json({ success: "ok", updatedUser, updatedArtist });
   }
@@ -299,6 +339,17 @@ exports.unFollowArtist = catchAsync(async (req, res) => {
     { $pull: { followings: artistId } },
     { new: true }
   );
+
+  // to send notification to artist
+  const Notify = { 
+    receiverId: artistId,
+    senderId: req.userId,
+    notificationMessage: `${updatedUser.name} has stopped following you`,
+    date: new Date(),
+  };
+  const newNotification = new ArtistNotificationModel(Notify);
+  newNotification.save();
+
   if (updatedArtist && updatedUser) {
     return res.status(200).json({ success: "ok", updatedUser, updatedArtist });
   }
@@ -360,22 +411,70 @@ exports.getComments = catchAsync(async (req, res) => {
   }
 });
 
-
-exports.getArtistFollowers = catchAsync(async(req,res)=>{
-  const artist = await Artist.findById(req.body.artistId).populate('followers')
-  const followers = artist.followers
-  if(followers.length){
-    return res.status(200).json({success:'ok',followers})
+exports.getArtistFollowers = catchAsync(async (req, res) => {
+  const artist = await Artist.findById(req.body.artistId).populate("followers");
+  const followers = artist.followers;
+  if (followers.length) {
+    return res.status(200).json({ success: "ok", followers });
   }
-  return res.status(200).json({error:'No followers found'})
-})
+  return res.status(200).json({ error: "No followers found" });
+});
 
-exports.getUserFollowings = catchAsync(async(req,res)=>{
-  const user = await User.findById(req.userId).populate('followings')
-  const followings = user.followings
-  if(followings.length){
-    return res.status(200).json({success:'ok',followings})
+exports.getUserFollowings = catchAsync(async (req, res) => {
+  const user = await User.findById(req.userId).populate("followings");
+  const followings = user.followings;
+  if (followings.length) {
+    return res.status(200).json({ success: "ok", followings });
   }
-  return res.status(200).json({error:'No followings found'})
-})
+  return res.status(200).json({ error: "No followings found" });
+});
 
+//notifications
+
+exports.getUserNotifications = catchAsync(async (req, res) => {
+  const Id = req.userId;
+  await Notification.updateMany(
+    { receiverId: Id, seen: false },
+    { $set: { seen: true } }
+  );
+  const notifications = await Notification.find({ receiverId: Id })
+    .sort({
+      date: -1,
+    })
+    .populate("relatedPostId");
+  return res.status(200).json({ notifications, success: true });
+});
+
+exports.getNotificationCount = catchAsync(async (req, res) => {
+  const userId = req.userId;
+  const count = await Notification.countDocuments({
+    receiverId: userId,
+    seen: false,
+  });
+  return res.status(200).json({ success: true, count });
+});
+
+exports.deleteNotification = catchAsync(async (req, res) => {
+  const id = req.body?.notificationId;
+  const deletedNotification = await Notification.findOneAndDelete({ _id: id });
+  if (deletedNotification) {
+    return res
+      .status(200)
+      .json({ success: "deleted notification successfully" });
+  }
+  return res.json({ error: "deleting notification failed" });
+});
+
+exports.clearAllNotification = catchAsync(async (req, res) => {
+  const id = req.userId;
+  const clearNotifications = await Notification.deleteMany({
+    receiverId: id,
+    seen: true,
+  });
+  if (clearNotifications) {
+    return res
+      .status(200)
+      .json({ success: "All notifications cleared" });
+  }
+  return res.json({ error: "deleting notification failed" });
+});

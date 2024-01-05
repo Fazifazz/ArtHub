@@ -11,21 +11,70 @@ import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutArtist } from "../redux/ArtistAuthSlice";
+import socket from "./SocketIo";
+import toast from "react-hot-toast";
+import { ArtistRequest } from "../Helper/instance";
+import { apiEndPoints } from "../util/api";
 
 const ArtistNavbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [activeItem, setActiveItem] = useState("Home");
+  const [Ntcount, setNtCount] = useState(0);
   const location = useLocation();
 
   const { artist } = useSelector((state) => state.ArtistAuth);
+
+  useEffect(() => {
+    // Handle the notification event
+    socket.on("artistNotification", (notification) => {
+      toast.success(notification.message, { duration: 5000 });
+    });
+
+    return () => {
+      socket.off("artistNotification");
+    };
+  }, []);
+
+  useEffect(() => {
+    ArtistRequest({
+      url: apiEndPoints.getArtistNotificationCount,
+      method: "get",
+    })
+      .then((res) => {
+        if (res.data?.success) {
+          setNtCount(res.data?.count);
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, [Ntcount]);
+
+  let adjustedNtcount = Ntcount;
+
+  if (Ntcount > 10) {
+    if (Ntcount > 1000) {
+      adjustedNtcount = "999+";
+    } else if (Ntcount > 100) {
+      adjustedNtcount = "99+";
+    } else if (Ntcount > 50) {
+      adjustedNtcount = "50+";
+    } else if (Ntcount > 20) {
+      adjustedNtcount = "20+";
+    } else if (Ntcount > 10) {
+      adjustedNtcount = "10+";
+    } else {
+      adjustedNtcount = Ntcount;
+    }
+  }
 
   useEffect(() => {
     if (location.state) {
       const { data } = location.state;
       setActiveItem(data);
     }
-  });
+  }, [location.state]);
 
   const artistData = {
     name: artist.name,
@@ -46,7 +95,6 @@ const ArtistNavbar = () => {
   };
   const userNavigation = [
     { name: "Your Profile", navigation: ServerVariables.artistProfile },
-    { name: "Settings", navigation: "#" },
     { name: "Logout", navigation: "#" },
   ];
 
@@ -94,7 +142,7 @@ const ArtistNavbar = () => {
                   <button
                     type="button"
                     className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    onClick={()=>navigate(ServerVariables.artistChatPage)}
+                    onClick={() => navigate(ServerVariables.artistChatPage)}
                   >
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">View Chats</span>
@@ -106,11 +154,23 @@ const ArtistNavbar = () => {
                   <button
                     type="button"
                     className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    onClick={()=>navigate(ServerVariables.artistNotifications)}
+                    onClick={() =>
+                      navigate(ServerVariables.artistNotifications)
+                    }
                   >
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" aria-hidden="true" />
+                    <div className="relative inline-block">
+                      <BellIcon className="h-6 w-6" aria-hidden="true" />
+
+                      {Ntcount > 0 && (
+                        <>
+                          <span className="absolute top-0  bg-red-500 text-white rounded-full px-1  text-xs">
+                            {adjustedNtcount}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </button>
 
                   {/* Profile dropdown */}
@@ -213,25 +273,35 @@ const ArtistNavbar = () => {
                   </div>
                 </div>
                 <button
-                    type="button"
-                    className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    onClick={()=>navigate(ServerVariables.artistChatPage)}
-                  >
-                    <span className="absolute -inset-1.5" />
-                    <span className="sr-only">View Chats</span>
-                    <ChatBubbleLeftRightIcon
-                      className="h-6 w-6"
-                      aria-hidden="true"
-                    />
-                  </button>
-                <button
                   type="button"
                   className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                  onClick={()=>navigate(ServerVariables.artistNotifications)}
+                  onClick={() => navigate(ServerVariables.artistChatPage)}
+                >
+                  <span className="absolute -inset-1.5" />
+                  <span className="sr-only">View Chats</span>
+                  <ChatBubbleLeftRightIcon
+                    className="h-6 w-6"
+                    aria-hidden="true"
+                  />
+                </button>
+                <button
+                  type="button"
+                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  onClick={() => navigate(ServerVariables.artistNotifications)}
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  <div className="relative inline-block">
+                    <BellIcon className="h-6 w-6" aria-hidden="true" />
+
+                    {Ntcount > 0 && (
+                      <>
+                        <span className="absolute top-0  bg-red-500 text-white rounded-full px-1  text-xs">
+                          {adjustedNtcount}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </button>
               </div>
               <div className="mt-3 space-y-1 px-2">

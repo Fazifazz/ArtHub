@@ -11,6 +11,7 @@ import { updateArtist } from "../redux/ArtistAuthSlice";
 import toast from "react-hot-toast";
 import { ServerVariables } from "../util/ServerVariables";
 import AddCommentModal from "./AddCommentModal";
+import socket from "./SocketIo";
 
 const PostCard = () => {
   const dispatch = useDispatch();
@@ -71,6 +72,7 @@ const PostCard = () => {
     }).then((res) => {
       if (res.data?.success) {
         getAllPosts();
+        socket.emit('allNotifications',res.data.success,res.data.updatedPost.postedBy)
       }
     });
   };

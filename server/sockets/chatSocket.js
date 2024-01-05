@@ -1,5 +1,7 @@
-const socketIo = require("socket.io"); // Require the Socket.io module
-
+const socketIo = require("socket.io");
+const User = require("../models/user/userModel");
+const Artist = require("../models/artist/artistModel");
+// Require the Socket.io module
 function intializeSocket(server) {
   const io = socketIo(server, {
     pingTimeout: 60000,
@@ -19,17 +21,34 @@ function intializeSocket(server) {
       socket.join(room);
     });
 
-    socket.on("chatMessage", (message) => {
+    socket.on("chatMessage", async (message) => {
       if (message.userId === message.senderId) {
         socket.in(message.artistId).emit("message received", message);
+        const user = await User.findById(message.userId);
+        // Emit a notification event to the artist
+        io.to(message.artistId).emit("artistNotification", {
+          message: `New message from ${user.name}`,
+        });
       } else {
         socket.in(message.userId).emit("message received", message);
+        const artist = await Artist.findById(message.artistId);
+        // Emit a notification event to the user
+        io.to(message.userId).emit("userNotification", {
+          message: `New message from ${artist.name}`,
+        });
       }
     });
+
+    socket.on('allNotifications', async (notification, artistId) => {
+      io.to(artistId).emit('artistNotification', {
+        message: notification
+      });
+    });
+    
 
     socket.on("disconnect", () => {
       // console.log('A user disconnected');
     });
   });
 }
-module.exports = intializeSocket;
+module.exports = { intializeSocket };

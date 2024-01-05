@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import BannerCarousel from "./middlewares/BannerCourosel";
+import BannerCarousel from "./BannerCourosel";
 import Navbar from "./Navbar";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../redux/AlertSlice";

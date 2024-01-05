@@ -56,6 +56,7 @@ import ErrorPage from "../pages/404ErrorPage";
 import ChatWithArtist from "../pages/User/Chat";
 import ArtistChatPage from "../pages/Artist/ArtistChatPage";
 import ArtistNotification from "../pages/Artist/ArtistNotification";
+import UserNotification from "../pages/User/UserNotifications";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -125,6 +126,7 @@ function AppRoutes() {
           />
           <Route path={ServerVariables.about} element={<AboutPage />} />
           <Route path={ServerVariables.chatWithArtist} element={<ChatWithArtist />} />
+          <Route path={ServerVariables.userNotifications} element={<UserNotification />} />
         </Route>
 
         {/*artist routes */}

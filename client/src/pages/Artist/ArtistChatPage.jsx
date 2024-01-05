@@ -18,9 +18,8 @@ const ArtistChatPage = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chatPartner, setChatPartner] = useState(null); // Updated to null
-  const [msg, setMsg] = useState([]);
   const [roomId, setRoomid] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -67,13 +66,18 @@ const ArtistChatPage = () => {
       });
   };
 
+  const updateChatHistory = (message) => {
+    setChatHistory((prevHistory) => [...(prevHistory || []), message]);
+  };
+
   useEffect(() => {
     socket.on("message received", (message) => {
-      setMsg(message);
-      setChatHistory([...chatHistory, message]);
+      if (message.userId === selectedUserId) updateChatHistory(message);
     });
-  }, [chatHistory]);
-
+    return () => {
+      socket.off("message received");
+    };
+  }, [selectedUserId]);
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
   };
@@ -130,9 +134,8 @@ const ArtistChatPage = () => {
   };
 
   const handleUserClick = (userId) => {
-    const selectedUser = users.find((user) => user.userId === userId);
     fetchChatMessages(userId);
-    setSelectedUser(selectedUser);
+    setSelectedUserId(userId);
     // Focus on the input field when an artist is selected
     inputRef.current && inputRef.current.focus();
   };
@@ -205,9 +208,7 @@ const ArtistChatPage = () => {
                   whileHover={{ scale: 1.05 }}
                   key={user._id}
                   className={`flex items-center mb-4 cursor-pointer hover:bg-green-100 p-2 rounded-md ${
-                    selectedUser && selectedUser.userId === user.userId
-                      ? "bg-green-100" 
-                      : ""
+                    selectedUserId === user.userId ? "bg-green-100" : ""
                   }`}
                   onClick={() => handleUserClick(user.userId)}
                 >
@@ -220,9 +221,9 @@ const ArtistChatPage = () => {
                   </div>
                   <div className="flex-1">
                     <h2 className="text-lg font-semibold">{user.userName}</h2>
-                    <p className="text-gray-600">
+                    {/* <p className="text-gray-600">
                       {user.hasChat ? "last message" : "No messages yet"}
-                    </p>
+                    </p> */}
                   </div>
                 </motion.div>
               ))
@@ -260,7 +261,10 @@ const ArtistChatPage = () => {
             )}
           </header>
           {/* Chat Messages */}
-          <div className="h-screen overflow-y-auto p-4 pb-36 bg-gray-200" ref={chatContainerRef}>
+          <div
+            className="h-screen overflow-y-auto p-4 pb-36 bg-gray-200"
+            ref={chatContainerRef}
+          >
             {chatHistory?.map((message) => {
               const isArtistChat = message.senderId === message.artistId;
               const timeAgo = formatDistanceToNow(new Date(message.time), {

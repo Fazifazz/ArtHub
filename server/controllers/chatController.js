@@ -106,7 +106,7 @@ exports.artistGetRoom = catchAsync(async (req, res) => {
     userId: userId,
     artistId: artistId,
   });
-  const room_id = chatConnectionData._id;
+  const room_id = chatConnectionData?._id
 
   const Messages = await ChatMessages.find({ room_id: room_id }).sort({
     time: 1,
@@ -153,19 +153,4 @@ exports.artistNewMessage = async (req, res) => {
   }
 };
 
-// // to check notifications
-// const checkNotification = async (req, res) => {
 
-//     try {
-
-//         const Id = req.body.developerId
-
-//         const seenUpdate = await notificationModel.updateMany({ developerId: Id, seen: false }, { $set: { seen: true } })
-//         const Data = await notificationModel.find({ developerId: Id, seen: true }).sort({ date: -1 });
-//         res.status(200).send({ data: Data, success: true })
-//     }
-
-//     catch (error) {
-//         console.log(error, "At checkNotification ")
-//     }
-// }

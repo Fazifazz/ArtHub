@@ -16,8 +16,7 @@ const ChatWithArtist = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chatPartner, setChatPartner] = useState(null); // Updated to null
-  const [selectedArtist, setSelectedArtist] = useState(null);
-  const [msg, setMsg] = useState([]);
+  const [selectedArtistId, setSelectedArtistId] = useState(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -63,12 +62,18 @@ const ChatWithArtist = () => {
       });
   };
 
+  const updateChatHistory = (message) => {
+    setChatHistory((prevHistory) => [...(prevHistory || []), message]);
+  };
+
   useEffect(() => {
     socket.on("message received", (message) => {
-      setMsg(message);
-      setChatHistory([...chatHistory, message]);
+      if (message.artistId === selectedArtistId) updateChatHistory(message);
     });
-  }, [chatHistory]);
+    return () => {
+      socket.off("message received");
+    };
+  }, [selectedArtistId]);
 
   const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
@@ -121,14 +126,11 @@ const ChatWithArtist = () => {
     }
   };
 
-  const clearChatHistory = () => {
-    setChatHistory([]);
-  };
+
 
   const handleArtistClick = (artistId) => {
-    const selectedArtist = artists.find((artist) => artist._id === artistId);
     fetchChatMessages(artistId);
-    setSelectedArtist(selectedArtist);
+    setSelectedArtistId(artistId);
     // Focus on the input field when an artist is selected
     inputRef.current && inputRef.current.focus();
   };
@@ -201,8 +203,8 @@ const ChatWithArtist = () => {
                   whileHover={{ scale: 1.05 }}
                   key={artist._id}
                   className={`flex items-center mb-4 cursor-pointer hover:bg-green-100 p-2 rounded-md ${
-                    selectedArtist && selectedArtist._id === artist._id
-                      ? "bg-green-100" 
+                    selectedArtistId === artist._id
+                      ? "bg-green-100"
                       : ""
                   }`}
                   onClick={() => handleArtistClick(artist._id)}
@@ -216,9 +218,9 @@ const ChatWithArtist = () => {
                   </div>
                   <div className="flex-1">
                     <h2 className="text-lg font-semibold">{artist.name}</h2>
-                    <p className="text-gray-600">
+                    {/* <p className="text-gray-600">
                       {artist.hasChat ? "last message" : "No messages yet"}
-                    </p>
+                    </p> */}
                   </div>
                 </motion.div>
               ))
@@ -256,7 +258,10 @@ const ChatWithArtist = () => {
             )}
           </header>
           {/* Chat Messages */}
-          <div className="h-screen overflow-y-auto p-4 pb-36 bg-gray-200" ref={chatContainerRef}>
+          <div
+            className="h-screen overflow-y-auto p-4 pb-36 bg-gray-200"
+            ref={chatContainerRef}
+          >
             {chatHistory?.map((message) => {
               const isUserChat = message.senderId === message.userId;
               const timeAgo = formatDistanceToNow(new Date(message.time), {
