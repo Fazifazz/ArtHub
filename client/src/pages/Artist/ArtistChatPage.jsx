@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import socket from "../../components/SocketIo";
 import ArtistNavbar from "../../components/ArtistNav";
+import { VideoCameraIcon } from "@heroicons/react/24/outline";
 
 const ArtistChatPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -70,6 +71,8 @@ const ArtistChatPage = () => {
     setChatHistory((prevHistory) => [...(prevHistory || []), message]);
   };
 
+
+
   useEffect(() => {
     socket.on("message received", (message) => {
       if (message.userId === selectedUserId) updateChatHistory(message);
@@ -127,10 +130,6 @@ const ArtistChatPage = () => {
           console.log(error);
         });
     }
-  };
-
-  const clearChatHistory = () => {
-    setChatHistory([]);
   };
 
   const handleUserClick = (userId) => {
@@ -240,7 +239,7 @@ const ArtistChatPage = () => {
         {/* Main Chat Area */}
         <div className="flex-1">
           {/* Chat Header */}
-          <header className="bg-green-100 p-4 text-gray-700 flex items-center">
+          <header className="bg-green-100 p-4 text-gray-700 flex items-center justify-between">
             {chatPartner ? (
               <>
                 <img
@@ -251,6 +250,12 @@ const ArtistChatPage = () => {
                 <h1 className="uppercase text-2xl font-semibold ml-11">
                   {chatPartner?.userName}
                 </h1>
+                <VideoCameraIcon
+                  height={40}
+                  onClick={() =>
+                    navigate(`/artistVideoCall/${chatPartner.artistId}`)
+                  }
+                />
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center">
@@ -310,6 +315,8 @@ const ArtistChatPage = () => {
               </div>
             ) : null}
           </div>
+
+
 
           {/* Chat Input */}
           {chatPartner ? (

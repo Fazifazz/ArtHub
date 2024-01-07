@@ -8,6 +8,8 @@ import { apiEndPoints } from "../../util/api";
 import toast from "react-hot-toast";
 import { formatDistanceToNow } from "date-fns";
 import socket from "../../components/SocketIo";
+import { VideoCameraIcon } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 const ChatWithArtist = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,6 +19,7 @@ const ChatWithArtist = () => {
   const [newMessage, setNewMessage] = useState("");
   const [chatPartner, setChatPartner] = useState(null); // Updated to null
   const [selectedArtistId, setSelectedArtistId] = useState(null);
+  const navigate = useNavigate()
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -237,7 +240,7 @@ const ChatWithArtist = () => {
         {/* Main Chat Area */}
         <div className="flex-1">
           {/* Chat Header */}
-          <header className="bg-green-100 p-4 text-gray-700 flex items-center">
+          <header className="bg-green-100 p-4 text-gray-700 flex items-center justify-between">
             {chatPartner ? (
               <>
                 <img
@@ -248,6 +251,7 @@ const ChatWithArtist = () => {
                 <h1 className="uppercase text-2xl font-semibold ml-11">
                   {chatPartner?.artistName}
                 </h1>
+                <VideoCameraIcon height={40} onClick={()=>navigate(`/userVideoCall/${chatPartner.userId}/${chatPartner.artistId}`)} />
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center">

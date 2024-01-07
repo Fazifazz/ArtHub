@@ -20,6 +20,8 @@ export const ServerVariables = {
     viewArtistDetails:'/viewArtistDetails',
     chatWithArtist:'/chatWithArtist',
     userNotifications:'/userNotifications',
+    userVideoCall:'/userVideoCall/:roomId/:artistId',
+
     
 
     //ArtistRoutes
@@ -37,6 +39,7 @@ export const ServerVariables = {
     editArtistProfile:'/editArtistProfile',
     artistChatPage:'/artistChatPage',
     artistNotifications:'/artistNotifications',
+    artistVideoCall:'/artistVideoCall/:artistId',
 
 
     //Admin Routes

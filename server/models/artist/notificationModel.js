@@ -3,7 +3,7 @@ const { ObjectId } = mongoose.Schema.Types;
 const NotificationSchema = new mongoose.Schema(
   {
     receiverId: {
-      type: String,
+      type: String, 
       required: true,
     },
     senderId: {

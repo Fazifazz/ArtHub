@@ -57,6 +57,8 @@ import ChatWithArtist from "../pages/User/Chat";
 import ArtistChatPage from "../pages/Artist/ArtistChatPage";
 import ArtistNotification from "../pages/Artist/ArtistNotification";
 import UserNotification from "../pages/User/UserNotifications";
+import VideoCallRoom from "../pages/Artist/VideoCallRoom";
+import UserVideoCallRoom from "../pages/User/UserVideoRoom";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -125,8 +127,15 @@ function AppRoutes() {
             element={<ViewArtistDetails />}
           />
           <Route path={ServerVariables.about} element={<AboutPage />} />
-          <Route path={ServerVariables.chatWithArtist} element={<ChatWithArtist />} />
-          <Route path={ServerVariables.userNotifications} element={<UserNotification />} />
+          <Route
+            path={ServerVariables.chatWithArtist}
+            element={<ChatWithArtist />}
+          />
+          <Route
+            path={ServerVariables.userNotifications}
+            element={<UserNotification />}
+          />
+          <Route path={ServerVariables.userVideoCall} element={<UserVideoCallRoom />} />
         </Route>
 
         {/*artist routes */}
@@ -185,6 +194,7 @@ function AppRoutes() {
             path={ServerVariables.artistNotifications}
             element={<ArtistNotification />}
           />
+          <Route path={ServerVariables.artistVideoCall} element={<VideoCallRoom />} />
         </Route>
 
         {/* admin routes */}

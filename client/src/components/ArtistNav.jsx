@@ -11,10 +11,12 @@ import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutArtist } from "../redux/ArtistAuthSlice";
+import Modal from 'react-modal'
 import socket from "./SocketIo";
 import toast from "react-hot-toast";
 import { ArtistRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
+import CallingUi from "./CallingUi";
 
 const ArtistNavbar = () => {
   const navigate = useNavigate();
@@ -22,6 +24,9 @@ const ArtistNavbar = () => {
   const [activeItem, setActiveItem] = useState("Home");
   const [Ntcount, setNtCount] = useState(0);
   const location = useLocation();
+  const [sender,setSender] = useState({})
+  const [meetLink,setMeetLink] =  useState('')
+  const [openVideoCallModal,setOpenVideoCAllModal] = useState(false)
 
   const { artist } = useSelector((state) => state.ArtistAuth);
 
@@ -31,10 +36,38 @@ const ArtistNavbar = () => {
       toast.success(notification.message, { duration: 5000 });
     });
 
+    socket.on('videoCallInvitation',(data)=>{
+      setSender(data?.sender)
+      setMeetLink(data?.meetLink)
+      setOpenVideoCAllModal(true)
+      console.log(sender)
+      console.log(meetLink)
+    })
+
     return () => {
       socket.off("artistNotification");
+      socket.off("videoCallInvitation");
     };
   }, []);
+
+  const customStyles = {
+    content: {
+      top: "30%",
+      left: "50%",
+      right: "auto",
+      bottom: "30%",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
+
+  const closeModal = () => {
+    socket.emit("videoCallResponse", {
+      userId: sender._id,
+      accepted: false,
+    });
+    setOpenVideoCAllModal(false);
+  };
 
   useEffect(() => {
     ArtistRequest({
@@ -322,9 +355,24 @@ const ArtistNavbar = () => {
               </div>
             </div>
           </Disclosure.Panel>
+          <Modal
+        isOpen={openVideoCallModal}
+        onRequestClose={closeModal}
+        ariaHideApp={false}
+        style={customStyles}
+      >
+        {/* Use the CommentModal component */}
+        <CallingUi
+          isOpen={openVideoCallModal}
+          closeModal={closeModal}
+          sender={sender}
+          link={meetLink}
+        />
+      </Modal>
         </>
       )}
     </Disclosure>
+    
   );
 };
 

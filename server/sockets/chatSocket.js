@@ -39,12 +39,22 @@ function intializeSocket(server) {
       }
     });
 
-    socket.on('allNotifications', async (notification, artistId) => {
-      io.to(artistId).emit('artistNotification', {
-        message: notification
+    socket.on("videoCallInvitation", (invitation) => {
+      // Emit the video call invitation event to the recipient
+      io.to(invitation.artistId).emit("videoCallInvitation", {
+        artistId: invitation.artistId,
+        sender:invitation.sender,
+        meetLink:invitation.link  
+      }); 
+    });
+
+    socket.on("videoCallResponse", (data) => {
+      console.log(data)
+      io.to(data.userId).emit("videoCallResponse", {
+        userId: data.userId,
+        accepted: data.accepted,
       });
     });
-    
 
     socket.on("disconnect", () => {
       // console.log('A user disconnected');

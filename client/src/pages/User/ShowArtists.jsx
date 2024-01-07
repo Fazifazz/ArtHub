@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
-import { ArtistRequest, userRequest } from "../../Helper/instance";
+import { userRequest } from "../../Helper/instance";
+import ReactPaginate from "react-paginate";
 import { apiEndPoints } from "../../util/api";
 import toast from "react-hot-toast";
 import Navbar from "../../components/Navbar";
@@ -89,21 +90,24 @@ const ArtistsList = ({ artists, onFollow, onUnFollow }) => {
 
 const showArtists = () => {
   const [artists, setArtists] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
     getArtists();
-  }, []);
+  }, [currentPage]);
 
   const getArtists = async () => {
     dispatch(showLoading());
-    ArtistRequest({
-      url: apiEndPoints.getAllArtists,
+    userRequest({
+      url: `${apiEndPoints.getAllArtists}?page=${currentPage + 1}`,
       method: "get",
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data.success) {
+        setPageCount(res?.data?.totalPages);
         setArtists(res.data.artists);
       } else {
         toast.error(res.data.error);
@@ -158,6 +162,10 @@ const showArtists = () => {
       });
   };
 
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage.selected); // Update current page when page is changed
+  };
+
   return (
     <>
       <Navbar />
@@ -178,6 +186,27 @@ const showArtists = () => {
             artists={artists}
             onFollow={handleFollow}
             onUnFollow={handleUnFollow}
+          />
+        )}
+        {artists.length > 0 && (
+          <ReactPaginate
+            previousLabel={<i className="fas fa-chevron-left text-black"></i>}
+            nextLabel={<i className="fas fa-chevron-right text-black"></i>}
+            breakLabel={<span className="hidden sm:inline">...</span>}
+            pageCount={pageCount}
+            marginPagesDisplayed={3}
+            pageRangeDisplayed={2}
+            onPageChange={handlePageChange}
+            containerClassName="flex justify-center mt-4"
+            pageClassName="mx-2"
+            pageLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500 text-black"
+            previousClassName="mr-2"
+            previousLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+            nextClassName="ml-2"
+            nextLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+            breakClassName="mx-2"
+            breakLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+            activeClassName="text-blue-500 font-bold bg-blue-200"
           />
         )}
       </div>

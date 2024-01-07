@@ -357,17 +357,35 @@ exports.unFollowArtist = catchAsync(async (req, res) => {
 });
 
 exports.getAllArtists = catchAsync(async (req, res) => {
-  const artists = await Artist.find({
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 2; // Adjust the page size as needed
+  const query = {
     isApproved: true,
     isBlocked: false,
     isVerified: true,
-    // isSubscribed:true
-  });
+    // isSubscribed: true
+  };
+
+  const totalArtists = await Artist.countDocuments(query);
+  const totalPages = Math.ceil(totalArtists / pageSize);
+
+  const artists = await Artist.find(query)
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
+    .sort({ createdAt: -1 });
+
   if (artists) {
-    return res.status(200).json({ success: "ok", artists });
+    return res.status(200).json({
+      success: "ok",
+      artists,
+      currentPage: page,
+      totalPages,
+    });
   }
-  return res.status(200).json({ error: "failed to fetching artists" });
+
+  return res.status(200).json({ error: "failed to fetch artists" });
 });
+
 
 exports.getArtistAllposts = catchAsync(async (req, res) => {
   const posts = await Post.find({ postedBy: req.body.artistId })
