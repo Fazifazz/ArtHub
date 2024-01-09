@@ -171,6 +171,30 @@ exports.updatePassword = catchAsync(async (req, res) => {
   return res.status(200).json({ error: "password changing failed" });
 });
 
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
+exports.getAllFollowingsPosts = catchAsync(async (req, res) => {
+  const currentUser = await User.findById(req.userId);
+  const followedArtists = currentUser.followings;
+  // Fetch posts from followed artists
+  const artistPosts = await Post.find({ postedBy: { $in: followedArtists } })
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile",
+      },
+    })
+    .populate("postedBy");
+
+  if (artistPosts) {
+    return res.status(200).json({ success: "ok", artistPosts });
+  }
+
+  return res.status(200).json({ error: "failed" });
+});
 exports.getAllPosts = catchAsync(async (req, res) => {
   const artistPosts = await Post.find({})
     .sort({ createdAt: -1 })
@@ -178,14 +202,15 @@ exports.getAllPosts = catchAsync(async (req, res) => {
       path: "comments",
       populate: {
         path: "postedBy",
-        select: "name profile", // Replace 'User' with the actual model name for the user
+        select: "name profile",
       },
     })
     .populate("postedBy");
-  // console.log(artistPosts[0].comments[0].postedBy.name)
+
   if (artistPosts) {
     return res.status(200).json({ success: "ok", artistPosts });
   }
+
   return res.status(200).json({ error: "failed" });
 });
 
@@ -241,7 +266,7 @@ exports.likePost = catchAsync(async (req, res) => {
   const Notify = {
     receiverId: updatedPost.postedBy,
     senderId: req.userId,
-    relatedPostId:updatedPost._id,
+    relatedPostId: updatedPost._id,
     notificationMessage: `${user.name} liked your post`,
     date: new Date(),
   };
@@ -284,7 +309,7 @@ exports.comment = catchAsync(async (req, res) => {
   const Notify = {
     receiverId: updatedPost.postedBy._id,
     senderId: req.userId,
-    relatedPostId:updatedPost._id,
+    relatedPostId: updatedPost._id,
     notificationMessage: `${user.name} commented '${newComment.text}' to your post`,
     date: new Date(),
   };
@@ -341,7 +366,7 @@ exports.unFollowArtist = catchAsync(async (req, res) => {
   );
 
   // to send notification to artist
-  const Notify = { 
+  const Notify = {
     receiverId: artistId,
     senderId: req.userId,
     notificationMessage: `${updatedUser.name} has stopped following you`,
@@ -385,7 +410,6 @@ exports.getAllArtists = catchAsync(async (req, res) => {
 
   return res.status(200).json({ error: "failed to fetch artists" });
 });
-
 
 exports.getArtistAllposts = catchAsync(async (req, res) => {
   const posts = await Post.find({ postedBy: req.body.artistId })
@@ -490,9 +514,7 @@ exports.clearAllNotification = catchAsync(async (req, res) => {
     seen: true,
   });
   if (clearNotifications) {
-    return res
-      .status(200)
-      .json({ success: "All notifications cleared" });
+    return res.status(200).json({ success: "All notifications cleared" });
   }
   return res.json({ error: "deleting notification failed" });
 });

@@ -32,11 +32,20 @@ const CallingUi = ({ isOpen, closeModal, sender, link }) => {
             className="relative border-2 border-solid border-slate-500 rounded-3xl w-80 "
             style={{ height: "35rem" }}
           >
-            <img
-            src={`http://localhost:5000/userProfile/${sender.profile}`}
-            className="w-full h-full object-cover rounded-3xl border-2 border-white"
-              alt=""
-            />
+            {sender.field ? (
+              <img
+                src={`http://localhost:5000/artistProfile/${sender?.profile}`}
+                className="w-full h-full object-cover rounded-3xl border-2 border-white"
+                alt=""
+              />
+            ) : (
+              <img
+                src={`http://localhost:5000/userProfile/${sender?.profile}`}
+                className="w-full h-full object-cover rounded-3xl border-2 border-white"
+                alt=""
+              />
+            )}
+
             {/* TOP ICONS */}
             <div className="text-2xl text-white flex justify-between px-4 absolute top-0 left-0 right-0 py-4 bg-transparent font-semibold">
               <svg
@@ -60,8 +69,11 @@ const CallingUi = ({ isOpen, closeModal, sender, link }) => {
           </svg> */}
             </div>
             {/* BOTTOM ICONS */}
-            <div  className="absolute py-5 bottom-6 left-0 right-0 flex justify-around">
-              <div onClick={closeModal} className="p-5 bg-red-600 text-white rounded-full ml-2 cursor-pointer hover:bg-red-600 transition-all duration-150 ease-linear">
+            <div className="absolute py-5 bottom-6 left-0 right-0 flex justify-around">
+              <div
+                onClick={closeModal}
+                className="p-5 bg-red-600 text-white rounded-full ml-2 cursor-pointer hover:bg-red-600 transition-all duration-150 ease-linear"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-8 w-8"

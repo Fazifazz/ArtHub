@@ -6,6 +6,7 @@ export const apiEndPoints = {
     postResendOtp:'/api/user/resendOtp',
     forgetVerifyEmail:'/api/user/verifyEmail',
     updatePassword:'/api/user/updatePassword',
+    getAllFollowingPosts:'/api/user/getAllFollowingPosts',
     getAllPosts:'/api/user/getAllPosts',
     likePost:'/api/user/likePost',
     unLikePost:'/api/user/unLikePost',

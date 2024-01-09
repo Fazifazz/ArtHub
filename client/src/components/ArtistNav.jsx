@@ -35,8 +35,8 @@ const ArtistNavbar = () => {
     socket.on("artistNotification", (notification) => {
       toast.success(notification.message, { duration: 5000 });
     });
-
     socket.on('videoCallInvitation',(data)=>{
+      console.log("Received video call invitation", data);
       setSender(data?.sender)
       setMeetLink(data?.meetLink)
       setOpenVideoCAllModal(true)
@@ -45,6 +45,7 @@ const ArtistNavbar = () => {
     })
 
     return () => {
+      console.log("Cleanup useEffect");
       socket.off("artistNotification");
       socket.off("videoCallInvitation");
     };

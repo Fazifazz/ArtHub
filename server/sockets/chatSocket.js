@@ -40,20 +40,35 @@ function intializeSocket(server) {
     });
 
     socket.on("videoCallInvitation", (invitation) => {
+      console.log(invitation);
       // Emit the video call invitation event to the recipient
-      io.to(invitation.artistId).emit("videoCallInvitation", {
-        artistId: invitation.artistId,
-        sender:invitation.sender,
-        meetLink:invitation.link  
-      }); 
+      if (invitation.artistId) {
+        io.to(invitation.artistId).emit("videoCallInvitation", {
+          artistId: invitation.artistId,
+          sender: invitation.sender,
+          meetLink: invitation.link,
+        });
+      } else {
+        io.to(invitation.userId).emit("videoCallInvitation", {
+          userId: invitation.userId,
+          sender: invitation.sender,
+          meetLink: invitation.link,
+        });
+      }
     });
 
     socket.on("videoCallResponse", (data) => {
-      console.log(data)
-      io.to(data.userId).emit("videoCallResponse", {
-        userId: data.userId,
-        accepted: data.accepted,
-      });
+      if (data.userId) {
+        io.to(data.userId).emit("videoCallResponse", {
+          userId: data.userId,
+          accepted: data.accepted,
+        });
+      } else {
+        io.to(data.artistId).emit("videoCallResponse", {
+          artistId: data.artistId,
+          accepted: data.accepted,
+        });
+      }
     });
 
     socket.on("disconnect", () => {

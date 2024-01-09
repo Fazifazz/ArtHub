@@ -59,6 +59,7 @@ import ArtistNotification from "../pages/Artist/ArtistNotification";
 import UserNotification from "../pages/User/UserNotifications";
 import VideoCallRoom from "../pages/Artist/VideoCallRoom";
 import UserVideoCallRoom from "../pages/User/UserVideoRoom";
+import ExplorePage from "../pages/User/ExplorePage";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -116,6 +117,7 @@ function AppRoutes() {
 
         <Route element={<IsLoggedUser />}>
           <Route path={ServerVariables.userHome} element={<UserHome />} />
+          <Route path={ServerVariables.explore} element={<ExplorePage />} />
           <Route path={ServerVariables.userProfile} element={<UserProfile />} />
           <Route
             path={ServerVariables.editUserProfile}

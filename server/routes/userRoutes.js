@@ -13,6 +13,7 @@ userRouter
   .post("/verifyLogin", userController.verifyLogin)
   .post("/verifyEmail", userController.forgetVerifyEmail)
   .post("/updatePassword", userController.updatePassword)
+  .get("/getAllFollowingPosts", userAuth, userController.getAllFollowingsPosts)
   .get("/getAllPosts", userAuth, userController.getAllPosts)
   .post(
     "/updateUserProfile",

@@ -250,12 +250,7 @@ const ArtistChatPage = () => {
                 <h1 className="uppercase text-2xl font-semibold ml-11">
                   {chatPartner?.userName}
                 </h1>
-                <VideoCameraIcon
-                  height={40}
-                  onClick={() =>
-                    navigate(`/artistVideoCall/${chatPartner.artistId}`)
-                  }
-                />
+                <VideoCameraIcon height={40} onClick={()=>navigate(`/artistVideoCall/${chatPartner.artistId}/${chatPartner.userId}`)} />
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center">

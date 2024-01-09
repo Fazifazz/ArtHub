@@ -6,7 +6,7 @@ import { userRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
-import { logoutUser, updateUser } from "../redux/AuthSlice";
+import {  updateUser } from "../redux/AuthSlice";
 import { updateArtist } from "../redux/ArtistAuthSlice";
 import toast from "react-hot-toast";
 import { ServerVariables } from "../util/ServerVariables";
@@ -44,8 +44,25 @@ const PostCard = () => {
     },
   };
   useEffect(() => {
-    getAllPosts();
-  }, []);
+    if (location.pathname === "/userHome") {
+      getAllFollowingPosts();
+    } else {
+       getAllPosts();
+    }
+  }, [location]);
+
+  const getAllFollowingPosts = async () => {
+    dispatch(showLoading());
+    userRequest({
+      url: apiEndPoints.getAllFollowingPosts,
+      method: "get",
+    }).then((res) => {
+      dispatch(hideLoading());
+      if (res.data?.success) {
+        return setArtistPosts(res.data?.artistPosts);
+      }
+    });
+  };
 
   const getAllPosts = async () => {
     dispatch(showLoading());
@@ -57,10 +74,6 @@ const PostCard = () => {
       if (res.data?.success) {
         return setArtistPosts(res.data?.artistPosts);
       }
-      if (res.data.error === "blocked") {
-        toast.error("You are blocked by the Admin!");
-        return dispatch(logoutUser());
-      }
     });
   };
 
@@ -71,8 +84,16 @@ const PostCard = () => {
       data: { id: postId },
     }).then((res) => {
       if (res.data?.success) {
-        getAllPosts();
-        socket.emit('allNotifications',res.data.success,res.data.updatedPost.postedBy)
+        if (location.pathname === "/userHome") {
+          getAllFollowingPosts();
+        } else {
+           getAllPosts();
+        }
+        socket.emit(
+          "allNotifications",
+          res.data.success,
+          res.data.updatedPost.postedBy
+        );
       }
     });
   };
@@ -83,7 +104,11 @@ const PostCard = () => {
       data: { id: postId },
     }).then((res) => {
       if (res.data?.success) {
-        getAllPosts();
+        if (location.pathname === "/userHome") {
+          getAllFollowingPosts();
+        } else {
+           getAllPosts();
+        }
       }
     });
   };
@@ -97,7 +122,11 @@ const PostCard = () => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data.success) {
-        getAllPosts();
+        if (location.pathname === "/userHome") {
+          getAllFollowingPosts();
+        } else {
+           getAllPosts();
+        }
       }
     });
   };
@@ -114,7 +143,11 @@ const PostCard = () => {
         if (res.data?.success) {
           dispatch(updateUser(res.data.updatedUser));
           dispatch(updateArtist(res.data.updatedArtist));
-          getAllPosts();
+          if (location.pathname === "/userHome") {
+            getAllFollowingPosts();
+          } else {
+             getAllPosts();
+          }
           return;
         }
         return toast.error(res.data.error);
@@ -137,7 +170,11 @@ const PostCard = () => {
         if (res.data?.success) {
           dispatch(updateUser(res.data.updatedUser));
           dispatch(updateArtist(res.data.updatedArtist));
-          getAllPosts();
+          if (location.pathname === "/userHome") {
+            getAllFollowingPosts();
+          } else {
+             getAllPosts();
+          }
           return;
         }
         return toast.error(res.data.error);

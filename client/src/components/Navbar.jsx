@@ -5,6 +5,7 @@ import {
   ChatBubbleLeftRightIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import Modal from 'react-modal'
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
@@ -14,6 +15,7 @@ import { userRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import toast from "react-hot-toast";
 import socket from "./SocketIo";
+import CallingUi from "./CallingUi";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -22,17 +24,44 @@ const Navbar = () => {
   const location = useLocation();
   const [Ntcount, setNtCount] = useState(0);
   const { user } = useSelector((state) => state.Auth);
+  const [sender, setSender] = useState({});
+  const [meetLink, setMeetLink] = useState("");
+  const [openVideoCallModal, setOpenVideoCAllModal] = useState(false);
 
   useEffect(() => {
     // Handle the notification event
     socket.on("userNotification", (notification) => {
       toast.success(notification.message, { duration: 5000 });
     });
+    socket.on("videoCallInvitation", (data) => {
+      setSender(data?.sender);
+      setMeetLink(data?.meetLink);
+      setOpenVideoCAllModal(true);
+    });
 
     return () => {
       socket.off("userNotification");
+      socket.off("videoCallInvitation");
     };
   }, []);
+
+  const closeModal = () => {
+    socket.emit("videoCallResponse", {
+      userId: sender._id,
+      accepted: false,
+    });
+    setOpenVideoCAllModal(false);
+  };
+  const customStyles = {
+    content: {
+      top: "30%",
+      left: "50%",
+      right: "auto",
+      bottom: "30%",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
 
   useEffect(() => {
     userRequest({
@@ -88,7 +117,7 @@ const Navbar = () => {
   const navigation = [
     { name: "Home", navigation: ServerVariables.userHome },
     { name: "About", navigation: ServerVariables.about },
-    { name: "Contact", navigation: "#" },
+    { name: "Explore", navigation: ServerVariables.explore },
     { name: "Artists", navigation: ServerVariables.showArtists },
     { name: "Chats", navigation: ServerVariables.chatWithArtist },
   ];
@@ -98,7 +127,6 @@ const Navbar = () => {
   };
   const userNavigation = [
     { name: "Your Profile", navigation: ServerVariables.userProfile },
-    { name: "Settings", navigation: "#" },
     { name: "Logout", navigation: "#" },
   ];
 
@@ -328,6 +356,20 @@ const Navbar = () => {
               </div>
             </div>
           </Disclosure.Panel>
+          <Modal
+            isOpen={openVideoCallModal}
+            onRequestClose={closeModal}
+            ariaHideApp={false}
+            style={customStyles}
+          >
+            {/* Use the CommentModal component */}
+            <CallingUi
+              isOpen={openVideoCallModal}
+              closeModal={closeModal}
+              sender={sender}
+              link={meetLink}
+            />
+          </Modal>
         </>
       )}
     </Disclosure>

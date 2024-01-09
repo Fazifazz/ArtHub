@@ -9,6 +9,7 @@ export const ServerVariables = {
     Register: "/register",
     verifyOtp:'/verifyOtp',
     userHome:'/userHome',
+    explore:'/explore',
     verifyEmail:'/verifyEmail',
     forgetOtp:'/forgetOtp',
     changePassword:'/changePassword',
@@ -39,7 +40,7 @@ export const ServerVariables = {
     editArtistProfile:'/editArtistProfile',
     artistChatPage:'/artistChatPage',
     artistNotifications:'/artistNotifications',
-    artistVideoCall:'/artistVideoCall/:artistId',
+    artistVideoCall:'/artistVideoCall/:roomId/:userId',
 
 
     //Admin Routes
