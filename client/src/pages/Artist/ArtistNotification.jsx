@@ -7,10 +7,13 @@ import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { ServerVariables } from "../../util/ServerVariables";
 
 const ArtistNotification = () => {
   const [notifications, setNotifications] = useState([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate()
 
   // to check notification
   const getAllNotifications = async () => {
@@ -117,7 +120,7 @@ const ArtistNotification = () => {
                     <p className="text-gray-800 font-bold">
                       {item?.notificationMessage}
                     </p>
-                    {item?.relatedPostId?<img src={`http://localhost:5000/artistPosts/${item?.relatedPostId?.image}`}
+                    {item?.relatedPostId?<img onClick={()=>navigate(ServerVariables.artistPosts)} src={`http://localhost:5000/artistPosts/${item?.relatedPostId?.image}`}
                     className="w-10 h-10"
                     alt={item?.relatedPostId?.name}
                     />:''}

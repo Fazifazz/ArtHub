@@ -10,18 +10,6 @@ const ChatConnectionSchema = new mongoose.Schema(
       type: ObjectId,
       ref: "artist",
     },
-    artistImage: {
-      type: String,
-    },
-    artistName: {
-      type: String,
-    },
-    userName: {
-      type: String,
-    },
-    userImage: {
-      type: String,
-    },
     latestMsg: {
       type: ObjectId,
       ref:'chatMsg'

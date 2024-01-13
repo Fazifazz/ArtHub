@@ -111,7 +111,6 @@ const Artists = () => {
           setArtists(res.data.artists);
           setFilterData(res.data.artists);
           setPageCount(res.data.totalPages);
-          console.log(res.data.totalPages);
         } else {
           toast.error(res.data.error);
         }

@@ -72,8 +72,8 @@ function intializeSocket(server) {
     });
 
     socket.on("disconnect", () => {
-      // console.log('A user disconnected');
+      // console.log("socket disconnected");
     });
   });
 }
-module.exports = { intializeSocket };
+module.exports = { intializeSocket }; 

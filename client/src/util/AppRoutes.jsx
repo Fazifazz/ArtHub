@@ -35,7 +35,6 @@ import ArtistForgetOtp from "../pages/Artist/ArtistForgetOtp";
 import ArtistVerifyEmail from "../pages/Artist/ArtistVerifyEmail";
 import ArtistChangePassword from "../pages/Artist/ArtistChangePassword";
 import SubscriptionPlans from "../pages/Artist/PlansAvailable";
-import SuccessPage from "../pages/Artist/SuccessPage";
 import PostPage from "../pages/Artist/ArtistPosts";
 import AddPost from "../pages/Artist/AddPost";
 import ArtistProfile from "../pages/Artist/ArtistProfile";
@@ -60,6 +59,8 @@ import UserNotification from "../pages/User/UserNotifications";
 import VideoCallRoom from "../pages/Artist/VideoCallRoom";
 import UserVideoCallRoom from "../pages/User/UserVideoRoom";
 import ExplorePage from "../pages/User/ExplorePage";
+import MySubscriptions from "../pages/Artist/MySubscriptions";
+import ArtistAboutPage from "../pages/Artist/ArtistAbout";
 
 function AppRoutes() {
   const { loading } = useSelector((state) => state.alerts);
@@ -197,6 +198,8 @@ function AppRoutes() {
             element={<ArtistNotification />}
           />
           <Route path={ServerVariables.artistVideoCall} element={<VideoCallRoom />} />
+          <Route path={ServerVariables.mySubscriptions} element={<MySubscriptions />} />
+          <Route path={ServerVariables.aboutPage} element={<ArtistAboutPage />} />
         </Route>
 
         {/* admin routes */}

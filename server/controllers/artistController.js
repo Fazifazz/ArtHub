@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken"),
   randomString = require("randomstring"),
   otpTemplate = require("../util/otpTemplate"),
   Artist = require("../models/artist/artistModel"),
+  Banner = require("../models/admin/BannerModel"),
   PlansHistory = require("../models/admin/subscriptionHistoryModel"),
   Plan = require("../models/admin/planModel"),
   Category = require("../models/admin/categoryModel"),
@@ -13,6 +14,8 @@ const jwt = require("jsonwebtoken"),
   crypto = require("crypto"),
   Mail = require("../util/otpMailer"),
   paypal = require("paypal-rest-sdk");
+const chatModel = require("../models/user/chatModel");
+const chatMessage = require("../models/user/chatMessage");
 
 paypal.configure({
   mode: "sandbox",
@@ -153,7 +156,7 @@ exports.verifyLogin = catchAsync(async (req, res) => {
     return res.json({ error: "sorry,you are not verified!, sign up again" });
   }
   const token = jwt.sign({ id: artist._id }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
+    expiresIn: "1d",
   });
   return res.status(200).json({ success: "Login Successfull", token, artist });
 });
@@ -291,6 +294,11 @@ exports.editArtistProfile = catchAsync(async (req, res) => {
         },
       },
       { new: true }
+    );
+    await chatModel.updateMany(
+      { artistId: req.artistId },
+      { $set: { artistImage: updatedArtist.profile } },
+      {new:true}
     );
     return res
       .status(200)
@@ -527,7 +535,8 @@ exports.getNotificationCount = catchAsync(async (req, res) => {
     receiverId: artistId,
     seen: false,
   });
-  return res.status(200).json({ success: true, count });
+  const messagesCount =  await chatMessage.find({artistId:artistId,isArtistSeen:false}).countDocuments()
+  return res.status(200).json({ success: true, count,messagesCount });
 });
 
 exports.deleteNotification = catchAsync(async (req, res) => {
@@ -553,4 +562,37 @@ exports.clearAllNotification = catchAsync(async (req, res) => {
       .json({ success: "All notifications cleared" });
   }
   return res.json({ error: "deleting notification failed" });
+});
+
+
+
+exports.getMySubscriptions = catchAsync(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 3;
+  const SubscriptionHistory = await PlansHistory.find({artist:req.artistId}).countDocuments();
+  const totalPages = Math.ceil(SubscriptionHistory / pageSize);
+
+  const histories = await PlansHistory.find({artist:req.artistId})
+    .skip((page - 1) * pageSize)
+    .limit(pageSize)
+    .sort({ createdAt: -1 })
+    .populate("plan artist");
+
+  return res.status(200).json({
+    success: "ok",
+    payments: histories,
+    currentPage: page,
+    totalPages, 
+  });
+});
+
+
+exports.getArtistBanners = catchAsync(async (req, res) => {
+  const banners = await Banner.find({ isDeleted: false }).sort({
+    createdAt: -1,
+  });
+  if (banners) {
+    return res.status(200).json({ success: "ok", banners });
+  }
+  return res.json({ error: "failed to get banners" });
 });

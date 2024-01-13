@@ -5,7 +5,7 @@ import {
   ChatBubbleLeftRightIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import Modal from 'react-modal'
+import Modal from "react-modal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
@@ -26,6 +26,7 @@ const Navbar = () => {
   const { user } = useSelector((state) => state.Auth);
   const [sender, setSender] = useState({});
   const [meetLink, setMeetLink] = useState("");
+  const [MsgCount, setMsgCount] = useState(0);
   const [openVideoCallModal, setOpenVideoCAllModal] = useState(false);
 
   useEffect(() => {
@@ -71,14 +72,18 @@ const Navbar = () => {
       .then((res) => {
         if (res.data?.success) {
           setNtCount(res.data?.count);
+          if (location.pathname !== ServerVariables.chatWithArtist) {
+            setMsgCount(res.data?.messagesCount);
+          }
         }
       })
       .catch((err) => {
         console.log(err.message);
       });
-  }, [Ntcount]);
+  }, [Ntcount, MsgCount]);
 
   let adjustedNtcount = Ntcount;
+  let adjustedMsgcount = MsgCount;
 
   if (Ntcount > 10) {
     if (Ntcount > 1000) {
@@ -93,6 +98,22 @@ const Navbar = () => {
       adjustedNtcount = "10+";
     } else {
       adjustedNtcount = Ntcount;
+    }
+  }
+
+  if (MsgCount > 10) {
+    if (MsgCount > 1000) {
+      adjustedMsgcount = "999+";
+    } else if (MsgCount > 100) {
+      adjustedMsgcount = "99+";
+    } else if (MsgCount > 50) {
+      adjustedMsgcount = "50+";
+    } else if (MsgCount > 20) {
+      adjustedMsgcount = "20+";
+    } else if (MsgCount > 10) {
+      adjustedMsgcount = "10+";
+    } else {
+      adjustedMsgcount = MsgCount;
     }
   }
 
@@ -119,7 +140,6 @@ const Navbar = () => {
     { name: "About", navigation: ServerVariables.about },
     { name: "Explore", navigation: ServerVariables.explore },
     { name: "Artists", navigation: ServerVariables.showArtists },
-    { name: "Chats", navigation: ServerVariables.chatWithArtist },
   ];
 
   const handleLogout = async () => {
@@ -182,10 +202,20 @@ const Navbar = () => {
                   >
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">View Chats</span>
-                    <ChatBubbleLeftRightIcon
-                      className="h-6 w-6"
-                      aria-hidden="true"
-                    />
+                    <div className="relative inline-block">
+                      <ChatBubbleLeftRightIcon
+                        className="h-6 w-6"
+                        aria-hidden="true"
+                      />
+
+                      {MsgCount > 0 && (
+                        <>
+                          <span className="absolute top-0  bg-red-500 text-white rounded-full px-1  text-xs">
+                            {adjustedMsgcount}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </button>
 
                   <button

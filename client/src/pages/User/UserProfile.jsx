@@ -58,12 +58,12 @@ function UserProfile() {
          
           <hr className="mt-8" />
           <div className="flex p-4 justify-center" onClick={openModal}>
-            <p className="font-bold text-center">
+            <p className="font-bold text-center cursor-pointer">
               {user?.followings?.length} Following
             </p>
           </div>
           <div className="flex justify-center">
-            <p className="font-bold text-center" onClick={()=>navigate(ServerVariables.editUserProfile)}>
+            <p className="font-bold text-center cursor-pointer" onClick={()=>navigate(ServerVariables.editUserProfile)}>
               <EditIcon/>
             </p>
           </div>

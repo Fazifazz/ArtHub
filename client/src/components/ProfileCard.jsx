@@ -115,8 +115,8 @@ function ProfileCard({ Artist }) {
                   <span className="text-sm text-slate-500">Posts</span>
                 </div>
 
-                <div className="p-3 text-center" onClick={openModal}>
-                  <span className="text-xl font-bold block uppercase tracking-wide text-slate-500">
+                <div className="p-3 text-center cursor-pointer" onClick={openModal}>
+                  <span className="text-xl font-bold block uppercase tracking-wide text-slate-500 ">
                     {artist?.followers?.length}
                   </span>
                   <span className="text-sm text-slate-500">Followers</span>

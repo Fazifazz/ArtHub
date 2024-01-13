@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { ServerVariables } from "../../util/ServerVariables";
 import socket from "../../components/SocketIo";
 import toast from "react-hot-toast";
 
@@ -77,7 +76,7 @@ function ArtistVideoCallRoom() {
       socket.on("videoCallResponse", (data) => {
         console.log('data',data)
         if (!data.accepted) {
-         toast.error('call rejected by artist',{duration:5000})
+         toast.error('call rejected by user',{duration:5000})
         }
       });
     

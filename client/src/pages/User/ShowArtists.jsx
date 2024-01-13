@@ -40,18 +40,18 @@ const PostCard = ({ artist, onFollow, onUnFollow }) => {
         <p className="text-gray-600 mb-2">{artist.field} Artist</p>
         <div className="flex p-4">
           <div className="w-1/2 text-center font-medium">
-            <span className="font-gray-800">
+            <span className="font-gray-800 cursor-pointer">
               {artist?.followers?.length && artist?.followers?.length} Followers
             </span>
           </div>
           <div className="w-0 border border-gray-800"></div>
           <div className="w-1/2 text-center font-medium">
-            <span className="font-gray-800">
+            <span className="font-gray-800 cursor-pointer">
               {artist?.posts?.length && artist?.posts?.length} Posts
             </span>
           </div>
         </div>
-        <div className="flex items-center justify-center mb-2">
+        <div className="flex items-center justify-center mb-2 cursor-pointer">
           {user?.followings?.includes(artist._id) ? (
             <button
               className="bg-gray-500 w-24 text-center text-white p-2 rounded-full hover:bg-gray-600"
@@ -92,6 +92,7 @@ const showArtists = () => {
   const [artists, setArtists] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
+  const [filterData, setFilterData] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -109,6 +110,7 @@ const showArtists = () => {
       if (res.data.success) {
         setPageCount(res?.data?.totalPages);
         setArtists(res.data.artists);
+        setFilterData(res.data.artists);
       } else {
         toast.error(res.data.error);
       }
@@ -162,6 +164,15 @@ const showArtists = () => {
       });
   };
 
+  const handleFilter = (e) => {
+    const newData = filterData?.filter(
+      (item) =>
+        item.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        item.field.toLowerCase().includes(e.target.value.toLowerCase()) 
+    );
+    setArtists(newData);
+  };
+
   const handlePageChange = (selectedPage) => {
     setCurrentPage(selectedPage.selected); // Update current page when page is changed
   };
@@ -171,9 +182,22 @@ const showArtists = () => {
       <Navbar />
       <div className="min-h-screen bg-gray-100 p-8">
         {artists.length ? (
-          <h2 className="uppercase text-center text-slate-500 font-bold mb-12 text-3xl">
-            Artists List
-          </h2>
+          <>
+          <div className="flex justify-around">
+
+            <h2 className="uppercase text-center text-slate-500 font-bold mb-12 text-3xl">
+              Artists List
+            </h2>
+            <div className="relative flex items-center mb-12 sm:mt-0">
+              <input
+                type="text"
+                placeholder="Search artist name/field.."
+                className="border p-2 mr-2"
+                onChange={handleFilter}
+              />
+            </div>
+          </div>
+          </>
         ) : (
           <>
             <p className="text-center text-slate-500 font-bold mb-12 text-3xl">

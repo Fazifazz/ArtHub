@@ -9,17 +9,16 @@ import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import socket from "../../components/SocketIo";
 import ArtistNavbar from "../../components/ArtistNav";
-import { VideoCameraIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
 
 const ArtistChatPage = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [chatHistory, setChatHistory] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [chatPartner, setChatPartner] = useState(null); // Updated to null
-  const [roomId, setRoomid] = useState("");
+  const [filterData, setFilterData] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const inputRef = useRef(null);
 
@@ -35,7 +34,8 @@ const ArtistChatPage = () => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data.success) {
-        setUsers(res.data.users);
+        setUsers(res?.data?.users);
+        setFilterData(res?.data?.users);
       } else {
         toast.error(res.data.error);
       }
@@ -55,9 +55,9 @@ const ArtistChatPage = () => {
           setNewMessage("");
           socket.emit("setup", response.data?.artistId);
           socket.emit("join", response.data?.room_id);
-          setRoomid(response.data?.room_id);
           setChatPartner(response.data?.Data);
           setChatHistory(response.data?.msg);
+          getAllMessagedUsers();
         }
       })
       .catch((err) => {
@@ -71,28 +71,19 @@ const ArtistChatPage = () => {
     setChatHistory((prevHistory) => [...(prevHistory || []), message]);
   };
 
-
-
   useEffect(() => {
     socket.on("message received", (message) => {
-      if (message.userId === selectedUserId) updateChatHistory(message);
+      if (message.userId === selectedUserId){
+        updateChatHistory(message);
+        fetchChatMessages(selectedUserId)
+      }else{
+        getAllMessagedUsers()
+      } 
     });
     return () => {
       socket.off("message received");
     };
   }, [selectedUserId]);
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
-  const closeMenu = (e) => {
-    if (
-      !document.getElementById("menuDropdown").contains(e.target) &&
-      !document.getElementById("menuButton").contains(e.target)
-    ) {
-      setIsMenuOpen(false);
-    }
-  };
 
   const sendNewMessage = async (room_id, userId) => {
     const Data = {
@@ -133,8 +124,9 @@ const ArtistChatPage = () => {
   };
 
   const handleUserClick = (userId) => {
-    fetchChatMessages(userId);
     setSelectedUserId(userId);
+    fetchChatMessages(userId);
+    getAllMessagedUsers()
     // Focus on the input field when an artist is selected
     inputRef.current && inputRef.current.focus();
   };
@@ -143,6 +135,13 @@ const ArtistChatPage = () => {
   useEffect(() => {
     chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
   }, [chatHistory]);
+
+  const handleFilter = (e) => {
+    const newData = filterData?.filter((item) =>
+      item.userName.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setUsers(newData);
+  };
 
   return (
     <>
@@ -153,49 +152,13 @@ const ArtistChatPage = () => {
           {/* Sidebar Header */}
           <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-gray-400 text-white">
             <h1 className="text-2xl font-semibold">My chats</h1>
-            <div className="relative">
-              <button
-                id="menuButton"
-                className="focus:outline-none"
-                onClick={toggleMenu}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-100"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                  <path d="M2 10a2 2 0 012-2h12a2 2 0 012 2 2 2 0 01-2 2H4a2 2 0 01-2-2z" />
-                </svg>
-              </button>
-              {/* Menu Dropdown */}
-              <div
-                id="menuDropdown"
-                className={`absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg ${
-                  isMenuOpen ? "" : "hidden"
-                }`}
-              >
-                <ul className="py-2 px-3">
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-gray-800 hover:text-gray-400"
-                    >
-                      Option 1
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-gray-800 hover:text-gray-400"
-                    >
-                      Option 2
-                    </a>
-                  </li>
-                  {/* Add more menu options here */}
-                </ul>
-              </div>
+            <div className="relative flex items-center mt-4 sm:mt-0">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border p-1 text-black"
+                onChange={handleFilter}
+              />
             </div>
           </header>
 
@@ -206,20 +169,24 @@ const ArtistChatPage = () => {
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   key={user._id}
-                  className={`flex items-center mb-4 cursor-pointer hover:bg-green-100 p-2 rounded-md ${
+                  className={`flex items-center mb-4 cursor-pointer shadow-md hover:bg-green-100 p-2 rounded-md ${
                     selectedUserId === user.userId ? "bg-green-100" : ""
                   }`}
-                  onClick={() => handleUserClick(user.userId)}
+                  onClick={() => handleUserClick(user.userId._id)}
                 >
                   <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
                     <img
-                      src={`http://localhost:5000/userProfile/${user.userImage}`}
-                      alt={`Avatar of ${user.userName}`}
+                      src={`http://localhost:5000/userProfile/${user.userId?.profile}`}
+                      alt={`Avatar of ${user.userId?.name}`}
                       className="w-12 h-12 rounded-full"
                     />
                   </div>
-                  <div className="flex-1">
-                    <h2 className="text-lg font-semibold">{user.userName}</h2>
+                  <div className="flex-1 flex justify-between">
+                    <h2 className="text-lg font-semibold">{user.userId?.name}</h2>
+                    {user?.unseenMessagesCount>0?
+                    <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2">
+                    {user?.unseenMessagesCount}
+                  </span>:''}
                     {/* <p className="text-gray-600">
                       {user.hasChat ? "last message" : "No messages yet"}
                     </p> */}
@@ -243,14 +210,21 @@ const ArtistChatPage = () => {
             {chatPartner ? (
               <>
                 <img
-                  src={`http://localhost:5000/userProfile/${chatPartner?.userImage}`}
-                  alt={`Avatar of ${chatPartner?.userName}`}
+                  src={`http://localhost:5000/userProfile/${chatPartner?.userId?.profile}`}
+                  alt={`Avatar of ${chatPartner?.userId?.name}`}
                   className="w-12 h-12 rounded-full mr-4"
                 />
                 <h1 className="uppercase text-2xl font-semibold ml-11">
-                  {chatPartner?.userName}
+                  {chatPartner?.userId?.name}
                 </h1>
-                <VideoCameraIcon height={40} onClick={()=>navigate(`/artistVideoCall/${chatPartner.artistId}/${chatPartner.userId}`)} />
+                <VideoCameraIcon
+                  height={40}
+                  onClick={() =>
+                    navigate(
+                      `/artistVideoCall/${chatPartner.artistId._id}/${chatPartner.userId._id}`
+                    )
+                  }
+                />
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center">
@@ -282,8 +256,8 @@ const ArtistChatPage = () => {
                     <img
                       src={
                         isArtistChat
-                          ? `http://localhost:5000/artistProfile/${chatPartner?.artistImage}`
-                          : `http://localhost:5000/userProfile/${chatPartner?.userImage}`
+                          ? `http://localhost:5000/artistProfile/${chatPartner?.artistId?.profile}`
+                          : `http://localhost:5000/userProfile/${chatPartner?.userId?.profile}`
                       }
                       alt={`${message.sender}'s Avatar`}
                       className="w-8 h-8 rounded-full"
@@ -299,7 +273,13 @@ const ArtistChatPage = () => {
                     <p>{message.message}</p>
                   </div>
                   <div className="text-xs text-gray-500 ml-2 self-end">
-                    {timeAgo}
+                    {timeAgo}{" "}
+                    {isArtistChat&&message.isUserSeen?
+                    <>
+                    seen
+                    <CheckCircleIcon className="h-5 w-5 text-blue-500"/>
+                    </>
+                    :''}
                   </div>
                 </div>
               );
@@ -310,8 +290,6 @@ const ArtistChatPage = () => {
               </div>
             ) : null}
           </div>
-
-
 
           {/* Chat Input */}
           {chatPartner ? (
@@ -328,7 +306,7 @@ const ArtistChatPage = () => {
                 <button
                   className="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2"
                   onClick={() => {
-                    sendNewMessage(chatPartner?._id, chatPartner?.userId);
+                    sendNewMessage(chatPartner?._id, chatPartner?.userId._id);
                   }}
                 >
                   Send

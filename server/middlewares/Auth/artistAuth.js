@@ -5,11 +5,9 @@ const Artist = require("../../models/artist/artistModel");
 module.exports = async (req, res, next) => {
   try {
     const artistToken = req.headers["authorization"];
-
     jwt.verify(
       artistToken,
       process.env.JWT_SECRET,
-      { ignoreExpiration: true },
       async (err, decoded) => {
         if (err) {
           console.log(err.message);

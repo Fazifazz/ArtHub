@@ -22,6 +22,14 @@ const ChatMsgSchema = new mongoose.Schema(
     time: {
       type: String,
     },
+    isUserSeen: {
+      type: Boolean,
+      default:false
+    },
+    isArtistSeen: {
+      type: Boolean,
+      default:false
+    },
   },
   {
     timestamps: true,

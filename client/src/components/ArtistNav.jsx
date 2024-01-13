@@ -11,7 +11,7 @@ import { ServerVariables } from "../util/ServerVariables";
 import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutArtist } from "../redux/ArtistAuthSlice";
-import Modal from 'react-modal'
+import Modal from "react-modal";
 import socket from "./SocketIo";
 import toast from "react-hot-toast";
 import { ArtistRequest } from "../Helper/instance";
@@ -23,10 +23,11 @@ const ArtistNavbar = () => {
   const dispatch = useDispatch();
   const [activeItem, setActiveItem] = useState("Home");
   const [Ntcount, setNtCount] = useState(0);
+  const [MsgCount, setMsgCount] = useState(0);
   const location = useLocation();
-  const [sender,setSender] = useState({})
-  const [meetLink,setMeetLink] =  useState('')
-  const [openVideoCallModal,setOpenVideoCAllModal] = useState(false)
+  const [sender, setSender] = useState({});
+  const [meetLink, setMeetLink] = useState("");
+  const [openVideoCallModal, setOpenVideoCAllModal] = useState(false);
 
   const { artist } = useSelector((state) => state.ArtistAuth);
 
@@ -35,14 +36,14 @@ const ArtistNavbar = () => {
     socket.on("artistNotification", (notification) => {
       toast.success(notification.message, { duration: 5000 });
     });
-    socket.on('videoCallInvitation',(data)=>{
+    socket.on("videoCallInvitation", (data) => {
       console.log("Received video call invitation", data);
-      setSender(data?.sender)
-      setMeetLink(data?.meetLink)
-      setOpenVideoCAllModal(true)
-      console.log(sender)
-      console.log(meetLink)
-    })
+      setSender(data?.sender);
+      setMeetLink(data?.meetLink);
+      setOpenVideoCAllModal(true);
+      console.log(sender);
+      console.log(meetLink);
+    });
 
     return () => {
       console.log("Cleanup useEffect");
@@ -78,14 +79,18 @@ const ArtistNavbar = () => {
       .then((res) => {
         if (res.data?.success) {
           setNtCount(res.data?.count);
+          if (location.pathname !== ServerVariables.artistChatPage) {
+            setMsgCount(res.data?.messagesCount);
+          }
         }
       })
       .catch((err) => {
         console.log(err.message);
       });
-  }, [Ntcount]);
+  }, [Ntcount, MsgCount]);
 
   let adjustedNtcount = Ntcount;
+  let adjustedMsgcount = MsgCount;
 
   if (Ntcount > 10) {
     if (Ntcount > 1000) {
@@ -100,6 +105,21 @@ const ArtistNavbar = () => {
       adjustedNtcount = "10+";
     } else {
       adjustedNtcount = Ntcount;
+    }
+  }
+  if (MsgCount > 10) {
+    if (MsgCount > 1000) {
+      adjustedMsgcount = "999+";
+    } else if (MsgCount > 100) {
+      adjustedMsgcount = "99+";
+    } else if (MsgCount > 50) {
+      adjustedMsgcount = "50+";
+    } else if (MsgCount > 20) {
+      adjustedMsgcount = "20+";
+    } else if (MsgCount > 10) {
+      adjustedMsgcount = "10+";
+    } else {
+      adjustedMsgcount = MsgCount;
     }
   }
 
@@ -118,10 +138,10 @@ const ArtistNavbar = () => {
 
   const navigation = [
     { name: "Home", navigation: ServerVariables.ArtistHome },
-    { name: "About", navigation: "#" },
-    { name: "plans", navigation: ServerVariables.plansAvailable },
+    { name: "About", navigation: ServerVariables.aboutPage },
+    { name: "Plans", navigation: ServerVariables.plansAvailable },
     { name: "My Posts", navigation: ServerVariables.artistPosts },
-    { name: "Chats", navigation: ServerVariables.artistChatPage },
+    { name: "Subscriptions", navigation: ServerVariables.mySubscriptions },
   ];
 
   const handleLogout = async () => {
@@ -144,7 +164,11 @@ const ArtistNavbar = () => {
             <div className="flex h-16 items-center justify-between">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <PhotoIcon />
+                <img
+                    className="h-36 w-34"
+                    src="/images/userImages/hub1.png"
+                    alt="Your Company"
+                  />
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-baseline space-x-4">
@@ -180,10 +204,20 @@ const ArtistNavbar = () => {
                   >
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">View Chats</span>
-                    <ChatBubbleLeftRightIcon
-                      className="h-6 w-6"
-                      aria-hidden="true"
-                    />
+                    <div className="relative inline-block">
+                      <ChatBubbleLeftRightIcon
+                        className="h-6 w-6"
+                        aria-hidden="true"
+                      />
+
+                      {MsgCount > 0 && (
+                        <>
+                          <span className="absolute top-0  bg-red-500 text-white rounded-full px-1  text-xs">
+                            {adjustedMsgcount}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </button>
                   <button
                     type="button"
@@ -357,23 +391,22 @@ const ArtistNavbar = () => {
             </div>
           </Disclosure.Panel>
           <Modal
-        isOpen={openVideoCallModal}
-        onRequestClose={closeModal}
-        ariaHideApp={false}
-        style={customStyles}
-      >
-        {/* Use the CommentModal component */}
-        <CallingUi
-          isOpen={openVideoCallModal}
-          closeModal={closeModal}
-          sender={sender}
-          link={meetLink}
-        />
-      </Modal>
+            isOpen={openVideoCallModal}
+            onRequestClose={closeModal}
+            ariaHideApp={false}
+            style={customStyles}
+          >
+            {/* Use the CommentModal component */}
+            <CallingUi
+              isOpen={openVideoCallModal}
+              closeModal={closeModal}
+              sender={sender}
+              link={meetLink}
+            />
+          </Modal>
         </>
       )}
     </Disclosure>
-    
   );
 };
 

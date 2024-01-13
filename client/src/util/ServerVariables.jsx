@@ -13,7 +13,6 @@ export const ServerVariables = {
     verifyEmail:'/verifyEmail',
     forgetOtp:'/forgetOtp',
     changePassword:'/changePassword',
-    artistPosts:'/artistPosts',
     addPost:'/addPost',
     userProfile:'/userProfile',
     editUserProfile:'/editUserProfile',
@@ -34,6 +33,7 @@ export const ServerVariables = {
     forgetArtistOtp:'/forgetArtistOtp',
     artistChangePassword:'/artistChangePassword',
     plansAvailable:'/plansAvailable',
+    artistPosts:'/artistPosts',
     successPage:'/successPage',
     errorPage:'/errorPage',
     artistProfile:'/artistProfile',
@@ -41,6 +41,8 @@ export const ServerVariables = {
     artistChatPage:'/artistChatPage',
     artistNotifications:'/artistNotifications',
     artistVideoCall:'/artistVideoCall/:roomId/:userId',
+    mySubscriptions:'/mySubscriptions',
+    aboutPage:'/aboutPage',
 
 
     //Admin Routes

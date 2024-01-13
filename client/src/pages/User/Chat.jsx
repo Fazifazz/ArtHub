@@ -8,18 +8,18 @@ import { apiEndPoints } from "../../util/api";
 import toast from "react-hot-toast";
 import { formatDistanceToNow } from "date-fns";
 import socket from "../../components/SocketIo";
-import { VideoCameraIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
 const ChatWithArtist = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [artists, setArtists] = useState([]);
   const dispatch = useDispatch();
   const [chatHistory, setChatHistory] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [filterData, setFilterData] = useState([]);
   const [chatPartner, setChatPartner] = useState(null); // Updated to null
   const [selectedArtistId, setSelectedArtistId] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -34,7 +34,8 @@ const ChatWithArtist = () => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data.success) {
-        setArtists(res.data.artists);
+        setArtists(res?.data?.artists);
+        setFilterData(res?.data?.artists);
       } else {
         toast.error(res.data.error);
       }
@@ -56,6 +57,7 @@ const ChatWithArtist = () => {
           socket.emit("join", response.data?.room_id);
           setChatPartner(response.data?.Data);
           setChatHistory(response.data?.msg);
+          getAllArtistsYouFollow();
         }
       })
       .catch((err) => {
@@ -71,25 +73,17 @@ const ChatWithArtist = () => {
 
   useEffect(() => {
     socket.on("message received", (message) => {
-      if (message.artistId === selectedArtistId) updateChatHistory(message);
+      if (message.artistId === selectedArtistId) {
+        updateChatHistory(message);
+        fetchChatMessages(selectedArtistId)
+      } else {
+        getAllArtistsYouFollow();
+      }
     });
     return () => {
       socket.off("message received");
     };
   }, [selectedArtistId]);
-
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
-  const closeMenu = (e) => {
-    if (
-      !document.getElementById("menuDropdown").contains(e.target) &&
-      !document.getElementById("menuButton").contains(e.target)
-    ) {
-      setIsMenuOpen(false);
-    }
-  };
 
   const sendChatMessage = async (room_id, artistId) => {
     const Data = {
@@ -129,11 +123,10 @@ const ChatWithArtist = () => {
     }
   };
 
-
-
   const handleArtistClick = (artistId) => {
     fetchChatMessages(artistId);
     setSelectedArtistId(artistId);
+    getAllArtistsYouFollow();
     // Focus on the input field when an artist is selected
     inputRef.current && inputRef.current.focus();
   };
@@ -142,6 +135,13 @@ const ChatWithArtist = () => {
   useEffect(() => {
     chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
   }, [chatHistory]);
+
+  const handleFilter = (e) => {
+    const newData = filterData?.filter((item) =>
+      item.name.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setArtists(newData);
+  };
 
   return (
     <>
@@ -152,49 +152,13 @@ const ChatWithArtist = () => {
           {/* Sidebar Header */}
           <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-gray-400 text-white">
             <h1 className="text-2xl font-semibold">My chats</h1>
-            <div className="relative">
-              <button
-                id="menuButton"
-                className="focus:outline-none"
-                onClick={toggleMenu}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-100"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                  <path d="M2 10a2 2 0 012-2h12a2 2 0 012 2 2 2 0 01-2 2H4a2 2 0 01-2-2z" />
-                </svg>
-              </button>
-              {/* Menu Dropdown */}
-              <div
-                id="menuDropdown"
-                className={`absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg ${
-                  isMenuOpen ? "" : "hidden"
-                }`}
-              >
-                <ul className="py-2 px-3">
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-gray-800 hover:text-gray-400"
-                    >
-                      Option 1
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-gray-800 hover:text-gray-400"
-                    >
-                      Option 2
-                    </a>
-                  </li>
-                  {/* Add more menu options here */}
-                </ul>
-              </div>
+            <div className="relative flex items-center mt-4 sm:mt-0">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border p-1 text-black"
+                onChange={handleFilter}
+              />
             </div>
           </header>
 
@@ -205,10 +169,8 @@ const ChatWithArtist = () => {
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   key={artist._id}
-                  className={`flex items-center mb-4 cursor-pointer hover:bg-green-100 p-2 rounded-md ${
-                    selectedArtistId === artist._id
-                      ? "bg-green-100"
-                      : ""
+                  className={`flex items-center mb-4 shadow-md cursor-pointer hover:bg-green-100 p-2 rounded-md ${
+                    selectedArtistId === artist._id ? "bg-green-100" : ""
                   }`}
                   onClick={() => handleArtistClick(artist._id)}
                 >
@@ -219,11 +181,15 @@ const ChatWithArtist = () => {
                       className="w-12 h-12 rounded-full"
                     />
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 flex justify-between">
                     <h2 className="text-lg font-semibold">{artist.name}</h2>
-                    {/* <p className="text-gray-600">
-                      {artist.hasChat ? "last message" : "No messages yet"}
-                    </p> */}
+                    {artist?.unseenMessagesCount > 0 ? (
+                      <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2">
+                        {artist?.unseenMessagesCount}
+                      </span>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </motion.div>
               ))
@@ -244,14 +210,21 @@ const ChatWithArtist = () => {
             {chatPartner ? (
               <>
                 <img
-                  src={`http://localhost:5000/artistProfile/${chatPartner?.artistImage}`}
-                  alt={`Avatar of ${chatPartner?.artistName}`}
+                  src={`http://localhost:5000/artistProfile/${chatPartner?.artistId?.profile}`}
+                  alt={`Avatar of ${chatPartner?.artistId?.name}`}
                   className="w-12 h-12 rounded-full mr-4"
                 />
                 <h1 className="uppercase text-2xl font-semibold ml-11">
-                  {chatPartner?.artistName}
+                  {chatPartner?.artistId?.name}
                 </h1>
-                <VideoCameraIcon height={40} onClick={()=>navigate(`/userVideoCall/${chatPartner.userId}/${chatPartner.artistId}`)} />
+                <VideoCameraIcon
+                  height={40}
+                  onClick={() =>
+                    navigate(
+                      `/userVideoCall/${chatPartner?.userId?._id}/${chatPartner?.artistId?._id}`
+                    )
+                  }
+                />
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center">
@@ -274,7 +247,7 @@ const ChatWithArtist = () => {
 
               return (
                 <div
-                  key={message.id}
+                  key={message._id}
                   className={`flex mb-4 cursor-pointer ${
                     isUserChat ? "justify-end" : "justify-start"
                   }`}
@@ -283,8 +256,8 @@ const ChatWithArtist = () => {
                     <img
                       src={
                         isUserChat
-                          ? `http://localhost:5000/userProfile/${chatPartner?.userImage}`
-                          : `http://localhost:5000/artistProfile/${chatPartner?.artistImage}`
+                          ? `http://localhost:5000/userProfile/${chatPartner?.userId?.profile}`
+                          : `http://localhost:5000/artistProfile/${chatPartner?.artistId?.profile}`
                       }
                       alt={`${message.sender}'s Avatar`}
                       className="w-8 h-8 rounded-full"
@@ -300,7 +273,13 @@ const ChatWithArtist = () => {
                     <p>{message.message}</p>
                   </div>
                   <div className="text-xs text-gray-500 ml-2 self-end">
-                    {timeAgo}
+                    {timeAgo}{" "}
+                    {isUserChat&&message.isArtistSeen?
+                    <>
+                    seen
+                    <CheckCircleIcon className="h-5 w-5 text-blue-500"/>
+                    </>
+                    :''}
                   </div>
                 </div>
               );
@@ -327,7 +306,7 @@ const ChatWithArtist = () => {
                 <button
                   className="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2"
                   onClick={() => {
-                    sendChatMessage(chatPartner?._id, chatPartner?.artistId);
+                    sendChatMessage(chatPartner?._id, chatPartner?.artistId._id);
                   }}
                 >
                   Send

@@ -101,7 +101,7 @@ exports.verifyLogin = catchAsync(async (req, res) => {
     return res.json({ error: "sorry,you are not verified!, sign up again" });
   }
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
+    expiresIn: "1d",
   });
   console.log(user.role);
   return res.status(200).json({ success: "Login Successfull", token, user });
@@ -172,6 +172,8 @@ exports.updatePassword = catchAsync(async (req, res) => {
 });
 
 const mongoose = require("mongoose");
+const chatModel = require("../models/user/chatModel");
+const chatMessage = require("../models/user/chatMessage");
 const ObjectId = mongoose.Types.ObjectId;
 
 exports.getAllFollowingsPosts = catchAsync(async (req, res) => {
@@ -205,7 +207,10 @@ exports.getAllPosts = catchAsync(async (req, res) => {
         select: "name profile",
       },
     })
-    .populate("postedBy");
+    .populate("postedBy")
+
+     // Sort the posts based on the highest count of likes
+  artistPosts.sort((a, b) => b.likes.length - a.likes.length);
 
   if (artistPosts) {
     return res.status(200).json({ success: "ok", artistPosts });
@@ -228,7 +233,12 @@ exports.updateUserProfile = catchAsync(async (req, res) => {
       },
       { new: true }
     );
-    if (updatedUser) {
+    await chatModel.updateMany(
+      { userId: req.userId },
+      { $set: { userImage: updatedUser.profile } },
+      {new:true}
+    );
+    if (updatedUser) {   
       return res
         .status(200)
         .json({ success: "profile updated successfully", updatedUser });
@@ -383,7 +393,7 @@ exports.unFollowArtist = catchAsync(async (req, res) => {
 
 exports.getAllArtists = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const pageSize = 2; // Adjust the page size as needed
+  const pageSize = 3; // Adjust the page size as needed
   const query = {
     isApproved: true,
     isBlocked: false,
@@ -493,7 +503,8 @@ exports.getNotificationCount = catchAsync(async (req, res) => {
     receiverId: userId,
     seen: false,
   });
-  return res.status(200).json({ success: true, count });
+  const messagesCount =  await chatMessage.find({userId:userId,isUserSeen:false}).countDocuments()
+  return res.status(200).json({ success: true, count,messagesCount });
 });
 
 exports.deleteNotification = catchAsync(async (req, res) => {

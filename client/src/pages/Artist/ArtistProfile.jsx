@@ -1,13 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import EditIcon from "../../components/icons/EditIcon";
 import ArtistNavbar from "../../components/ArtistNav";
+import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
+import FollowersModal from "../../components/FollowersModal";
 
 const ArtistProfile = () => {
   const { artist } = useSelector((state) => state.ArtistAuth);
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  
+  const customStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.0)",
+    },
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "30%",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
 
   return (
     <>
@@ -58,7 +83,9 @@ const ArtistProfile = () => {
           <div className="w-full mt-8 border border-gray-700"></div>
           <div className="flex p-4">
             <div className="w-1/2 text-center">
-              <span className="font-black">
+              <span className="font-black cursor-pointer"
+              onClick={openModal}
+              >
                 {artist?.followers?.length && artist?.followers?.length}{" "}
                 Followers
               </span>
@@ -66,7 +93,7 @@ const ArtistProfile = () => {
             <div className="w-0 border border-gray-800"></div>
             <div className="w-1/2 text-center">
               <span
-                className="font-black"
+                className="font-black cursor-pointer"
                 onClick={() => navigate(ServerVariables.artistPosts)}
               >
                 {artist?.posts?.length && artist?.posts?.length} Posts
@@ -76,12 +103,24 @@ const ArtistProfile = () => {
 
           <div className="flex justify-center">
             <p
-              className="font-bold text-center"
+              className="font-bold text-center cursor-pointer"
               onClick={() => navigate(ServerVariables.editArtistProfile)}
             >
               <EditIcon />
             </p>
           </div>
+          <Modal
+                isOpen={isModalOpen}
+                onRequestClose={closeModal}
+                ariaHideApp={false}
+                style={customStyles}
+              >
+                <FollowersModal
+                  isOpen={isModalOpen}
+                  closeModal={closeModal}
+                  artistId={artist._id}
+                />
+              </Modal>
         </div>
       </div>
     </>

@@ -3,15 +3,31 @@ const ChatMessages = require("../models/user/chatMessage");
 const User = require("../models/user/userModel");
 const Artist = require("../models/artist/artistModel");
 const catchAsync = require("../util/catchAsync");
-const chatModel = require("../models/user/chatModel");
 
 exports.getArtistsUserFollow = catchAsync(async (req, res) => {
   const user = await User.findById(req.userId).populate("followings");
   if (!user) {
     return res.json({ error: "user not found" });
   }
+  
   const artists = user.followings;
-  return res.status(200).json({ success: "ok", artists });
+  const artistsWithUnseenMessages = await Promise.all(
+    artists.map(async (artist) => {
+      const artistId = artist._id;
+      const unseenMessagesCount = await ChatMessages.countDocuments({
+        artistId: artistId,
+        isUserSeen: false, // Add any additional conditions if needed
+      });
+
+      return {
+        ...artist.toObject(),
+        unseenMessagesCount,
+      };
+    })
+  );
+  return res
+    .status(200)
+    .json({ success: "ok", artists: artistsWithUnseenMessages });
 });
 
 exports.getChatMessages = catchAsync(async (req, res) => {
@@ -19,17 +35,22 @@ exports.getChatMessages = catchAsync(async (req, res) => {
   const chatConnectionData = await Chat.find({
     userId: req.userId,
     artistId: artistId,
-  });
+  })
+
 
   if (chatConnectionData.length > 0) {
     const chatConnectionData = await Chat.findOne({
       userId: req.userId,
       artistId: artistId,
-    });
+    }).populate('userId artistId')
     const room_id = chatConnectionData._id;
     const Messages = await ChatMessages.find({ room_id: room_id }).sort({
       time: 1,
     });
+    await ChatMessages.updateMany(
+      { room_id: room_id, isUserSeen: false },
+      { $set: { isUserSeen: true } }
+    );
     if (Messages.length > 0) {
       res.status(200).json({
         Data: chatConnectionData,
@@ -48,19 +69,14 @@ exports.getChatMessages = catchAsync(async (req, res) => {
       });
     }
   } else {
-    const artist = await Artist.findById(artistId);
-    const userData = await User.findById(req.userId);
     const Data = {
       userId: req.userId,
       artistId,
-      artistImage: artist?.profile,
-      artistName: artist?.name,
-      userName: userData?.name,
-      userImage: userData?.profile,
     };
     const newChatConnection = new Chat(Data);
     const savedNewChat = await newChatConnection.save();
-    res.status(200).json({ success: "message added", Data: savedNewChat });
+    const connection = await Chat.findById(savedNewChat._id).populate('userId artistId')
+    res.status(200).json({ success: "message added", Data: connection });
   }
 });
 
@@ -87,14 +103,24 @@ exports.sendNewMessage = catchAsync(async (req, res) => {
 exports.getUserChatList = catchAsync(async (req, res) => {
   const artistId = req.artistId;
 
-  const data = await Chat.find({ artistId: artistId });
-  const count = data.length;
+  const users = await Chat.find({ artistId: artistId }).populate('userId artistId')
+  const userWithUnseenMessages = await Promise.all(
+    users.map(async (user) => {
+      const userId = user.userId;
+      const unseenMessagesCount = await ChatMessages.countDocuments({
+        userId: userId,
+        isArtistSeen: false, // Add any additional conditions if needed
+      });
 
-  if (data.length > 0) {
-    res.status(200).send({ users: data, success: true });
-  } else {
-    res.status(200).send({ success: true });
-  }
+      return {
+        ...user.toObject(),
+        unseenMessagesCount,
+      };
+    })
+  );
+  // console.log('contacts',userWithUnseenMessages)
+
+    res.status(200).send({ users: userWithUnseenMessages, success: true });  
 });
 
 //  get room
@@ -105,12 +131,16 @@ exports.artistGetRoom = catchAsync(async (req, res) => {
   const chatConnectionData = await Chat.findOne({
     userId: userId,
     artistId: artistId,
-  });
-  const room_id = chatConnectionData?._id
+  }).populate('userId artistId')
+  const room_id = chatConnectionData?._id;
 
   const Messages = await ChatMessages.find({ room_id: room_id }).sort({
     time: 1,
   });
+  await ChatMessages.updateMany(
+    { room_id: room_id, isArtistSeen: false },
+    { $set: { isArtistSeen: true } }
+  );
 
   if (Messages.length > 0) {
     res.status(200).json({
@@ -152,5 +182,3 @@ exports.artistNewMessage = async (req, res) => {
     console.log(error, " at developerNewMessage");
   }
 };
-
-

@@ -56,6 +56,8 @@ export const apiEndPoints = {
     deleteNotification:'/api/artist/deleteNotification',
     clearArtistAllNotifications:'/api/artist/clearArtistAllNotifications',
     getArtistNotificationCount:'/api/artist/getArtistNotificationCount',
+    getMySubscriptions:'/api/artist/getMySubscriptions',
+    getArtistBanners:'/api/artist/getArtistBanners',
 
     //admin endpoints
     postAdminLogin:'/api/admin/postAdminLogin',

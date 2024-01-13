@@ -59,10 +59,9 @@ artistRouter
   .post("/deleteReply", artistAuthMiddleware, artistController.deleteReply)
   .get(
     "/successPayment",
-    artistAuthMiddleware,
     artistController.showSuccessPage
   )
-  .get("/errorPayment", artistAuthMiddleware, artistController.showErrorPage)
+  .get("/errorPayment", artistController.showErrorPage)
 
   //chat
   .get(
@@ -103,6 +102,16 @@ artistRouter
     "/getArtistNotificationCount",
     artistAuthMiddleware,
     artistController.getNotificationCount
+  )
+  .get(
+    "/getMySubscriptions",
+    artistAuthMiddleware,
+    artistController.getMySubscriptions
+  )
+  .get(
+    "/getArtistBanners",
+    artistAuthMiddleware,
+    artistController.getArtistBanners
   )
 
 module.exports = artistRouter;

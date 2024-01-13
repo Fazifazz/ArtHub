@@ -7,7 +7,6 @@ module.exports = async (req, res, next) => {
     jwt.verify(
       userToken,
       process.env.JWT_SECRET,
-      { ignoreExpiration: true },
       (err, decoded) => { 
         if (err) {
           console.log(err.message);
