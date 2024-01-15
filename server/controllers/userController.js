@@ -207,9 +207,9 @@ exports.getAllPosts = catchAsync(async (req, res) => {
         select: "name profile",
       },
     })
-    .populate("postedBy")
+    .populate("postedBy");
 
-     // Sort the posts based on the highest count of likes
+  // Sort the posts based on the highest count of likes
   artistPosts.sort((a, b) => b.likes.length - a.likes.length);
 
   if (artistPosts) {
@@ -236,9 +236,9 @@ exports.updateUserProfile = catchAsync(async (req, res) => {
     await chatModel.updateMany(
       { userId: req.userId },
       { $set: { userImage: updatedUser.profile } },
-      {new:true}
+      { new: true }
     );
-    if (updatedUser) {   
+    if (updatedUser) {
       return res
         .status(200)
         .json({ success: "profile updated successfully", updatedUser });
@@ -503,8 +503,10 @@ exports.getNotificationCount = catchAsync(async (req, res) => {
     receiverId: userId,
     seen: false,
   });
-  const messagesCount =  await chatMessage.find({userId:userId,isUserSeen:false}).countDocuments()
-  return res.status(200).json({ success: true, count,messagesCount });
+  const messagesCount = await chatMessage
+    .find({ userId: userId, isUserSeen: false })
+    .countDocuments();
+  return res.status(200).json({ success: true, count, messagesCount });
 });
 
 exports.deleteNotification = catchAsync(async (req, res) => {
@@ -528,4 +530,38 @@ exports.clearAllNotification = catchAsync(async (req, res) => {
     return res.status(200).json({ success: "All notifications cleared" });
   }
   return res.json({ error: "deleting notification failed" });
+});
+
+exports.addRatingToArtist = catchAsync(async (req, res) => {
+  const { rating, artistId } = req.body;
+  const artist = await Artist.findById(artistId);
+
+  if (!artist) {
+    return res.status(404).json({ error: "Artist not found" });
+  }
+
+  const existingRating = artist.ratings.find(
+    (ratingObj) => ratingObj.user.toString() === req.userId
+  );
+
+  if (existingRating) {
+    // If the user has already rated, update the existing rating
+    existingRating.rating = rating;
+  } else {
+    // If the user hasn't rated, add a new rating
+    artist.ratings.push({
+      rating: rating,
+      user: req.userId,
+    });
+  }
+
+  const updatedArtist = await artist.save();
+
+  if (updatedArtist) {
+    return res
+      .status(200)
+      .json({ success: true, message: "Rating submitted successfully" });
+  }
+
+  res.json({ error: true, message: "Rating submitting failed" });
 });

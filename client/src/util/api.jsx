@@ -29,6 +29,7 @@ export const apiEndPoints = {
     clearUserAllNotifications:'api/user/clearUserAllNotifications',
     deleteUserNotification:'api/user/deleteUserNotification',
     userNotificationsCount:'api/user/userNotificationsCount',
+    addRatingToArtist:'api/user/addRatingToArtist',
 
 
     //artist endpoints
@@ -58,6 +59,7 @@ export const apiEndPoints = {
     getArtistNotificationCount:'/api/artist/getArtistNotificationCount',
     getMySubscriptions:'/api/artist/getMySubscriptions',
     getArtistBanners:'/api/artist/getArtistBanners',
+    getRatedUsers:'/api/artist/getRatedUsers',
 
     //admin endpoints
     postAdminLogin:'/api/admin/postAdminLogin',

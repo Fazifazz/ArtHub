@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { apiEndPoints } from "../util/api";
@@ -10,16 +10,26 @@ import { updateArtist } from "../redux/ArtistAuthSlice";
 import toast from "react-hot-toast";
 import { IoArrowBackCircle } from "react-icons/io5";
 import FollowersModal from "./FollowersModal";
+import RatingModal from "./RatingModal";
+import StarRating from "./StarRating";
 
 function ProfileCard({ Artist }) {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.Auth);
   const [artist, setArtist] = useState(Artist);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
+  const averageRating = artist.ratings?.reduce((acc,rating)=>acc + rating?.rating,0)/artist?.ratings?.length || 0
+
 
   const openModal = () => {
     setIsModalOpen(true);
+  };
+  const openRatingModal = () => {
+    setIsRatingModalOpen(true);
+  };
+  const closeRatingModal = () => {
+    setIsRatingModalOpen(false);
   };
 
   const closeModal = () => {
@@ -115,7 +125,10 @@ function ProfileCard({ Artist }) {
                   <span className="text-sm text-slate-500">Posts</span>
                 </div>
 
-                <div className="p-3 text-center cursor-pointer" onClick={openModal}>
+                <div
+                  className="p-3 text-center cursor-pointer"
+                  onClick={openModal}
+                >
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-500 ">
                     {artist?.followers?.length}
                   </span>
@@ -124,6 +137,9 @@ function ProfileCard({ Artist }) {
               </div>
             </div>
           </div>
+          <span className="text-slate-500 cursor-pointer flex justify-center">
+              Rating: <StarRating rating={averageRating} />
+            </span>
           <div className="text-center mt-2">
             <h3 className="uppercase text-2xl text-slate-500 font-bold leading-normal mb-1">
               {artist?.name}
@@ -181,6 +197,27 @@ function ProfileCard({ Artist }) {
                   )}
                 </a>
               </div>
+              {artist.ratings.some((rat) => rat.user === user._id) ? (
+                <>
+                <span className="text-black no-underline mt-2"> You have already rated this artist.... </span>
+                  <a
+                    className="text-blue-600 hover:text-blue-800 cursor-pointer underline mt-2"
+                    onClick={openRatingModal}
+                  >
+                    Rate again?
+                  </a>
+                </>
+              ) : (
+                <>
+                  <a
+                    className="text-blue-600 hover:text-blue-800 cursor-pointer underline mt-2"
+                    onClick={openRatingModal}
+                  >
+                    Rate this artist?
+                  </a>
+                </>
+              )}
+
               <Modal
                 isOpen={isModalOpen}
                 onRequestClose={closeModal}
@@ -190,6 +227,18 @@ function ProfileCard({ Artist }) {
                 <FollowersModal
                   isOpen={isModalOpen}
                   closeModal={closeModal}
+                  artistId={artist._id}
+                />
+              </Modal>
+              <Modal
+                isOpen={isRatingModalOpen}
+                onRequestClose={closeRatingModal}
+                ariaHideApp={false}
+                style={customStyles}
+              >
+                <RatingModal
+                  isOpen={isRatingModalOpen}
+                  closeModal={closeRatingModal}
                   artistId={artist._id}
                 />
               </Modal>

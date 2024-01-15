@@ -8,13 +8,20 @@ const artistSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: 'artist',
+      default: "artist",
     },
+    
     email: {
       type: String,
       required: true,
       unique: true,
     },
+    ratings: [
+      {
+        user: { type: ObjectId, ref: "user" },
+        rating: { type: Number, min: 1, max: 5 },
+      },
+    ],
 
     password: {
       type: String,
@@ -112,3 +119,20 @@ const artistSchema = new mongoose.Schema(
 const artistModel = mongoose.model("artist", artistSchema);
 
 module.exports = artistModel;
+
+
+// rating: {
+//   type: String,
+//   default: 0,
+// },
+// ratings: [
+//   {
+//     rating: {
+//       type: String,
+//     },
+//     ratedBy: {
+//       type: ObjectId,
+//       ref: "user",
+//     },
+//   },
+// ],

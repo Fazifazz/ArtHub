@@ -156,7 +156,7 @@ exports.verifyLogin = catchAsync(async (req, res) => {
     return res.json({ error: "sorry,you are not verified!, sign up again" });
   }
   const token = jwt.sign({ id: artist._id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "7d",
   });
   return res.status(200).json({ success: "Login Successfull", token, artist });
 });
@@ -298,7 +298,7 @@ exports.editArtistProfile = catchAsync(async (req, res) => {
     await chatModel.updateMany(
       { artistId: req.artistId },
       { $set: { artistImage: updatedArtist.profile } },
-      {new:true}
+      { new: true }
     );
     return res
       .status(200)
@@ -478,10 +478,10 @@ exports.replyUserComment = catchAsync(async (req, res) => {
 
   await post.save();
   // to send notification to user
-  const Notify = { 
+  const Notify = {
     receiverId: comment.postedBy._id,
     senderId: req.artistId,
-    relatedPostId:post._id,
+    relatedPostId: post._id,
     notificationMessage: `${artist.name} replied '${reply}' to your comment '${comment.text}'`,
     date: new Date(),
   };
@@ -535,8 +535,10 @@ exports.getNotificationCount = catchAsync(async (req, res) => {
     receiverId: artistId,
     seen: false,
   });
-  const messagesCount =  await chatMessage.find({artistId:artistId,isArtistSeen:false}).countDocuments()
-  return res.status(200).json({ success: true, count,messagesCount });
+  const messagesCount = await chatMessage
+    .find({ artistId: artistId, isArtistSeen: false })
+    .countDocuments();
+  return res.status(200).json({ success: true, count, messagesCount });
 });
 
 exports.deleteNotification = catchAsync(async (req, res) => {
@@ -557,22 +559,20 @@ exports.clearAllNotification = catchAsync(async (req, res) => {
     seen: true,
   });
   if (clearNotifications) {
-    return res
-      .status(200)
-      .json({ success: "All notifications cleared" });
+    return res.status(200).json({ success: "All notifications cleared" });
   }
   return res.json({ error: "deleting notification failed" });
 });
 
-
-
 exports.getMySubscriptions = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = 3;
-  const SubscriptionHistory = await PlansHistory.find({artist:req.artistId}).countDocuments();
+  const SubscriptionHistory = await PlansHistory.find({
+    artist: req.artistId,
+  }).countDocuments();
   const totalPages = Math.ceil(SubscriptionHistory / pageSize);
 
-  const histories = await PlansHistory.find({artist:req.artistId})
+  const histories = await PlansHistory.find({ artist: req.artistId })
     .skip((page - 1) * pageSize)
     .limit(pageSize)
     .sort({ createdAt: -1 })
@@ -582,10 +582,9 @@ exports.getMySubscriptions = catchAsync(async (req, res) => {
     success: "ok",
     payments: histories,
     currentPage: page,
-    totalPages, 
+    totalPages,
   });
 });
-
 
 exports.getArtistBanners = catchAsync(async (req, res) => {
   const banners = await Banner.find({ isDeleted: false }).sort({
@@ -595,4 +594,13 @@ exports.getArtistBanners = catchAsync(async (req, res) => {
     return res.status(200).json({ success: "ok", banners });
   }
   return res.json({ error: "failed to get banners" });
+});
+
+exports.getRatedUsers = catchAsync(async (req, res) => {
+  const artist = await Artist.findById(req.artistId).populate({
+    path: "ratings",
+    populate: { path: "user", select: "name profile" },
+  });
+  const ratedUsers = artist.ratings;
+  return res.status(200).json({ success: "ok", ratedUsers });
 });

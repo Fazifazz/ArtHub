@@ -61,6 +61,11 @@ userRouter
     "/userNotificationsCount",
     userAuth,
     userController.getNotificationCount
+  )
+  .post(
+    "/addRatingToArtist",
+    userAuth,
+    userController.addRatingToArtist
   );
 
 module.exports = userRouter;

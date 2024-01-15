@@ -88,7 +88,7 @@ function AboutPage() {
             {/* Team Member 2 */}
             <div className="bg-white rounded-lg p-4 shadow-md">
               <img
-                src="images/adminImages/myphoto1.jpg"
+                src="images/userImages/myoffice photo.jpg"
                 alt="Team Member 2"
                 className="w-32 h-32 mx-auto rounded-full"
               />
@@ -120,6 +120,7 @@ function AboutPage() {
           </div>
         </div>
       </section>
+
 
       <footer class="bg-black dark:bg-gray-800">
                 <div class="ml-0 w-full max-w-full p-4 py-6 lg:py-8">
