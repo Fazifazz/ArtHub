@@ -81,5 +81,6 @@ export const apiEndPoints = {
     deleteBanner:'/api/admin/deleteBanner',
     updateBanner:'/api/admin/updateBanner',
     getSubscriptionHistory:'/api/admin/getSubscriptionHistory',
+    getDashboardDatas:'/api/admin/getDashboardDatas',
 
 }

@@ -49,6 +49,11 @@ adminRouter
     "/getSubscriptionHistory",
     adminAuthMiddleware,
     adminController.getSubscriptionHistory
-  );
+  )
+  .get(
+    "/getDashboardDatas",
+    adminAuthMiddleware,
+    adminController.getDashboardDatas
+  )
 
 module.exports = adminRouter;

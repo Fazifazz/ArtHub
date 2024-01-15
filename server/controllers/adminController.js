@@ -11,6 +11,7 @@ const Banner = require("../models/admin/BannerModel");
 const Artist = require("../models/artist/artistModel");
 const catchAsync = require("../util/catchAsync");
 const paypal = require("paypal-rest-sdk");
+const subscritionHistoryModel = require("../models/admin/subscriptionHistoryModel");
 
 paypal.configure({
   mode: "sandbox",
@@ -319,7 +320,7 @@ exports.blockArtist = catchAsync(async (req, res) => {
 
 exports.getSubscriptionHistory = catchAsync(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const pageSize = 3;
+  const pageSize = 5;
   const SubscriptionHistory = await PlansHistory.countDocuments();
   const totalPages = Math.ceil(SubscriptionHistory / pageSize);
 
@@ -409,3 +410,52 @@ exports.updateBanner = catchAsync(async (req, res) => {
   }
   return res.status(200).json({ error: "failed in updating banner" });
 });
+
+
+exports.getDashboardDatas = catchAsync(async (req, res) => {
+  // Calculate daily, weekly, and monthly date ranges
+  const currentDate = new Date();
+  const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
+  const oneWeek = 7 * oneDay;
+  const oneMonth = 30 * oneDay;
+
+  const startDateDaily = new Date(currentDate - oneDay);
+  const startDateWeekly = new Date(currentDate - oneWeek);
+  const startDateMonthly = new Date(currentDate - oneMonth);
+
+  // Function to calculate the total amount from subscriptions
+  const calculateTotalAmount = async (startDate) => {
+    const subscriptions = await subscritionHistoryModel.find({
+      date: { $gte: startDate, $lte: currentDate },
+    }).populate("plan");
+
+    let totalAmount = 0;
+
+    subscriptions.forEach((subscription) => {
+      totalAmount += subscription.plan.amount; // Assuming your plan model has an 'amount' field
+    });
+
+    return totalAmount;
+  };
+
+  // Get counts for users, artists, and subscribed artists
+  const users = await User.find({}).countDocuments();
+  const artists = await Artist.find({}).countDocuments();
+  const subscribedArtists = await Artist.find({ isSubscribed: true }).countDocuments();
+
+  // Calculate total amounts for daily, weekly, and monthly subscriptions
+  const dailyAmount = await calculateTotalAmount(startDateDaily);
+  const weeklyAmount = await calculateTotalAmount(startDateWeekly);
+  const monthlyAmount = await calculateTotalAmount(startDateMonthly);
+
+  return res.status(200).json({
+    success: "ok",
+    users,
+    artists,
+    subscribedArtists,
+    dailyAmount,
+    weeklyAmount,
+    monthlyAmount,
+  });
+});
+
