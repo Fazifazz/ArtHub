@@ -6,6 +6,7 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
 import FollowersModal from "../../components/FollowersModal";
+import { motion } from "framer-motion";
 
 const ArtistProfile = () => {
   const { artist } = useSelector((state) => state.ArtistAuth);
@@ -19,7 +20,7 @@ const ArtistProfile = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  
+
   const customStyles = {
     overlay: {
       backgroundColor: "rgba(0, 0, 0, 0.0)",
@@ -37,7 +38,12 @@ const ArtistProfile = () => {
   return (
     <>
       <ArtistNavbar />
-      <div className="bg-gray-100 font-sans min-h-screen w-full  flex flex-row justify-center items-center">
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gray-100 font-sans min-h-screen w-full  flex flex-row justify-center items-center"
+      >
         {/* Increase width and height of the outer div */}
         <div className="card w-96 h-100 mx-auto  bg-gray-300  text-grey-800 shadow-xl hover:shadow">
           <img
@@ -83,9 +89,7 @@ const ArtistProfile = () => {
           <div className="w-full mt-8 border border-gray-700"></div>
           <div className="flex p-4">
             <div className="w-1/2 text-center">
-              <span className="font-black cursor-pointer"
-              onClick={openModal}
-              >
+              <span className="font-black cursor-pointer" onClick={openModal}>
                 {artist?.followers?.length && artist?.followers?.length}{" "}
                 Followers
               </span>
@@ -110,19 +114,19 @@ const ArtistProfile = () => {
             </p>
           </div>
           <Modal
-                isOpen={isModalOpen}
-                onRequestClose={closeModal}
-                ariaHideApp={false}
-                style={customStyles}
-              >
-                <FollowersModal
-                  isOpen={isModalOpen}
-                  closeModal={closeModal}
-                  artistId={artist._id}
-                />
-              </Modal>
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+            ariaHideApp={false}
+            style={customStyles}
+          >
+            <FollowersModal
+              isOpen={isModalOpen}
+              closeModal={closeModal}
+              artistId={artist._id}
+            />
+          </Modal>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

@@ -412,13 +412,13 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
         artist.subscription = {
           transactionId: transactionId,
           currentPlan: planId,
-          expiresAt: new Date(currentDate.getTime() + 10 * 60 * 1000),
-          // expiresAt = new Date(currentDate.getTime() + (plan.dayDuaration) * 24 * 60 * 60 * 1000);
+          // expiresAt: new Date(currentDate.getTime() + 10 * 60 * 1000),
+          expiresAt : new Date(currentDate.getTime() + (plan.dayDuaration) * 24 * 60 * 60 * 1000)
         };
         artist.isSubscribed = true;
         artist.paymentHistory.push({
           planName: plan.name,
-          expireDate: new Date(currentDate.getTime() + 10 * 60 * 1000),
+          expireDate: new Date(currentDate.getTime() + (plan.dayDuaration) * 24 * 60 * 60 * 1000),
           date: currentDate,
           price: plan.amount,
           duration: plan.dayDuaration,
@@ -429,7 +429,7 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
           artist: artistId,
           date: currentDate,
           transactionId: transactionId,
-          expireDate: new Date(currentDate.getTime() + 10 * 60 * 1000),
+          expireDate: new Date(currentDate.getTime() + (plan.dayDuaration) * 24 * 60 * 60 * 1000),
         });
         return res.redirect("http://localhost:5173/successPage");
       }

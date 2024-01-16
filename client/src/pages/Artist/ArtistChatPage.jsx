@@ -73,12 +73,12 @@ const ArtistChatPage = () => {
 
   useEffect(() => {
     socket.on("message received", (message) => {
-      if (message.userId === selectedUserId){
+      if (message.userId === selectedUserId) {
         updateChatHistory(message);
-        fetchChatMessages(selectedUserId)
-      }else{
-        getAllMessagedUsers()
-      } 
+        fetchChatMessages(selectedUserId);
+      } else {
+        getAllMessagedUsers();
+      }
     });
     return () => {
       socket.off("message received");
@@ -126,7 +126,7 @@ const ArtistChatPage = () => {
   const handleUserClick = (userId) => {
     setSelectedUserId(userId);
     fetchChatMessages(userId);
-    getAllMessagedUsers()
+    getAllMessagedUsers();
     // Focus on the input field when an artist is selected
     inputRef.current && inputRef.current.focus();
   };
@@ -156,7 +156,7 @@ const ArtistChatPage = () => {
               <input
                 type="text"
                 placeholder="Search..."
-                className="border p-1 text-black"
+                className="border p-1 text-black sm:w-20 md:w-20 lg:w-40 xl:w-40" // Adjust width based on screen size
                 onChange={handleFilter}
               />
             </div>
@@ -182,11 +182,16 @@ const ArtistChatPage = () => {
                     />
                   </div>
                   <div className="flex-1 flex justify-between">
-                    <h2 className="text-lg font-semibold">{user.userId?.name}</h2>
-                    {user?.unseenMessagesCount>0?
-                    <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2">
-                    {user?.unseenMessagesCount}
-                  </span>:''}
+                    <h2 className="text-lg font-semibold">
+                      {user.userId?.name}
+                    </h2>
+                    {user?.unseenMessagesCount > 0 ? (
+                      <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2 sm:w-6 sm:h-7 sm:ml-2 md:text-xs">
+                        {user?.unseenMessagesCount}
+                      </span>
+                    ) : (
+                      ""
+                    )}
                     {/* <p className="text-gray-600">
                       {user.hasChat ? "last message" : "No messages yet"}
                     </p> */}
@@ -274,12 +279,14 @@ const ArtistChatPage = () => {
                   </div>
                   <div className="text-xs text-gray-500 ml-2 self-end">
                     {timeAgo}{" "}
-                    {isArtistChat&&message.isUserSeen?
-                    <>
-                    seen
-                    <CheckCircleIcon className="h-5 w-5 text-blue-500"/>
-                    </>
-                    :''}
+                    {isArtistChat && message.isUserSeen ? (
+                      <>
+                        seen
+                        <CheckCircleIcon className="h-5 w-5 text-blue-500" />
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
               );

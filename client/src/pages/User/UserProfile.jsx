@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
-import { useSelector } from 'react-redux';
-import EditIcon from '../../components/icons/EditIcon';
-import Navbar from '../../components/Navbar';
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import EditIcon from "../../components/icons/EditIcon";
+import Navbar from "../../components/Navbar";
 import Modal from "react-modal";
-import { ServerVariables } from '../../util/ServerVariables';
-import { useNavigate } from 'react-router-dom';
-import FollowingsModal from '../../components/Followings';
+import { ServerVariables } from "../../util/ServerVariables";
+import { useNavigate } from "react-router-dom";
+import FollowingsModal from "../../components/Followings";
+import { motion } from "framer-motion";
 
 function UserProfile() {
-    const { user } = useSelector((state) => state.Auth);
-    const navigate = useNavigate()
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user } = useSelector((state) => state.Auth);
+  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -36,9 +37,14 @@ function UserProfile() {
 
   return (
     <>
-    <Navbar/>
-     <div className="bg-gray-100 font-sans min-h-screen w-full flex flex-row justify-center items-center">
-    <div className="card w-96 h-96 mx-auto bg-gray-300 text-grey-800 shadow-xl hover:shadow">
+      <Navbar />
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="bg-gray-100 font-sans min-h-screen w-full flex flex-row justify-center items-center"
+      >
+        <div className="card w-96 h-96 mx-auto bg-gray-300 text-grey-800 shadow-xl hover:shadow">
           <img
             className="w-36 mx-auto rounded-full -mt-20 border-2 border-gray-800 "
             src={`http://localhost:5000/userProfile/${user?.profile}`}
@@ -48,14 +54,14 @@ function UserProfile() {
             {user.name}
           </div>
           <div className="uppercase text-center mt-2 font-semibold text-sm">
-            <h2>Email:  {user?.email}</h2>
+            <h2>Email: {user?.email}</h2>
           </div>
           <div className="text-center font-normal text-lg"></div>
           <div className="uppercase text-center mt-2 font-semibold text-sm">
             <h2>Mobile: {user?.mobile} </h2>
           </div>
           <div className="text-center font-normal text-lg"></div>
-         
+
           <hr className="mt-8" />
           <div className="flex p-4 justify-center" onClick={openModal}>
             <p className="font-bold text-center cursor-pointer">
@@ -63,25 +69,25 @@ function UserProfile() {
             </p>
           </div>
           <div className="flex justify-center">
-            <p className="font-bold text-center cursor-pointer" onClick={()=>navigate(ServerVariables.editUserProfile)}>
-              <EditIcon/>
+            <p
+              className="font-bold text-center cursor-pointer"
+              onClick={() => navigate(ServerVariables.editUserProfile)}
+            >
+              <EditIcon />
             </p>
           </div>
           <Modal
-                isOpen={isModalOpen}
-                onRequestClose={closeModal}
-                ariaHideApp={false}
-                style={customStyles}
-              >
-                <FollowingsModal
-                  isOpen={isModalOpen}
-                  closeModal={closeModal}
-                />
-              </Modal>
-       </div>
-      </div>
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+            ariaHideApp={false}
+            style={customStyles}
+          >
+            <FollowingsModal isOpen={isModalOpen} closeModal={closeModal} />
+          </Modal>
+        </div>
+      </motion.div>
     </>
-  )
+  );
 }
 
-export default UserProfile
+export default UserProfile;

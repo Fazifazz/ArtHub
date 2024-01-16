@@ -3,6 +3,8 @@ import MyButton from '../../components/MyButton';
 import { useNavigate } from 'react-router-dom';
 import { ServerVariables } from '../../util/ServerVariables';
 import ArtistNavbar from '../../components/ArtistNav';
+import { motion } from 'framer-motion';
+
 
 const PaymentSuccessPage = () => {
   const navigate = useNavigate()
@@ -10,7 +12,11 @@ const PaymentSuccessPage = () => {
   return (
     <>
       <ArtistNavbar />
-      <div className="min-h-screen flex items-center justify-center bg-green-100">
+      <motion.div
+      initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+       className="min-h-screen flex items-center justify-center bg-green-100">
         <div className="bg-white p-8 rounded-md shadow-md text-center">
         <div className="myDivBg  p-6 m-4">
               <svg
@@ -35,7 +41,7 @@ const PaymentSuccessPage = () => {
         </div>
       </div>
       </div>
-      </div>
+      </motion.div>
     </>
   );
 };

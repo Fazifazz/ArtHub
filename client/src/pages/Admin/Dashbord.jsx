@@ -191,7 +191,7 @@ const Dashboard = () => {
                 <p class="text-sm text-blueGray-400 mt-4">
                   <span
                     class="whitespace-nowrap text-blue-500 cursor-pointer underline"
-                    onClick={() => navigate(ServerVariables.showArtists)}
+                    onClick={() => navigate(ServerVariables.Artists)}
                   >
                     View All Artists...{" "}
                   </span>
@@ -219,7 +219,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <p class="text-sm text-blueGray-400 mt-4">
-                  <span class="whitespace-nowrap text-blue-500 cursor-pointer underline">
+                  <span class="whitespace-nowrap text-blue-500 cursor-pointer underline" onClick={()=>navigate(ServerVariables.Artists)}>
                     View All Artists...{" "}
                   </span>
                 </p>

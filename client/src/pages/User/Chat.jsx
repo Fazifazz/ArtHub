@@ -147,20 +147,20 @@ const ChatWithArtist = () => {
     <>
       <Navbar />
       <div className="flex h-screen overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-1/4 bg-white border-r border-gray-300">
-          {/* Sidebar Header */}
-          <header className="p-4 border-b border-gray-300 flex justify-between items-center bg-gray-400 text-white">
-            <h1 className="text-2xl font-semibold">My chats</h1>
-            <div className="relative flex items-center mt-4 sm:mt-0">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="border p-1 text-black"
-                onChange={handleFilter}
-              />
-            </div>
-          </header>
+       {/* Sidebar */}
+<div className="w-1/4 bg-white border-r border-gray-300">
+  {/* Sidebar Header */}
+  <header className="p-4 border-b border-gray-300 flex justify-between  items-center bg-gray-400 text-white">
+    <h1 className="text-2xl font-semibold">My chats</h1>
+    <div className="relative flex items-center mt-2 sm:mt-0"> {/* Adjusted margin for small screens */}
+      <input
+        type="text"
+        placeholder="Search..."
+        className="border p-1 text-black sm:w-20 md:w-20 lg:w-40 xl:w-40"  // Adjust width based on screen size
+        onChange={handleFilter}
+      />
+    </div>
+  </header>
 
           {/* Contact List */}
           <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
@@ -184,7 +184,7 @@ const ChatWithArtist = () => {
                   <div className="flex-1 flex justify-between">
                     <h2 className="text-lg font-semibold">{artist.name}</h2>
                     {artist?.unseenMessagesCount > 0 ? (
-                      <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2">
+                      <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2 sm:w-6 sm:h-7 sm:ml-2 md:text-xs">
                         {artist?.unseenMessagesCount}
                       </span>
                     ) : (

@@ -6,6 +6,7 @@ import { ArtistRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const SubscriptionPlans = () => {
   const [plans, setPlans] = useState([]);
@@ -65,26 +66,31 @@ const SubscriptionPlans = () => {
   return (
     <>
       <ArtistNavbar />
-      <div className="min-h-screen bg-black-100 flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen bg-black-100 flex items-center justify-center"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentPlan?(
-          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 text-center">
-            <h1 className="text-xl font-semibold mb-4 text-green-500">
-              My Current Plan
-            </h1>
-            <h2 className="text-xl font-semibold mb-4">
-              {currentPlan?.name}
-            </h2>
+          {currentPlan ? (
+            <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 text-center">
+              <h1 className="text-xl font-semibold mb-4 text-green-500">
+                My Current Plan
+              </h1>
+              <h2 className="text-xl font-semibold mb-4">
+                {currentPlan?.name}
+              </h2>
 
-            <h3 className="text-yellow-500 mb-4">
-            ₹{currentPlan.amount.toFixed()}
-            </h3>
-            <h3 className="text-red-500 mb-4">
-              Expires on: {currentPlan?.expiresOn}
-            </h3>
-          </div>
-          ):(
-          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 text-center">
+              <h3 className="text-yellow-500 mb-4">
+                ₹{currentPlan.amount.toFixed()}
+              </h3>
+              <h3 className="text-red-500 mb-4">
+                Expires on: {currentPlan?.expiresOn}
+              </h3>
+            </div>
+          ) : (
+            <div className="bg-gray-800 text-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105 text-center">
               <h2 className="text-xl font-semibold mb-4 text-red-500">
                 No Current Plan
               </h2>
@@ -92,8 +98,8 @@ const SubscriptionPlans = () => {
               <h3 className="text-yellow-500 mb-4">
                 Please subscribe a new Plan.....!
               </h3>
-            </div> 
-           )} 
+            </div>
+          )}
           {plans.length ? (
             plans.map((plan, index) => (
               <div
@@ -120,7 +126,7 @@ const SubscriptionPlans = () => {
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

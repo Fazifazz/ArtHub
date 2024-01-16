@@ -11,13 +11,20 @@ import { updateUser } from "../../redux/AuthSlice";
 import { updateArtist } from "../../redux/ArtistAuthSlice";
 import { ServerVariables } from "../../util/ServerVariables";
 import StarRating from "../../components/StarRating";
+import { motion } from 'framer-motion';
+
 
 const PostCard = ({ artist, onFollow, onUnFollow }) => {
   const { user } = useSelector((state) => state.Auth);
   const averageRating = artist.ratings?.reduce((acc,rating)=>acc + rating?.rating,0)/artist?.ratings?.length || 0
   const navigate = useNavigate();
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 relative">
+    <motion.div 
+    initial={{ opacity: 0, y: -50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{scale:1.1}}
+    className="bg-white shadow-lg rounded-lg overflow-hidden m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 relative">
       <img
         className="w-full h-42 object-cover"
         src={`http://localhost:5000/artistProfile/${artist.profile}`}
@@ -74,7 +81,7 @@ const PostCard = ({ artist, onFollow, onUnFollow }) => {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

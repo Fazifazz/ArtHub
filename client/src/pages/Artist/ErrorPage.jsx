@@ -3,6 +3,7 @@ import Navbar from "../../components/Navbar";
 import MyButton from "../../components/MyButton";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
+import { motion } from "framer-motion";
 
 const PaymentFailPage = () => {
   const navigate = useNavigate();
@@ -10,7 +11,12 @@ const PaymentFailPage = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen flex items-center justify-center bg-red-100">
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen flex items-center justify-center bg-red-100"
+      >
         <div className="bg-white p-8 rounded-md shadow-md text-center">
           <h1 className="text-3xl font-semibold text-red-600 mb-4">
             Payment Failed
@@ -23,7 +29,7 @@ const PaymentFailPage = () => {
             onClick={() => navigate(ServerVariables.plansAvailable)}
           />
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };
