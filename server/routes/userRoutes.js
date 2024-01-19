@@ -66,6 +66,11 @@ userRouter
     "/addRatingToArtist",
     userAuth,
     userController.addRatingToArtist
-  );
+  )
+  .post(
+    "/chechUserRating",
+    userAuth,
+    userController.checkUserRating
+  )
 
 module.exports = userRouter;

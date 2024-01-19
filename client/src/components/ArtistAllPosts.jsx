@@ -12,24 +12,8 @@ import AddCommentModal from "./AddCommentModal";
 const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
   const { user } = useSelector((state) => state.Auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [comments, setComments] = useState(post.comments);
   const dispatch = useDispatch();
 
-  // const getComments = async (postId) => {
-    
-  //   userRequest({
-  //     url: apiEndPoints.getComments,
-  //     method: "post",
-  //     data: { postId },
-  //   }).then((res) => {
-  //     if (res.data?.success) {
-  //       // setComments(res.data.comments);
-        
-  //       return  
-  //     }
-  //     toast.error("something went wrong");
-  //   });
-  // };
 
   const openModal = () => {
     setIsModalOpen(true);

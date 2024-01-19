@@ -89,6 +89,24 @@ const ArtistNavbar = () => {
       });
   }, [Ntcount, MsgCount]);
 
+  useEffect(() => {
+    ArtistRequest({
+      url: apiEndPoints.checkArtistBlocked,
+      method: "get",
+    }).then((res) => {
+      if (res.data.success) {
+        return;
+      }
+      toast.error(res.data.error);
+      dispatch(logoutArtist());
+      return;
+    });
+    if (location.state) {
+      const { data } = location.state;
+      setActiveItem(data);
+    }
+  }, []);
+
   let adjustedNtcount = Ntcount;
   let adjustedMsgcount = MsgCount;
 
@@ -123,12 +141,7 @@ const ArtistNavbar = () => {
     }
   }
 
-  useEffect(() => {
-    if (location.state) {
-      const { data } = location.state;
-      setActiveItem(data);
-    }
-  }, [location.state]);
+
 
   const artistData = {
     name: artist.name,

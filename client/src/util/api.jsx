@@ -30,6 +30,7 @@ export const apiEndPoints = {
     deleteUserNotification:'api/user/deleteUserNotification',
     userNotificationsCount:'api/user/userNotificationsCount',
     addRatingToArtist:'api/user/addRatingToArtist',
+    chechUserRating:'api/user/chechUserRating',
 
 
     //artist endpoints
@@ -60,6 +61,7 @@ export const apiEndPoints = {
     getMySubscriptions:'/api/artist/getMySubscriptions',
     getArtistBanners:'/api/artist/getArtistBanners',
     getRatedUsers:'/api/artist/getRatedUsers',
+    checkArtistBlocked:'/api/artist/checkArtistBlocked',
 
     //admin endpoints
     postAdminLogin:'/api/admin/postAdminLogin',

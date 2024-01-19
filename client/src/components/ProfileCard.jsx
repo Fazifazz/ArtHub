@@ -204,7 +204,7 @@ function ProfileCard({ Artist }) {
                     className="text-blue-600 hover:text-blue-800 cursor-pointer underline mt-2"
                     onClick={openRatingModal}
                   >
-                    Rate again?
+                    Edit it?
                   </a>
                 </>
               ) : (

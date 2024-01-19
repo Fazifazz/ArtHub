@@ -118,5 +118,10 @@ artistRouter
     artistAuthMiddleware,
     artistController.getRatedUsers
   )
+  .get(
+    "/checkArtistBlocked",
+    artistAuthMiddleware,
+    artistController.checkCurrentArtistBlocked
+  )
 
 module.exports = artistRouter;

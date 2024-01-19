@@ -8,6 +8,7 @@ const ContactCard = () => {
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      whileHover={{scale:1.012}}
       className="bg-gradient-to-r from-pink-400 via-purple-500 to-indigo-500 p-6 rounded-md shadow-md text-white mb-4 fixed top-40"
     >
       <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>

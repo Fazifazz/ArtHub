@@ -121,18 +121,3 @@ const artistModel = mongoose.model("artist", artistSchema);
 module.exports = artistModel;
 
 
-// rating: {
-//   type: String,
-//   default: 0,
-// },
-// ratings: [
-//   {
-//     rating: {
-//       type: String,
-//     },
-//     ratedBy: {
-//       type: ObjectId,
-//       ref: "user",
-//     },
-//   },
-// ],

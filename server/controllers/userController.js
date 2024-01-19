@@ -12,6 +12,8 @@ const jwt = require("jsonwebtoken"),
   Banner = require("../models/admin/BannerModel"),
   catchAsync = require("../util/catchAsync"),
   Mail = require("../util/otpMailer");
+const chatModel = require("../models/user/chatModel");
+const chatMessage = require("../models/user/chatMessage");
 
 exports.register = catchAsync(async (req, res) => {
   const { name, mobile, email, password } = req.body;
@@ -103,13 +105,12 @@ exports.verifyLogin = catchAsync(async (req, res) => {
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  console.log(user.role);
   return res.status(200).json({ success: "Login Successfull", token, user });
 });
 
 exports.ResendOtp = catchAsync(async (req, res) => {
   if (!req.body.email) {
-    return console.log("email not found");
+    return res.json({error:'email not found!'})
   }
   const user = await User.findOne({ email: req.body.email });
   const newOtp = randomString.generate({
@@ -171,11 +172,6 @@ exports.updatePassword = catchAsync(async (req, res) => {
   return res.status(200).json({ error: "password changing failed" });
 });
 
-const mongoose = require("mongoose");
-const chatModel = require("../models/user/chatModel");
-const chatMessage = require("../models/user/chatMessage");
-const ObjectId = mongoose.Types.ObjectId;
-
 exports.getAllFollowingsPosts = catchAsync(async (req, res) => {
   const currentUser = await User.findById(req.userId);
   const followedArtists = currentUser.followings;
@@ -197,6 +193,7 @@ exports.getAllFollowingsPosts = catchAsync(async (req, res) => {
 
   return res.status(200).json({ error: "failed" });
 });
+
 exports.getAllPosts = catchAsync(async (req, res) => {
   const artistPosts = await Post.find({})
     .sort({ createdAt: -1 })
@@ -209,8 +206,17 @@ exports.getAllPosts = catchAsync(async (req, res) => {
     })
     .populate("postedBy");
 
-  // Sort the posts based on the highest count of likes
-  artistPosts.sort((a, b) => b.likes.length - a.likes.length);
+  // Sort the posts based on the highest count of likes and the time elapsed
+  artistPosts.sort((a, b) => {
+    const likesComparison = b.likes.length - a.likes.length;
+
+    // If the likes count is the same, compare based on the time elapsed
+    if (likesComparison === 0) {
+      return b.createdAt - a.createdAt;
+    }
+
+    return likesComparison;
+  });
 
   if (artistPosts) {
     return res.status(200).json({ success: "ok", artistPosts });
@@ -407,7 +413,10 @@ exports.getAllArtists = catchAsync(async (req, res) => {
   const artists = await Artist.find(query)
     .skip((page - 1) * pageSize)
     .limit(pageSize)
-    .sort({ createdAt: -1 });
+    .sort({
+      "ratings.rating": -1, // Sort in descending order of rating
+      createdAt: -1, // Secondary sort by createdAt in descending order
+    });
 
   if (artists) {
     return res.status(200).json({
@@ -482,18 +491,32 @@ exports.getUserFollowings = catchAsync(async (req, res) => {
 });
 
 //notifications
-
 exports.getUserNotifications = catchAsync(async (req, res) => {
-  const Id = req.userId;
+  const userId = req.userId;
+
+  // Update notifications to mark them as seen
   await Notification.updateMany(
-    { receiverId: Id, seen: false },
+    { receiverId: userId, seen: false },
     { $set: { seen: true } }
   );
-  const notifications = await Notification.find({ receiverId: Id })
-    .sort({
-      date: -1,
-    })
-    .populate("relatedPostId");
+
+  // Fetch notifications with populated relatedPostId, comments, and their postedBy
+  const notifications = await Notification.find({ receiverId: userId })
+    .sort({ date: -1 })
+    .populate({
+      path: "relatedPostId",
+      populate: [
+        {
+          path: "postedBy",
+          model: "artist",
+        },
+        {
+          path: "comments.postedBy",
+          model: "user",
+        },
+      ],
+    });
+
   return res.status(200).json({ notifications, success: true });
 });
 
@@ -564,4 +587,22 @@ exports.addRatingToArtist = catchAsync(async (req, res) => {
   }
 
   res.json({ error: true, message: "Rating submitting failed" });
+});
+
+exports.checkUserRating = catchAsync(async (req, res) => {
+  const { artistId } = req.body;
+  const artist = await Artist.findById(artistId);
+
+  if (!artist) {
+    return res.status(404).json({ error: "Artist not found" });
+  }
+  const userRating = artist.ratings.find(
+    (rating) => rating.user.toString() === req.userId
+  );
+
+  if (userRating) {
+    return res.status(200).json({ success: true, rating: userRating.rating });
+  } else {
+    return res.status(200).json({ success: true, rating: null });
+  }
 });

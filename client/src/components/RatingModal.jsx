@@ -1,46 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { hideLoading, showLoading } from "../redux/AlertSlice";
 import { userRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-function RatingModal({ isOpen, closeModal,artistId }) {
+function RatingModal({ isOpen, closeModal, artistId }) {
+  const { user } = useSelector((state) => state.Auth);
   const [rating, setRating] = useState(0);
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    userRequest({
+      url: apiEndPoints.chechUserRating,
+      method: "post",
+      data: { artistId },
+    }).then((res) => {
+      if (res.data.success) {
+        setRating(res.data.rating);
+      }
+    });
+  }, []);
 
   const handleStarClick = (starIndex) => {
     setRating(starIndex + 1);
   };
 
-  const addRatingToArtist = async(artistId)=>{
-    if(!rating){
-        return toast.error('add stars to rate artist...')
+  const addRatingToArtist = async (artistId) => {
+    if (!rating) {
+      return toast.error("add stars to rate artist...");
     }
-    dispatch(showLoading())
+    dispatch(showLoading());
     userRequest({
-        url:apiEndPoints.addRatingToArtist,
-        method:'post',
-        data:{rating,artistId}
-    }).then((res)=>{
-        dispatch(hideLoading())
-        if(res.data.success){
-            toast.success(res.data.message)
-            window.location.reload()
-        }else{
-            toast.error(res.data.message)
-        }
-    })
-  }
+      url: apiEndPoints.addRatingToArtist,
+      method: "post",
+      data: { rating, artistId },
+    }).then((res) => {
+      dispatch(hideLoading());
+      if (res.data.success) {
+        toast.success(res.data.message);
+        window.location.reload();
+      } else {
+        toast.error(res.data.message);
+      }
+    });
+  };
 
   const renderStars = () => {
     const stars = [];
+    const totalStars = rating !== null ? rating : "";
     for (let i = 0; i < 5; i++) {
       const starClassName =
-        i < rating ? "text-yellow-500" : "text-gray-500 hover:text-gray-600";
+        i < totalStars
+          ? "text-yellow-500"
+          : "text-gray-500 hover:text-gray-600";
       stars.push(
         <svg
           key={i}
@@ -95,7 +111,10 @@ function RatingModal({ isOpen, closeModal,artistId }) {
               <div className="flex space-x-3">{renderStars()}</div>
             </div>
             <div className="w-3/4 flex flex-col">
-              <button className="py-3 my-8 text-lg bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl text-white" onClick={()=>  addRatingToArtist(artistId)}>
+              <button
+                className="py-3 my-8 text-lg bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl text-white"
+                onClick={() => addRatingToArtist(artistId)}
+              >
                 Rate Now
               </button>
             </div>

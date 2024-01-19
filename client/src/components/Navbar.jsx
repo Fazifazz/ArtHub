@@ -348,6 +348,13 @@ const Navbar = () => {
                     className="h-6 w-6"
                     aria-hidden="true"
                   />
+                  {MsgCount > 0 && (
+                        <>
+                          <span className="absolute top-0  bg-red-500 text-white rounded-full px-1  text-xs">
+                            {adjustedMsgcount}
+                          </span>
+                        </>
+                      )}
                 </button>
                 <button
                   type="button"

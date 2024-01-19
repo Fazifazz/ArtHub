@@ -9,13 +9,13 @@ const AddCommentModal = ({
   postId,
   addComment,
   artistPosts,
-  post
+  post,
 }) => {
   const [newComment, setNewComment] = useState("");
   const [selectedPost, setSelectedPost] = useState(null);
 
   useEffect(() => {
-    if(post){
+    if (post) {
       return setSelectedPost(post);
     }
     if (postId && artistPosts) {
@@ -48,7 +48,7 @@ const AddCommentModal = ({
           marginRight: "-50%",
           transform: "translate(-50%, -50%)",
           width: "400px",
-          height: '500px', // Increased width to accommodate comments
+          height: "500px", // Increased width to accommodate comments
           maxHeight: "500px",
           overflowY: "auto",
         },
@@ -90,7 +90,11 @@ const AddCommentModal = ({
                       <ShowReplies
                         key={reply?._id}
                         Reply={reply}
-                        Post={post?post:artistPosts.find((post) => post._id === postId)}
+                        Post={
+                          post
+                            ? post
+                            : artistPosts.find((post) => post._id === postId)
+                        }
                       />
                     ))}
                   </div>

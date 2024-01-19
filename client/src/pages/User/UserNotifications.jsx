@@ -7,10 +7,38 @@ import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import Modal from "react-modal";
+import AddCommentModal from "../../components/AddCommentModal";
 
 const UserNotification = () => {
   const [notifications, setNotifications] = useState([]);
   const dispatch = useDispatch();
+  const [selectedPostId, setSelectedPostId] = useState("");
+  const [selectedPost, setSelectedPost] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = (post) => {
+    setSelectedPostId(post._id);
+    setSelectedPost(post);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  const customStyles = {
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.0)",
+    },
+    content: {
+      top: "30%",
+      left: "50%",
+      right: "auto",
+      bottom: "30%",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+  };
 
   // to check notification
   const getAllNotifications = async () => {
@@ -26,8 +54,8 @@ const UserNotification = () => {
         }
       })
       .catch((error) => {
-        dispatch(hideLoading())
-        toast.error('something went wrong!')
+        dispatch(hideLoading());
+        toast.error("something went wrong!");
         console.log(error);
       });
   };
@@ -51,39 +79,55 @@ const UserNotification = () => {
     return `${year}-${month}-${day} ${formattedHours}:${formattedMinutes}${ampm}`;
   };
 
+  const addComment = async (text, postId) => {
+    dispatch(showLoading());
+    userRequest({
+      url: apiEndPoints.comment,
+      method: "post",
+      data: { text, postId },
+    }).then((res) => {
+      dispatch(hideLoading());
+      if (res.data.success) {
+        getAllNotifications()
+        window.location.reload()
+      }
+    });
+  };
+
   const clearAllNotifications = () => {
     userRequest({
-      url:apiEndPoints.clearUserAllNotifications,
-      method:'delete',
-    }).then((res) => {
-      if (res.data.success) {
-        toast.success(res.data.success)
-        getAllNotifications()
-      }
+      url: apiEndPoints.clearUserAllNotifications,
+      method: "delete",
     })
-    .catch((error) => {
-      toast.error('something went wrong!')
-      console.log(error);
-    });
+      .then((res) => {
+        if (res.data.success) {
+          toast.success(res.data.success);
+          getAllNotifications();
+        }
+      })
+      .catch((error) => {
+        toast.error("something went wrong!");
+        console.log(error);
+      });
   };
 
   const clearMessage = (notificationId) => {
     userRequest({
-      url:apiEndPoints.deleteUserNotification,
-      method:'delete',
-      data:{notificationId}
-    }).then((res) => {
-      if (res.data.success) {
-        toast.success(res.data.success)
-        getAllNotifications()
-      }
+      url: apiEndPoints.deleteUserNotification,
+      method: "delete",
+      data: { notificationId },
     })
-    .catch((error) => {
-      toast.error('something went wrong!')
-      console.log(error);
-    });
-};
-
+      .then((res) => {
+        if (res.data.success) {
+          toast.success(res.data.success);
+          getAllNotifications();
+        }
+      })
+      .catch((error) => {
+        toast.error("something went wrong!");
+        console.log(error);
+      });
+  };
 
   return (
     <div>
@@ -110,17 +154,23 @@ const UserNotification = () => {
               notifications.map((item) => (
                 <motion.div
                   key={item?._id}
-                  whileHover={{scale:1.02}}
+                  whileHover={{ scale: 1.02 }}
                   className="bg-gray-200 p-4 w-auto rounded-lg shadow-md flex items-center justify-between space-x-4"
                 >
                   <div className="flex-grow">
                     <p className="text-gray-800 font-bold">
                       {item?.notificationMessage}
                     </p>
-                    {item?.relatedPostId?<img src={`http://localhost:5000/artistPosts/${item?.relatedPostId?.image}`}
-                    className="w-10 h-10"
-                    alt={item?.relatedPostId?.name}
-                    />:''}
+                    {item?.relatedPostId ? (
+                      <img
+                        src={`http://localhost:5000/artistPosts/${item?.relatedPostId?.image}`}
+                        className="w-10 h-10"
+                        onClick={() => openModal(item?.relatedPostId)}
+                        alt={item?.relatedPostId?.name}
+                      />
+                    ) : (
+                      ""
+                    )}
                   </div>
                   <div className="flex items-center">
                     <p className="text-gray-800 mr-4 font-bold">
@@ -137,6 +187,20 @@ const UserNotification = () => {
                 No notifications
               </div>
             )}
+            <Modal
+              isOpen={isModalOpen}
+              onRequestClose={closeModal}
+              ariaHideApp={false}
+              style={customStyles}
+            >
+              <AddCommentModal
+                isOpen={isModalOpen}
+                closeModal={closeModal}
+                postId={selectedPostId}
+                post={selectedPost}
+                addComment={addComment}
+              />
+            </Modal>
           </div>
         </div>
       </div>

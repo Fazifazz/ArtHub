@@ -110,7 +110,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
 
 exports.ResendOtp = catchAsync(async (req, res) => {
   if (!req.body.email) {
-    return console.log("email not found");
+    return res.json({error:'email not found'})
   }
   const artist = await Artist.findOne({ email: req.body.email });
   const newOtp = randomString.generate({
@@ -188,7 +188,6 @@ exports.forgetVerifyEmail = catchAsync(async (req, res) => {
 exports.updatePassword = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const artist = await Artist.findOne({ email: email });
-  console.log(email, password);
   const hashPassword = await bcrypt.hash(password, 10);
   if (artist) {
     artist.password = hashPassword;
@@ -412,13 +411,16 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
         artist.subscription = {
           transactionId: transactionId,
           currentPlan: planId,
-          // expiresAt: new Date(currentDate.getTime() + 10 * 60 * 1000),
-          expiresAt : new Date(currentDate.getTime() + (plan.dayDuaration) * 24 * 60 * 60 * 1000)
+          expiresAt: new Date(
+            currentDate.getTime() + plan.dayDuaration * 24 * 60 * 60 * 1000
+          ),
         };
         artist.isSubscribed = true;
         artist.paymentHistory.push({
           planName: plan.name,
-          expireDate: new Date(currentDate.getTime() + (plan.dayDuaration) * 24 * 60 * 60 * 1000),
+          expireDate: new Date(
+            currentDate.getTime() + plan.dayDuaration * 24 * 60 * 60 * 1000
+          ),
           date: currentDate,
           price: plan.amount,
           duration: plan.dayDuaration,
@@ -429,7 +431,9 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
           artist: artistId,
           date: currentDate,
           transactionId: transactionId,
-          expireDate: new Date(currentDate.getTime() + (plan.dayDuaration) * 24 * 60 * 60 * 1000),
+          expireDate: new Date(
+            currentDate.getTime() + plan.dayDuaration * 24 * 60 * 60 * 1000
+          ),
         });
         return res.redirect("http://localhost:5173/successPage");
       }
@@ -525,7 +529,19 @@ exports.getArtistNotifications = catchAsync(async (req, res) => {
     .sort({
       date: -1,
     })
-    .populate("relatedPostId");
+    .populate({
+      path: "relatedPostId",
+      populate: [
+        {
+          path: "postedBy",
+          model: "artist",
+        },
+        {
+          path: "comments.postedBy",
+          model: "user",
+        },
+      ],
+    });
   return res.status(200).json({ notifications, success: true });
 });
 
@@ -603,4 +619,13 @@ exports.getRatedUsers = catchAsync(async (req, res) => {
   });
   const ratedUsers = artist.ratings;
   return res.status(200).json({ success: "ok", ratedUsers });
+});
+
+
+exports.checkCurrentArtistBlocked = catchAsync(async (req, res) => {
+  const currentArtist= await Artist.findById(req.artistId);
+  if (currentArtist.isBlocked) {
+    return res.json({ error: "You are blocked by admin", currentArtist });
+  }
+  return res.status(200).json({ success: "ok" });
 });
