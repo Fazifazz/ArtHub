@@ -42,3 +42,21 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ChatWithArtist.css */
+
+/* Media query for small screens (less than 670 pixels) */
+@media (max-width: 670px) {
+  .flex-1 {
+    display: none; /* Hide the main chat area by default on small screens */
+  }
+
+  .sidebar-container {
+    width: 100%; /* Make the sidebar take full width on small screens */
+  }
+
+  .sidebar-container .flex-1 {
+    display: block; /* Show the main chat area within the sidebar container */
+  }
+}
+

@@ -412,6 +412,11 @@ exports.updateBanner = catchAsync(async (req, res) => {
 });
 
 
+const monthNames = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 exports.getDashboardDatas = catchAsync(async (req, res) => {
   // Calculate daily, weekly, and monthly date ranges
   const currentDate = new Date();
@@ -422,6 +427,25 @@ exports.getDashboardDatas = catchAsync(async (req, res) => {
   const startDateDaily = new Date(currentDate - oneDay);
   const startDateWeekly = new Date(currentDate - oneWeek);
   const startDateMonthly = new Date(currentDate - oneMonth);
+
+    // Function to calculate monthly revenue data
+    const calculateMonthlyRevenue = async () => {
+      const monthlyRevenueData = [];
+  
+      for (let i = 1; i <= 12; i++) {
+        const startDate = new Date(currentDate.getFullYear(), i - 1, 1);
+        const endDate = new Date(currentDate.getFullYear(), i, 0, 23, 59, 59, 999);
+  
+        const monthlyAmount = await calculateTotalAmount(startDate, endDate);
+  
+        monthlyRevenueData.push({
+          month: monthNames[i - 1], // Using 0-based index
+          amount: monthlyAmount,
+        });
+      }
+  
+      return monthlyRevenueData;
+    };
 
   // Function to calculate the total amount from subscriptions
   const calculateTotalAmount = async (startDate) => {
@@ -447,6 +471,7 @@ exports.getDashboardDatas = catchAsync(async (req, res) => {
   const dailyAmount = await calculateTotalAmount(startDateDaily);
   const weeklyAmount = await calculateTotalAmount(startDateWeekly);
   const monthlyAmount = await calculateTotalAmount(startDateMonthly);
+  const monthlyRevenueData = await calculateMonthlyRevenue();
 
   return res.status(200).json({
     success: "ok",
@@ -456,6 +481,7 @@ exports.getDashboardDatas = catchAsync(async (req, res) => {
     dailyAmount,
     weeklyAmount,
     monthlyAmount,
+    monthlyRevenueData,
   });
 });
 

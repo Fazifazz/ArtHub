@@ -11,6 +11,7 @@ import socket from "../../components/SocketIo";
 import { CheckCircleIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
+
 const ChatWithArtist = () => {
   const [artists, setArtists] = useState([]);
   const dispatch = useDispatch();
@@ -75,7 +76,7 @@ const ChatWithArtist = () => {
     socket.on("message received", (message) => {
       if (message.artistId === selectedArtistId) {
         updateChatHistory(message);
-        fetchChatMessages(selectedArtistId)
+        fetchChatMessages(selectedArtistId);
       } else {
         getAllArtistsYouFollow();
       }
@@ -143,24 +144,28 @@ const ChatWithArtist = () => {
     setArtists(newData);
   };
 
+  const isSmallScreen = window.innerWidth < 670;
   return (
     <>
       <Navbar />
       <div className="flex h-screen overflow-hidden">
-       {/* Sidebar */}
-<div className="w-1/4 bg-white border-r border-gray-300">
-  {/* Sidebar Header */}
-  <header className="p-4 border-b border-gray-300 flex justify-between  items-center bg-gray-400 text-white">
-    <h1 className="text-2xl font-semibold">My chats</h1>
-    <div className="relative flex items-center mt-2 sm:mt-0"> {/* Adjusted margin for small screens */}
-      <input
-        type="text"
-        placeholder="Search..."
-        className="border p-1 text-black sm:w-20 md:w-20 lg:w-40 xl:w-40"  // Adjust width based on screen size
-        onChange={handleFilter}
-      />
-    </div>
-  </header>
+        {/* Sidebar */}
+
+        <div className="w-1/4 bg-white border-r border-gray-300">
+          {/* Sidebar Header */}
+          <header className="p-4 border-b border-gray-300 flex justify-between  items-center bg-gray-400 text-white">
+            <h1 className="text-2xl font-semibold">My chats</h1>
+            <div className="relative flex items-center mt-2 sm:mt-0">
+              {" "}
+              {/* Adjusted margin for small screens */}
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border p-1 text-black sm:w-20 md:w-20 lg:w-40 xl:w-40" // Adjust width based on screen size
+                onChange={handleFilter}
+              />
+            </div>
+          </header>
 
           {/* Contact List */}
           <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
@@ -202,8 +207,10 @@ const ChatWithArtist = () => {
             )}
           </div>
         </div>
+        {/* )} */}
 
         {/* Main Chat Area */}
+
         <div className="flex-1">
           {/* Chat Header */}
           <header className="bg-green-100 p-4 text-gray-700 flex items-center justify-between">
@@ -274,12 +281,14 @@ const ChatWithArtist = () => {
                   </div>
                   <div className="text-xs text-gray-500 ml-2 self-end">
                     {timeAgo}{" "}
-                    {isUserChat&&message.isArtistSeen?
-                    <>
-                    seen
-                    <CheckCircleIcon className="h-5 w-5 text-blue-500"/>
-                    </>
-                    :''}
+                    {isUserChat && message.isArtistSeen ? (
+                      <>
+                        seen
+                        <CheckCircleIcon className="h-5 w-5 text-blue-500" />
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
               );
@@ -306,7 +315,10 @@ const ChatWithArtist = () => {
                 <button
                   className="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2"
                   onClick={() => {
-                    sendChatMessage(chatPartner?._id, chatPartner?.artistId._id);
+                    sendChatMessage(
+                      chatPartner?._id,
+                      chatPartner?.artistId._id
+                    );
                   }}
                 >
                   Send
@@ -321,5 +333,6 @@ const ChatWithArtist = () => {
     </>
   );
 };
+
 
 export default ChatWithArtist;
