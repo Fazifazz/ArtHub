@@ -182,9 +182,21 @@ const ArtistChatPage = () => {
                     />
                   </div>
                   <div className="flex-1 flex justify-between">
-                    <h2 className="text-lg font-semibold">
-                      {user.userId?.name}
-                    </h2>
+                    <div>
+                      <h2 className="text-lg font-semibold">
+                        {user.userId?.name}
+                      </h2>
+                      {user?.latestMessage ? (
+                        <p className="text-slate-600">
+                          {user?.latestMessageSenderId !== user.userId._id
+                            ? `You: ${user?.latestMessage}`
+                            : `${user?.userId?.name}: ${user?.latestMessage}`}
+                        </p>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+
                     {user?.unseenMessagesCount > 0 ? (
                       <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2 sm:w-6 sm:h-7 sm:ml-2 md:text-xs">
                         {user?.unseenMessagesCount}
@@ -192,9 +204,6 @@ const ArtistChatPage = () => {
                     ) : (
                       ""
                     )}
-                    {/* <p className="text-gray-600">
-                      {user.hasChat ? "last message" : "No messages yet"}
-                    </p> */}
                   </div>
                 </motion.div>
               ))

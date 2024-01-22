@@ -11,7 +11,6 @@ import socket from "../../components/SocketIo";
 import { CheckCircleIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
-
 const ChatWithArtist = () => {
   const [artists, setArtists] = useState([]);
   const dispatch = useDispatch();
@@ -144,7 +143,6 @@ const ChatWithArtist = () => {
     setArtists(newData);
   };
 
-  const isSmallScreen = window.innerWidth < 670;
   return (
     <>
       <Navbar />
@@ -167,47 +165,54 @@ const ChatWithArtist = () => {
             </div>
           </header>
 
-          {/* Contact List */}
-          <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
-            {artists.length ? (
-              artists.map((artist) => (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  key={artist._id}
-                  className={`flex items-center mb-4 shadow-md cursor-pointer hover:bg-green-100 p-2 rounded-md ${
-                    selectedArtistId === artist._id ? "bg-green-100" : ""
-                  }`}
-                  onClick={() => handleArtistClick(artist._id)}
-                >
-                  <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
-                    <img
-                      src={`http://localhost:5000/artistProfile/${artist.profile}`}
-                      alt={`Avatar of ${artist.name}`}
-                      className="w-12 h-12 rounded-full"
-                    />
-                  </div>
-                  <div className="flex-1 flex justify-between">
+          {artists.length ? (
+            artists.map((artist) => (
+              <motion.div
+                whileHover={{ scale: 1.012 }}
+                key={artist._id}
+                className={`flex items-center mb-4 shadow-md cursor-pointer hover:bg-green-100 p-2 rounded-md ${
+                  selectedArtistId === artist._id ? "bg-green-100" : ""
+                }`}
+                onClick={() => handleArtistClick(artist._id)}
+              >
+                <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
+                  <img
+                    src={`http://localhost:5000/artistProfile/${artist.profile}`}
+                    alt={`Avatar of ${artist.name}`}
+                    className="w-12 h-12 rounded-full"
+                  />
+                </div>
+                <div className="flex-1 flex justify-between">
+                  <div>
                     <h2 className="text-lg font-semibold">{artist.name}</h2>
-                    {artist?.unseenMessagesCount > 0 ? (
-                      <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2 sm:w-6 sm:h-7 sm:ml-2 md:text-xs">
-                        {artist?.unseenMessagesCount}
-                      </span>
+                    {artist?.latestMessage ? (
+                      <p className="text-slate-600">
+                        {artist?.latestMessageSenderId !== artist._id
+                          ? `You: ${artist?.latestMessage}`
+                          : `${artist?.name}: ${artist?.latestMessage}`}
+                      </p>
                     ) : (
                       ""
                     )}
                   </div>
-                </motion.div>
-              ))
-            ) : (
-              <div className="w-full p-4 flex items-center justify-center">
-                <div className="text-xl font-bold text-center">
-                  No connections
+                  {artist?.unseenMessagesCount > 0 ? (
+                    <span className="bg-green-500 text-white rounded-full px-2 py-1 text-sm mr-2 sm:w-6 sm:h-7 sm:ml-2 md:text-xs">
+                      {artist?.unseenMessagesCount}
+                    </span>
+                  ) : (
+                    ""
+                  )}
                 </div>
+              </motion.div>
+            ))
+          ) : (
+            <div className="w-full p-4 flex items-center justify-center">
+              <div className="text-xl font-bold text-center">
+                No connections
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-        {/* )} */}
 
         {/* Main Chat Area */}
 
@@ -333,6 +338,5 @@ const ChatWithArtist = () => {
     </>
   );
 };
-
 
 export default ChatWithArtist;

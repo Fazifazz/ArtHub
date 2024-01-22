@@ -11,9 +11,19 @@ exports.getArtistsUserFollow = catchAsync(async (req, res) => {
   }
 
   const artists = user.followings;
-  const artistsWithUnseenMessages = await Promise.all(
+  const artistsWithMessages = await Promise.all(
     artists.map(async (artist) => {
       const artistId = artist._id;
+
+      // Fetch the latest message for the artist
+      const latestMessage = await ChatMessages.findOne({
+        artistId,
+        userId: user._id,
+      })
+        .sort({ time: -1 }) // Sort by time in descending order to get the latest message
+        .exec();
+
+      // Count unseen messages
       const unseenMessagesCount = await ChatMessages.countDocuments({
         artistId: artistId,
         isUserSeen: false, // Add any additional conditions if needed
@@ -22,12 +32,13 @@ exports.getArtistsUserFollow = catchAsync(async (req, res) => {
       return {
         ...artist.toObject(),
         unseenMessagesCount,
+        latestMessage: latestMessage?.message || null,
+        latestMessageSenderId: latestMessage?.senderId || null,
       };
     })
   );
-  return res
-    .status(200)
-    .json({ success: "ok", artists: artistsWithUnseenMessages });
+
+  return res.status(200).json({ success: "ok", artists: artistsWithMessages });
 });
 
 exports.getChatMessages = catchAsync(async (req, res) => {
@@ -114,10 +125,19 @@ exports.getUserChatList = catchAsync(async (req, res) => {
         userId: userId,
         isArtistSeen: false, // Add any additional conditions if needed
       });
+      // Fetch the latest message for the artist
+      const latestMessage = await ChatMessages.findOne({
+        userId,
+        artistId: artistId,
+      })
+        .sort({ time: -1 }) // Sort by time in descending order to get the latest message
+        .exec();
 
       return {
         ...user.toObject(),
         unseenMessagesCount,
+        latestMessage: latestMessage?.message || null,
+        latestMessageSenderId: latestMessage?.senderId || null,
       };
     })
   );
