@@ -6,7 +6,7 @@ const express = require("express"),
   { isUserBlocked } = require("../middlewares/blockMiddleware/isUserBlocked");
 upload = require("../middlewares/imageUpload/cropImage");
 
-userRouter
+userRouter 
   .post("/register", userController.register)
   .post("/verifyOtp", userController.verifyOtp)
   .post("/resendOtp", userController.ResendOtp)

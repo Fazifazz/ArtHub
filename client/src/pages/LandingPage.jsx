@@ -34,7 +34,7 @@ const LandingPage = () => {
               alt="Artwork 1"
               className="w-full h-auto rounded-lg"
             />
-            <p className="mt-2">By Mohamed Fasil</p>
+            <p className="mt-2">By MOHAMED FASIL P</p>
           </div>
           <div className="max-w-xs">
             <img
@@ -42,7 +42,7 @@ const LandingPage = () => {
               alt="Artwork 2"
               className="w-full h-auto rounded-lg"
             />
-            <p className="mt-2">By Bilal</p>
+            <p className="mt-2">By BILAL MOHAMED</p>
           </div>
           {/* Add more featured artworks as needed */}
         </div>
