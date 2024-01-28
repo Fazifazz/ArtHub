@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config(); 
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookies = require("cookie-parser");
@@ -14,7 +14,7 @@ const paypal = require("paypal-rest-sdk");
 const subscritionHistoryModel = require("../models/admin/subscriptionHistoryModel");
 
 paypal.configure({
-  mode: "sandbox",
+  mode: "sandbox", 
   client_id: process.env.PAYPAL_CLIENT_ID,
   client_secret: process.env.PAYPAL_SECRET_ID,
 });
