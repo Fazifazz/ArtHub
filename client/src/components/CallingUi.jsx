@@ -1,6 +1,7 @@
 import React from "react";
 import Modal from "react-modal";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../config/api";
 
 const CallingUi = ({ isOpen, closeModal, sender, link }) => {
   return (
@@ -34,13 +35,13 @@ const CallingUi = ({ isOpen, closeModal, sender, link }) => {
           >
             {sender.field ? (
               <img
-                src={`http://localhost:5000/artistProfile/${sender?.profile}`}
+                src={`${API_BASE_URL}/artistProfile/${sender?.profile}`}
                 className="w-full h-full object-cover rounded-3xl border-2 border-white"
                 alt=""
               />
             ) : (
               <img
-                src={`http://localhost:5000/userProfile/${sender?.profile}`}
+                src={`${API_BASE_URL}/userProfile/${sender?.profile}`}
                 className="w-full h-full object-cover rounded-3xl border-2 border-white"
                 alt=""
               />

@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { ServerVariables } from "../../util/ServerVariables";
 import { apiEndPoints } from "../../util/api";
+import { API_BASE_URL } from "../../config/api";
 
 function ArtistView() {
   const location = useLocation();
@@ -62,7 +63,7 @@ function ArtistView() {
         <div className="card w-96 h-96 mx-auto  bg-gray-300  text-grey-800 shadow-xl hover:shadow">
           <img
             className="w-36 mx-auto rounded-full -mt-20 border-2 border-gray-800 "
-            src={`http://localhost:5000/artistProfile/${artist?.profile}`}
+            src={`${API_BASE_URL}/artistProfile/${artist?.profile}`}
             alt=""
           />
           <div className="uppercase text-center mt-2 text-3xl font-medium">

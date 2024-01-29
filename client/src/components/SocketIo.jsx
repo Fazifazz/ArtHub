@@ -1,5 +1,6 @@
 import socketIOClient from 'socket.io-client';
+import { API_BASE_URL } from '../config/api';
 
-const socket = socketIOClient('http://localhost:5000'); // Replace with your server URL
+const socket = socketIOClient(API_BASE_URL); // Replace with your server URL
 
 export default socket;

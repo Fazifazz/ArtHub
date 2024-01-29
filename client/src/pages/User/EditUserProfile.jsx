@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import Navbar from "../../components/Navbar";
 import { logoutUser, updateUser } from "../../redux/AuthSlice";
+import { API_BASE_URL } from "../../config/api";
 
 function EditUserProfile() {
   const { user } = useSelector((state) => state.Auth);
@@ -89,7 +90,7 @@ function EditUserProfile() {
             src={
               selectedImage
                 ? URL.createObjectURL(selectedImage)
-                : `http://localhost:5000/userProfile/${user.profile}`
+                : `${API_BASE_URL}/userProfile/${user.profile}`
             }
             alt=""
           />

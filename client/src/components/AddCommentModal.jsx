@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { FaTelegram } from "react-icons/fa";
 import ShowReplies from "./showReplies";
+import { API_BASE_URL } from "../config/api";
 
 const AddCommentModal = ({
   isOpen,
@@ -58,7 +59,7 @@ const AddCommentModal = ({
         {selectedPost && (
           <img
             className="w-full h-42 object-cover"
-            src={`http://localhost:5000/artistPosts/${selectedPost?.image}`}
+            src={`${API_BASE_URL}/artistPosts/${selectedPost?.image}`}
             alt={selectedPost?.title}
           />
         )}
@@ -70,7 +71,7 @@ const AddCommentModal = ({
                 <div className="flex items-center">
                   <img
                     className="h-8 w-8 rounded-full mr-2"
-                    src={`http://localhost:5000/userProfile/${comment?.postedBy?.profile}`}
+                    src={`${API_BASE_URL}/userProfile/${comment?.postedBy?.profile}`}
                     alt=""
                   />
                   <div className="flex-grow">

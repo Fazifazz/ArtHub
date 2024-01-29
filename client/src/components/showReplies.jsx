@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { API_BASE_URL } from "../config/api";
 
 const ShowReplies = ({ Reply, Post }) => {
   const formatDate = (dateString) => {
@@ -12,7 +13,7 @@ const ShowReplies = ({ Reply, Post }) => {
         <div className="flex items-center mr-3 text-sm text-gray-950">
           <img
             className="mr-2 w-6 h-6 rounded-full"
-            src={`http://localhost:5000/artistProfile/${Post?.postedBy?.profile}`}
+            src={`${API_BASE_URL}/artistProfile/${Post?.postedBy?.profile}`}
             alt="Michael Gough"
           />
           <p className="font-semibold">{Post?.postedBy?.name}</p>

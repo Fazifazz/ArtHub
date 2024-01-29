@@ -2,6 +2,7 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { API_BASE_URL } from "../config/api";
 
 const BannerCarousel = ({ banners }) => {
   const settings = {
@@ -42,7 +43,7 @@ const BannerCarousel = ({ banners }) => {
       {banners.map((banner, index) => (
         <div key={index} className="relative">
           <img
-            src={`http://localhost:5000/banners/${banner.image}`}
+            src={`${API_BASE_URL}/banners/${banner.image}`}
             alt={`Banner ${index + 1}`}
             className="w-full h-auto"
           />

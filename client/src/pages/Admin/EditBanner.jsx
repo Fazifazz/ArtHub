@@ -8,6 +8,7 @@ import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import toast from "react-hot-toast";
 import { adminRequest } from "../../Helper/instance";
 import BannerImageCrop from "../../components/BannerImgCrop";
+import { API_BASE_URL } from "../../config/api";
 
 function EditBanner() {
   const location = useLocation();
@@ -120,8 +121,7 @@ function EditBanner() {
                   <div className="card-body">
                     <div className="d-flex justify-content-center">
                       <img
-                        src={`http://localhost:5000/banners/${preview}`}
-                        // src={URL.revokeObjectURL(banner?.bannerUrl)}
+                        src={`${API_BASE_URL}/banners/${preview}`}
                         className="preview"
                         style={{
                           maxWidth: "200px",

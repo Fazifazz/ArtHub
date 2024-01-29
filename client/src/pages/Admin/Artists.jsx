@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
 import { updateArtist } from "../../redux/ArtistAuthSlice";
+import { API_BASE_URL } from "../../config/api";
 
 const Artists = () => {
   const [artists, setArtists] = useState([]);
@@ -34,7 +35,7 @@ const Artists = () => {
       selector: (row) => (
         <img
           className="h-10 w-10 rounded-full"
-          src={`http://localhost:5000/artistProfile/${row?.profile}`}
+          src={`${API_BASE_URL}/artistProfile/${row?.profile}`}
           alt="image"
         />
       ),

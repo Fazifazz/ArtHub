@@ -16,6 +16,7 @@ import { apiEndPoints } from "../util/api";
 import toast from "react-hot-toast";
 import socket from "./SocketIo";
 import CallingUi from "./CallingUi";
+import { API_BASE_URL } from "../config/api";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -246,7 +247,7 @@ const Navbar = () => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src={`http://localhost:5000/userProfile/${user.profile}`}
+                          src={`${API_BASE_URL}/userProfile/${user.profile}`}
                           alt=""
                         />
                       </Menu.Button>
@@ -325,7 +326,7 @@ const Navbar = () => {
                 <div className="flex-shrink-0">
                   <img
                     className="h-10 w-10 rounded-full"
-                    src={`http://localhost:5000/userProfile/${user.profile}`}
+                    src={`${API_BASE_URL}/userProfile/${user.profile}`}
                     alt=""
                   />
                 </div>

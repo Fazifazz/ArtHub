@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { FaComment, FaHeart } from "react-icons/fa";
 import Modal from "react-modal";
 import AddCommentModal from "./AddCommentModal";
+import { API_BASE_URL } from "../config/api";
 
 const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
   const { user } = useSelector((state) => state.Auth);
@@ -52,7 +53,7 @@ const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
     <div className="bg-white shadow-lg rounded-lg overflow-hidden m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 relative">
       <img
         className="w-full h-42 object-cover"
-        src={`http://localhost:5000/artistPosts/${post.image}`}
+        src={`${API_BASE_URL}/artistPosts/${post.image}`}
         alt={post.title}
       />
       <div className="p-4">

@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
+import { API_BASE_URL } from "../../config/api";
 
 const ArtistNotification = () => {
   const [notifications, setNotifications] = useState([]);
@@ -120,7 +121,7 @@ const ArtistNotification = () => {
                     <p className="text-gray-800 font-bold">
                       {item?.notificationMessage}
                     </p>
-                    {item?.relatedPostId?<img onClick={()=>navigate(ServerVariables.artistPosts)} src={`http://localhost:5000/artistPosts/${item?.relatedPostId?.image}`}
+                    {item?.relatedPostId?<img onClick={()=>navigate(ServerVariables.artistPosts)} src={`${API_BASE_URL}/artistPosts/${item?.relatedPostId?.image}`}
                     className="w-10 h-10"
                     alt={item?.relatedPostId?.name}
                     />:''}

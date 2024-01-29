@@ -10,6 +10,7 @@ import { formatDistanceToNow } from "date-fns";
 import socket from "../../components/SocketIo";
 import { CheckCircleIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../config/api";
 
 const ChatWithArtist = () => {
   const [artists, setArtists] = useState([]);
@@ -177,7 +178,7 @@ const ChatWithArtist = () => {
               >
                 <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
                   <img
-                    src={`http://localhost:5000/artistProfile/${artist.profile}`}
+                    src={`${API_BASE_URL}/artistProfile/${artist.profile}`}
                     alt={`Avatar of ${artist.name}`}
                     className="w-12 h-12 rounded-full"
                   />
@@ -222,7 +223,7 @@ const ChatWithArtist = () => {
             {chatPartner ? (
               <>
                 <img
-                  src={`http://localhost:5000/artistProfile/${chatPartner?.artistId?.profile}`}
+                  src={`${API_BASE_URL}/artistProfile/${chatPartner?.artistId?.profile}`}
                   alt={`Avatar of ${chatPartner?.artistId?.name}`}
                   className="w-12 h-12 rounded-full mr-4"
                 />
@@ -268,8 +269,8 @@ const ChatWithArtist = () => {
                     <img
                       src={
                         isUserChat
-                          ? `http://localhost:5000/userProfile/${chatPartner?.userId?.profile}`
-                          : `http://localhost:5000/artistProfile/${chatPartner?.artistId?.profile}`
+                          ? `${API_BASE_URL}/userProfile/${chatPartner?.userId?.profile}`
+                          : `${API_BASE_URL}/artistProfile/${chatPartner?.artistId?.profile}`
                       }
                       alt={`${message.sender}'s Avatar`}
                       className="w-8 h-8 rounded-full"

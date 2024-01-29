@@ -9,6 +9,7 @@ import ArtistNavbar from "../../components/ArtistNav";
 import { useNavigate } from "react-router-dom";
 import { ServerVariables } from "../../util/ServerVariables";
 import RatedUsersModal from "../../components/RatedUsersModal";
+import { API_BASE_URL } from "../../config/api";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -77,7 +78,7 @@ function ArtistHome() {
                 className="relative"
               >
                 <img
-                  src={`http://localhost:5000/artistProfile/${artist?.profile}`}
+                  src={`${API_BASE_URL}/artistProfile/${artist?.profile}`}
                   className="shadow-xl rounded-full align-middle absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]  border-2 border-[#0d0a17]"
                   alt=""
                 />

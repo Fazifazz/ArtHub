@@ -1,9 +1,9 @@
 // to make HTTP requests
 // keep  request and response handling logic clean and centralized.
 
-import URL from "../config/api";
+import { API_BASE_URL } from "../config/api";
 import axios from "axios";
-const user = axios.create({ baseURL: URL.BASE_URL });
+const user = axios.create({ baseURL: API_BASE_URL });
 
 export const userRequest = async ({ ...options }) => {
   //the Authorization header

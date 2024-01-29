@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import socket from "../../components/SocketIo";
 import ArtistNavbar from "../../components/ArtistNav";
 import { CheckCircleIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
+import { API_BASE_URL } from "../../config/api";
 
 const ArtistChatPage = () => {
   const [users, setUsers] = useState([]);
@@ -176,7 +177,7 @@ const ArtistChatPage = () => {
                 >
                   <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
                     <img
-                      src={`http://localhost:5000/userProfile/${user.userId?.profile}`}
+                      src={`${API_BASE_URL}/userProfile/${user.userId?.profile}`}
                       alt={`Avatar of ${user.userId?.name}`}
                       className="w-12 h-12 rounded-full"
                     />
@@ -224,7 +225,7 @@ const ArtistChatPage = () => {
             {chatPartner ? (
               <>
                 <img
-                  src={`http://localhost:5000/userProfile/${chatPartner?.userId?.profile}`}
+                  src={`${API_BASE_URL}/userProfile/${chatPartner?.userId?.profile}`}
                   alt={`Avatar of ${chatPartner?.userId?.name}`}
                   className="w-12 h-12 rounded-full mr-4"
                 />
@@ -270,8 +271,8 @@ const ArtistChatPage = () => {
                     <img
                       src={
                         isArtistChat
-                          ? `http://localhost:5000/artistProfile/${chatPartner?.artistId?.profile}`
-                          : `http://localhost:5000/userProfile/${chatPartner?.userId?.profile}`
+                          ? `${API_BASE_URL}/artistProfile/${chatPartner?.artistId?.profile}`
+                          : `${API_BASE_URL}/userProfile/${chatPartner?.userId?.profile}`
                       }
                       alt={`${message.sender}'s Avatar`}
                       className="w-8 h-8 rounded-full"

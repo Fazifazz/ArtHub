@@ -7,6 +7,7 @@ import { hideLoading, showLoading } from "../redux/AlertSlice";
 import toast from "react-hot-toast";
 import { updateUser } from "../redux/AuthSlice";
 import { updateArtist } from "../redux/ArtistAuthSlice";
+import { API_BASE_URL } from "../config/api";
 
 const FollowingsModal = ({ isOpen, closeModal }) => {
   const dispatch = useDispatch();
@@ -89,7 +90,7 @@ const FollowingsModal = ({ isOpen, closeModal }) => {
             <div className="flex items-center mt-4" key={following._id}>
               <img
                 className="h-8 w-8 rounded-full mr-2"
-                src={`http://localhost:5000/artistProfile/${following?.profile}`}
+                src={`${API_BASE_URL}/artistProfile/${following?.profile}`}
                 alt=""
               />
               <div className="flex-grow flex justify-between">

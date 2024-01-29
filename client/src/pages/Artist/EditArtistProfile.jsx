@@ -10,6 +10,7 @@ import { ServerVariables } from "../../util/ServerVariables";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { updateArtist } from "../../redux/ArtistAuthSlice";
+import { API_BASE_URL } from "../../config/api";
 
 function EditArtistProfile() {
   const [categories, setCategories] = useState([]);
@@ -121,7 +122,7 @@ function EditArtistProfile() {
             src={
               selectedImage
                 ? URL.createObjectURL(selectedImage)
-                : `http://localhost:5000/artistProfile/${artist.profile}`
+                : `${API_BASE_URL}/artistProfile/${artist.profile}`
             }
             alt=""
           />

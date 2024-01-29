@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import Modal from "react-modal";
 import AddCommentModal from "../../components/AddCommentModal";
+import { API_BASE_URL } from "../../config/api";
 
 const UserNotification = () => {
   const [notifications, setNotifications] = useState([]);
@@ -163,7 +164,7 @@ const UserNotification = () => {
                     </p>
                     {item?.relatedPostId ? (
                       <img
-                        src={`http://localhost:5000/artistPosts/${item?.relatedPostId?.image}`}
+                        src={`${API_BASE_URL}/artistPosts/${item?.relatedPostId?.image}`}
                         className="w-10 h-10"
                         onClick={() => openModal(item?.relatedPostId)}
                         alt={item?.relatedPostId?.name}

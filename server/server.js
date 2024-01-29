@@ -14,7 +14,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(path.join(__dirname, "client")));
 const http = require("http").createServer(app);
 const { intializeSocket } = require("./sockets/chatSocket");
 

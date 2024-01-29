@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../../config/api';
 
 const ProfileCard = ({ user }) => {
   return (
@@ -12,7 +13,7 @@ const ProfileCard = ({ user }) => {
       <div className="flex flex-col items-center">
         <img
           className="h-20 w-20 rounded-full mb-4 mt-4"
-          src={`http://localhost:5000/userProfile/${user.profile}`}
+          src={`${API_BASE_URL}/userProfile/${user.profile}`}
           alt=""
         />
         <div className='mt-3'>

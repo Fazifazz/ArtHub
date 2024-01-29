@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { ArtistRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import CallingUi from "./CallingUi";
+import { API_BASE_URL } from "../config/api";
 
 const ArtistNavbar = () => {
   const navigate = useNavigate();
@@ -146,7 +147,7 @@ const ArtistNavbar = () => {
   const artistData = {
     name: artist.name,
     email: artist.email,
-    imageUrl: `http://localhost:5000/artistProfile/${artist.profile}`,
+    imageUrl: `${API_BASE_URL}/artistProfile/${artist.profile}`,
   };
 
   const navigation = [
@@ -262,7 +263,7 @@ const ArtistNavbar = () => {
                         <span className="sr-only">Open user menu</span>
                         <img
                           className="h-8 w-8 rounded-full"
-                          src={`http://localhost:5000/artistProfile/${artist.profile}`}
+                          src={`${API_BASE_URL}/artistProfile/${artist.profile}`}
                           alt=""
                         />
                       </Menu.Button>

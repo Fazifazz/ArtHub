@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import DataTable from "react-data-table-component";
 import ReactPaginate from "react-paginate";
 import { logoutUser, updateUser } from "../../redux/AuthSlice";
+import { API_BASE_URL } from "../../config/api";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -30,7 +31,7 @@ const Users = () => {
       selector: (row) => (
         <img
           className="h-10 w-10 rounded-full"
-          src={`http://localhost:5000/userProfile/${row?.profile}`}
+          src={`${API_BASE_URL}/userProfile/${row?.profile}`}
           alt="image"
         />
       ),

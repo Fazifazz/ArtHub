@@ -10,6 +10,7 @@ import { ServerVariables } from "../../util/ServerVariables";
 import toast from "react-hot-toast";
 import DataTable from "react-data-table-component";
 import ReactPaginate from "react-paginate";
+import { API_BASE_URL } from "../../config/api";
 
 function Banners() {
   const dispatch = useDispatch();
@@ -30,7 +31,7 @@ function Banners() {
       selector: (row) => (
         <img
           className="h-10 w-10 rounded-full"
-          src={`http://localhost:5000/banners/${row?.image}`}
+          src={`${API_BASE_URL}/banners/${row?.image}`}
           alt="image"
         />
       ),

@@ -5,6 +5,7 @@ import { hideLoading, showLoading } from "../redux/AlertSlice";
 import { ArtistRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import StarRating from "./StarRating";
+import { API_BASE_URL } from "../config/api";
 
 function RatedUsersModal({ isOpen, closeModal }) {
   const dispatch = useDispatch();
@@ -56,7 +57,7 @@ function RatedUsersModal({ isOpen, closeModal }) {
             <div className="flex items-center mt-4 justify-between" key={user.user?._id}>
               <img
                 className="h-8 w-8 rounded-full mr-2"
-                src={`http://localhost:5000/userProfile/${user?.user?.profile}`}
+                src={`${API_BASE_URL}/userProfile/${user?.user?.profile}`}
                 alt=""
               />
                 <small className="text-black font-semibold uppercase">

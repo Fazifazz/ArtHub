@@ -7,6 +7,7 @@ import { ServerVariables } from "../../util/ServerVariables";
 import { useNavigate } from "react-router-dom";
 import FollowingsModal from "../../components/Followings";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "../../config/api";
 
 function UserProfile() {
   const { user } = useSelector((state) => state.Auth);
@@ -47,7 +48,7 @@ function UserProfile() {
         <div className="card w-96 h-96 mx-auto bg-gray-300 text-grey-800 shadow-xl hover:shadow">
           <img
             className="w-36 mx-auto rounded-full -mt-20 border-2 border-gray-800 "
-            src={`http://localhost:5000/userProfile/${user?.profile}`}
+            src={`${API_BASE_URL}/userProfile/${user?.profile}`}
             alt=""
           />
           <div className="uppercase text-center mt-2 text-3xl font-medium">

@@ -6,6 +6,7 @@ import { hideLoading, showLoading } from "../redux/AlertSlice";
 import { ArtistRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import Reply from "./Reply";
+import { API_BASE_URL } from "../config/api";
 
 const CommentModal = ({ isOpen, closeModal, Comments, post }) => {
   const [replyText, setReplyText] = useState("");
@@ -73,7 +74,7 @@ const CommentModal = ({ isOpen, closeModal, Comments, post }) => {
       <div className="mt-4 mb-2">
         <img
           className="w-full h-42 object-cover"
-          src={`http://localhost:5000/artistPosts/${post.image}`}
+          src={`${API_BASE_URL}/artistPosts/${post.image}`}
           alt={post.title}
         />
         <h2 className="text-slate-400 mb-4">Comments</h2>
@@ -84,7 +85,7 @@ const CommentModal = ({ isOpen, closeModal, Comments, post }) => {
                 <div className="flex items-center">
                   <img
                     className="h-8 w-8 rounded-full mr-2"
-                    src={`http://localhost:5000/userProfile/${comment?.postedBy?.profile}`}
+                    src={`${API_BASE_URL}/userProfile/${comment?.postedBy?.profile}`}
                     alt=""
                   />
                   <div className="flex-grow">

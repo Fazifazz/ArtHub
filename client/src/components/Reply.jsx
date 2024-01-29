@@ -5,6 +5,7 @@ import { hideLoading, showLoading } from "../redux/AlertSlice";
 import { ArtistRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import toast from "react-hot-toast";
+import { API_BASE_URL } from "../config/api";
 
 const Reply = ({ Reply, Post, comment }) => {
   const dispatch = useDispatch();
@@ -43,7 +44,7 @@ const Reply = ({ Reply, Post, comment }) => {
           <p className="inline-flex items-center mr-3 text-sm text-gray-950 ">
             <img
               className="mr-2 w-6 h-6 rounded-full"
-              src={`http://localhost:5000/artistProfile/${post?.postedBy?.profile}`}
+              src={`${API_BASE_URL}/artistProfile/${post?.postedBy?.profile}`}
               alt="Michael Gough"
             />
             {post?.postedBy?.name}
