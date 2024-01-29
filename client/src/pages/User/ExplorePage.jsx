@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../../components/Navbar";
-import PostCard from "../../components/postCard";
+import PostCard from "../../components/PostCard";
 import ContactCard from "../../components/userComponents/ContactCard";
 import ProfileCard from "../../components/userComponents/ProfileCd";
 import { useSelector } from "react-redux";
