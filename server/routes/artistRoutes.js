@@ -123,5 +123,10 @@ artistRouter
     artistAuthMiddleware,
     artistController.checkCurrentArtistBlocked
   )
+  .get(
+    "/getFollowersInArtistSide",
+    artistAuthMiddleware,
+    artistController.getArtistFollowers
+  )
 
 module.exports = artistRouter;

@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
-import { userRequest } from "../Helper/instance";
+import { ArtistRequest, userRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../redux/AlertSlice";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../config/api";
+import { ServerVariables } from "../util/ServerVariables";
 
 const FollowersModal = ({ isOpen, closeModal, artistId }) => {
   const dispatch = useDispatch();
   const [Followers, setFollowers] = useState([]);
 
   useEffect(() => {
-    getFollowers(artistId);
-  }, []);
+    if (location.pathname === ServerVariables.viewArtistDetails) {
+      getFollowers(artistId);
+    } else {
+      getFollowersInArtistSide();
+    }
+  }, [location.pathname]);
 
   const getFollowers = async (id) => {
     dispatch(showLoading());
@@ -21,6 +26,24 @@ const FollowersModal = ({ isOpen, closeModal, artistId }) => {
       url: apiEndPoints.getArtistFollowers,
       method: "post",
       data: { artistId: id },
+    })
+      .then((res) => {
+        dispatch(hideLoading());
+        if (res.data.success) {
+          setFollowers(res.data.followers);
+        }
+      })
+      .catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong!");
+        console.log(err.message);
+      });
+  };
+  const getFollowersInArtistSide = async () => {
+    dispatch(showLoading());
+    ArtistRequest({
+      url: apiEndPoints.getFollowersInArtistSide,
+      method: "get",
     })
       .then((res) => {
         dispatch(hideLoading());
@@ -59,26 +82,26 @@ const FollowersModal = ({ isOpen, closeModal, artistId }) => {
     >
       <div className="mt-2 mb-2">
         <h1 className="text-slate-500 font-semibold">Followers</h1>
-        {Followers.length
-          ? Followers.map((follower) => (
-              <div className="flex items-center mt-4" key={follower._id}>
-                <img
-                  className="h-8 w-8 rounded-full mr-2"
-                  src={`${API_BASE_URL}/userProfile/${follower?.profile}`}
-                  alt=""
-                />
-                <div className="flex-grow flex justify-between">
-                  <small className="text-black font-semibold">
-                    {follower.name}
-                  </small>{" "}
-                  <small className="ml-3">{follower.email}</small>
-                  <small className="text-blue-400 ml-3">
-                    {follower.mobile}
-                  </small>
-                </div>
+        {Followers.length ? (
+          Followers.map((follower) => (
+            <div className="flex items-center mt-4" key={follower._id}>
+              <img
+                className="h-8 w-8 rounded-full mr-2"
+                src={`${API_BASE_URL}/userProfile/${follower?.profile}`}
+                alt=""
+              />
+              <div className="flex-grow flex justify-between">
+                <small className="text-black font-semibold">
+                  {follower.name}
+                </small>{" "}
+                <small className="ml-3">{follower.email}</small>
+                <small className="text-blue-400 ml-3">{follower.mobile}</small>
               </div>
-            ))
-          : <p className="text-center text-slate-500">No followers found!..</p>}
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-slate-500">No followers found!..</p>
+        )}
       </div>
     </Modal>
   );

@@ -70,7 +70,7 @@ userRouter
   .post(
     "/chechUserRating",
     userAuth,
-    userController.checkUserRating
+    userController.checkUserRating 
   )
 
 module.exports = userRouter;

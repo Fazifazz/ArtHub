@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken"),
   Banner = require("../models/admin/BannerModel"),
   PlansHistory = require("../models/admin/subscriptionHistoryModel"),
   Plan = require("../models/admin/planModel"),
-  Category = require("../models/admin/categoryModel"), 
+  Category = require("../models/admin/categoryModel"),
   Post = require("../models/artist/postModel"),
   Notification = require("../models/artist/notificationModel"),
   catchAsync = require("../util/catchAsync"),
@@ -110,7 +110,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
 
 exports.ResendOtp = catchAsync(async (req, res) => {
   if (!req.body.email) {
-    return res.json({error:'email not found'})
+    return res.json({ error: "email not found" });
   }
   const artist = await Artist.findOne({ email: req.body.email });
   const newOtp = randomString.generate({
@@ -621,11 +621,20 @@ exports.getRatedUsers = catchAsync(async (req, res) => {
   return res.status(200).json({ success: "ok", ratedUsers });
 });
 
-
 exports.checkCurrentArtistBlocked = catchAsync(async (req, res) => {
-  const currentArtist= await Artist.findById(req.artistId);
+  const currentArtist = await Artist.findById(req.artistId);
   if (currentArtist.isBlocked) {
     return res.json({ error: "You are blocked by admin", currentArtist });
   }
   return res.status(200).json({ success: "ok" });
+});
+
+
+exports.getArtistFollowers = catchAsync(async (req, res) => {
+  const artist = await Artist.findById(req.artistId).populate("followers");
+  const followers = artist.followers;
+  if (followers.length) {
+    return res.status(200).json({ success: "ok", followers });
+  }
+  return res.status(200).json({ error: "No followers found" });
 });
