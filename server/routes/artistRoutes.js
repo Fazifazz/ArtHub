@@ -117,7 +117,7 @@ artistRouter
     "/getRatedUsers",
     artistAuthMiddleware,
     artistController.getRatedUsers
-  )
+  ) 
   .get(
     "/checkArtistBlocked",
     artistAuthMiddleware,

@@ -150,17 +150,15 @@ const ChatWithArtist = () => {
       <div className="flex h-screen overflow-hidden">
         {/* Sidebar */}
 
-        <div className="w-1/4 bg-white border-r border-gray-300">
+        <div className="w-1/4  bg-white border-r border-gray-300">
           {/* Sidebar Header */}
-          <header className="p-4 border-b border-gray-300 flex justify-between  items-center bg-gray-400 text-white">
+          <header className="p-4 border-b border-gray-300 flex flex-col sm:flex-row lg:flex-row items-center justify-between  bg-gray-400 text-white">
             <h1 className="text-2xl font-semibold">My chats</h1>
             <div className="relative flex items-center mt-2 sm:mt-0">
-              {" "}
-              {/* Adjusted margin for small screens */}
               <input
                 type="text"
                 placeholder="Search..."
-                className="border p-1 text-black sm:w-20 md:w-20 lg:w-40 xl:w-40" // Adjust width based on screen size
+                className="border p-1 text-black w-full sm:w-auto  lg:w-auto xl:w-40" // Adjust width based on screen size
                 onChange={handleFilter}
               />
             </div>

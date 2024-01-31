@@ -106,7 +106,6 @@ const showArtists = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [filterData, setFilterData] = useState([]);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -189,34 +188,28 @@ const showArtists = () => {
   const handlePageChange = (selectedPage) => {
     setCurrentPage(selectedPage.selected); // Update current page when page is changed
   };
-
   return (
     <>
       <Navbar />
       <div className="min-h-screen bg-gray-100 p-8">
         {artists.length ? (
-          <>
-          <div className="flex justify-around">
-
-            <h2 className="uppercase text-center text-slate-500 font-bold mb-12 text-3xl">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-12">
+            <h2 className="uppercase text-center sm:text-left text-slate-500 font-bold mb-4 sm:mb-0 text-3xl">
               Artists List
             </h2>
-            <div className="relative flex items-center mb-12 sm:mt-0">
+            <div className="relative flex items-center">
               <input
                 type="text"
                 placeholder="Search artist name/field.."
-                className="border p-2 mr-2"
+                className="border p-2 w-full sm:w-auto"
                 onChange={handleFilter}
               />
             </div>
           </div>
-          </>
         ) : (
-          <>
-            <p className="text-center text-slate-500 font-bold mb-12 text-3xl">
-              No artists Available
-            </p>
-          </>
+          <p className="text-center text-slate-500 font-bold mb-12 text-3xl">
+            No artists Available
+          </p>
         )}
         {artists.length > 0 && (
           <ArtistsList
@@ -250,5 +243,6 @@ const showArtists = () => {
     </>
   );
 };
+
 
 export default showArtists;
