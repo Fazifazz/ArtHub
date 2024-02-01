@@ -338,8 +338,8 @@ exports.subscriptionPayment = catchAsync(async (req, res) => {
       payment_method: "paypal",
     },
     redirect_urls: {
-      return_url: `http://localhost:5000/api/artist/successPayment?planId=${planId}&artistId=${req.artistId}`,
-      cancel_url: "http://localhost:5000/api/artist/errorPayment",
+      return_url: `https://arthub.website/api/artist/successPayment?planId=${planId}&artistId=${req.artistId}`,
+      cancel_url: "https://arthub.website/api/artist/errorPayment",
     },
     transactions: [
       {
@@ -435,7 +435,7 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
             currentDate.getTime() + plan.dayDuaration * 24 * 60 * 60 * 1000
           ),
         });
-        return res.redirect("http://localhost:5173/successPage");
+        return res.redirect("https://arthubfreelance.netlify.app/successPage");
       }
     }
   );
@@ -443,7 +443,7 @@ exports.showSuccessPage = catchAsync(async (req, res) => {
 
 exports.showErrorPage = catchAsync(async (req, res) => {
   console.log("payment failed!");
-  return res.redirect("http://localhost:5173/errorPage");
+  return res.redirect("https://arthubfreelance.netlify.app/errorPage");
 });
 
 exports.getPostComments = catchAsync(async (req, res) => {

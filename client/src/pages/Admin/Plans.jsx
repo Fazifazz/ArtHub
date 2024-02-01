@@ -178,39 +178,38 @@ function Plans() {
           <div className="mt-8 mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             {/* Your content */}
             <div className="overflow-x-auto">
-              <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                    <DataTable
-                      columns={cols}
-                      data={plans}
-                      className="min-w-full"
-                    />
-                  </div>
-                </div>
-              </div>
-              <ReactPaginate
-                previousLabel={
-                  <i className="fas fa-chevron-left text-black"></i>
-                }
-                nextLabel={<i className="fas fa-chevron-right text-black"></i>}
-                breakLabel={<span className="hidden sm:inline">...</span>}
-                pageCount={pageCount}
-                marginPagesDisplayed={3}
-                pageRangeDisplayed={2}
-                onPageChange={handlePageChange}
-                containerClassName="flex justify-center mt-4"
-                pageClassName="mx-2"
-                pageLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500 text-black"
-                previousClassName="mr-2"
-                previousLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
-                nextClassName="ml-2"
-                nextLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
-                breakClassName="mx-2"
-                breakLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
-                activeClassName="text-blue-500 font-bold bg-blue-200"
-              />
-            </div>
+  <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+    <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+      <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+        <DataTable
+          columns={cols}
+          data={plans}
+          className="min-w-full"
+        />
+      </div>
+    </div>
+  </div>
+  <ReactPaginate
+    previousLabel={<i className="fas fa-chevron-left text-black"></i>}
+    nextLabel={<i className="fas fa-chevron-right text-black"></i>}
+    breakLabel={<span className="hidden sm:inline">...</span>}
+    pageCount={pageCount}
+    marginPagesDisplayed={3}
+    pageRangeDisplayed={2}
+    onPageChange={handlePageChange}
+    containerClassName="flex justify-center mt-4"
+    pageClassName="mx-2"
+    pageLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500 text-black"
+    previousClassName="mr-2"
+    previousLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+    nextClassName="ml-2"
+    nextLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+    breakClassName="mx-2"
+    breakLinkClassName="cursor-pointer transition-colors duration-300 hover:text-blue-500"
+    activeClassName="text-blue-500 font-bold bg-blue-200"
+  />
+</div>
+
           </div>
         </main>
       </div>
