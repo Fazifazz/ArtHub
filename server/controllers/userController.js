@@ -68,7 +68,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
   }
   const user = await User.findOne({ email: req.body.email });
   const generatedAt = new Date(user.otp.generatedAt).getTime();
-  if (Date.now() - generatedAt <= 30 * 1000) {
+  if (Date.now() - generatedAt <= 60 * 1000) {
     if (req.body.otp === user.otp.code) {
       user.isVerified = true;
       user.otp.code = "";

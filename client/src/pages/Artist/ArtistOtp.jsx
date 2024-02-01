@@ -12,7 +12,7 @@ import { hideLoading, showLoading } from "../../redux/AlertSlice";
 const ArtistOtp = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(60);
   const timerIntervalRef = useRef(null);
   const location = useLocation();
   const email = location.state ? location.state.email : "";
@@ -22,7 +22,7 @@ const ArtistOtp = () => {
   }, []);
 
   const startTimer = () => {
-    setTimer(30);
+    setTimer(60);
     clearInterval(timerIntervalRef.current); // Clear any existing interval before starting a new one
     const countdown = setInterval(() => {
       setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));

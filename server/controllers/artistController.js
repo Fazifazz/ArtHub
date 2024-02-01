@@ -91,7 +91,7 @@ exports.verifyOtp = catchAsync(async (req, res) => {
   }
   const artist = await Artist.findOne({ email: email });
   const generatedAt = new Date(artist.otp.generatedAt).getTime();
-  if (Date.now() - generatedAt <= 30 * 1000) {
+  if (Date.now() - generatedAt <= 60 * 1000) {
     if (otp === artist.otp.code) {
       artist.isVerified = true;
       artist.otp.code = "";

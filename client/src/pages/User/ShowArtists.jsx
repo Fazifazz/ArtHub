@@ -25,20 +25,20 @@ const PostCard = ({ artist, onFollow, onUnFollow }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       whileHover={{scale:1.1}}
-      onClick={() =>
-        navigate(ServerVariables.viewArtistDetails, {
-          state: { artist: artist },
-        })
-      }
     className="bg-white shadow-lg rounded-lg overflow-hidden m-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5 relative">
       <img
         className="w-full h-42 object-cover"
         src={`${API_BASE_URL}/artistProfile/${artist.profile}`}
         alt="Artist Profile"
+        onClick={() =>
+          navigate(ServerVariables.viewArtistDetails, {
+            state: { artist: artist },
+          })
+        }
       />
       <div className="text-center border-t border-slate-500">
         <h2
-          className="uppercase text-xl font-semibold mt-2 mb-2"
+          className="uppercase text-xl font-semibold mt-2 mb-2 cursor-pointer"
           onClick={() =>
             navigate(ServerVariables.viewArtistDetails, {
               state: { artist: artist },

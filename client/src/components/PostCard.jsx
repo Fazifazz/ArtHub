@@ -298,7 +298,7 @@ const PostCard = () => {
                   </Modal>
                 </div>
               ))
-            : "No posts available"}
+            : <h2 className="text-center mt-96 text-green-600">since you are not followed any artists,No Followers post found.Go and follow your artists...</h2>}
         </div>
       </div>
     </>

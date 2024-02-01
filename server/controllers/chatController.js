@@ -26,6 +26,7 @@ exports.getArtistsUserFollow = catchAsync(async (req, res) => {
       // Count unseen messages
       const unseenMessagesCount = await ChatMessages.countDocuments({
         artistId: artistId,
+        userId:user._id,
         isUserSeen: false, // Add any additional conditions if needed
       });
 
@@ -123,6 +124,7 @@ exports.getUserChatList = catchAsync(async (req, res) => {
       const userId = user.userId;
       const unseenMessagesCount = await ChatMessages.countDocuments({
         userId: userId,
+        artistId:artistId,
         isArtistSeen: false, // Add any additional conditions if needed
       });
       // Fetch the latest message for the artist
