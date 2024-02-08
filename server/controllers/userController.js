@@ -110,7 +110,7 @@ exports.verifyLogin = catchAsync(async (req, res) => {
 
 exports.ResendOtp = catchAsync(async (req, res) => {
   if (!req.body.email) {
-    return res.json({error:'email not found!'})
+    return res.json({ error: "email not found!" });
   }
   const user = await User.findOne({ email: req.body.email });
   const newOtp = randomString.generate({
@@ -462,7 +462,7 @@ exports.getComments = catchAsync(async (req, res) => {
       path: "comments",
       populate: {
         path: "postedBy",
-        select: "name profile", // Replace 'User' with the actual model name for the user
+        select: "name profile", 
       },
     })
     .populate("postedBy");
@@ -605,4 +605,20 @@ exports.checkUserRating = catchAsync(async (req, res) => {
   } else {
     return res.status(200).json({ success: true, rating: null });
   }
+});
+
+exports.deleteComment = catchAsync(async (req, res) => {
+  const { postid, commentId } = req.body;
+  const post = await Post.findById(postid)
+    .populate({
+      path: "comments",
+      populate: {
+        path: "postedBy",
+        select: "name profile",
+      },
+    })
+    .populate("postedBy");
+  post.comments.pull(commentId);
+  await post.save();
+  return res.status(200).json({ success: true, post });
 });

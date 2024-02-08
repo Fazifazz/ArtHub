@@ -31,7 +31,6 @@ function ArtistRegister() {
       mobile: "",
       email: "",
       password: "",
-      // confirmPassword: "",
       experience: "",
       worksDone: "",
       interest: "",
@@ -47,11 +46,12 @@ function ArtistRegister() {
         .required("Mobile number is required"),
       email: Yup.string().email("Invalid email address").required("Required"),
       password: Yup.string()
-        .min(6, "Password must be at least 6 characters")
-        .required("Password is required"),
-      // confirmPassword: Yup.string()
-      //   .oneOf([Yup.ref("password"), null], "Passwords must match")
-      //   .required("Required"),
+      .min(8, "Password must be at least 8 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      )
+      .required("Password is required"),
       experience: Yup.string(),
       worksDone: Yup.string(),
       interest: Yup.string(),
@@ -184,8 +184,6 @@ function ArtistRegister() {
                 )}
               </div>
 
-              {/* ... (Other fields) */}
-
               {/* Password */}
               <div>
                 <label
@@ -214,37 +212,6 @@ function ArtistRegister() {
                   </div>
                 )}
               </div>
-
-              {/* Confirm Password
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium leading-6 text-white-200"
-                >
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={formik.values.confirmPassword}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  id="confirmPassword"
-                  autoComplete="current-password"
-                  className={
-                    formik.touched.confirmPassword &&
-                    formik.errors.confirmPassword
-                      ? "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 border-red-500"
-                      : "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2"
-                  }
-                />
-                {formik.touched.confirmPassword &&
-                  formik.errors.confirmPassword && (
-                    <div className="text-red-500 text-sm mt-1">
-                      {formik.errors.confirmPassword}
-                    </div>
-                  )}
-              </div> */}
 
               {/* Years of Experience */}
               <div>
@@ -450,7 +417,7 @@ function ArtistRegister() {
         <p className="text-sm text-center mt-4">
           Already have an account?
           <a
-            className="text-blue-500"
+            className="text-blue-500 cursor-pointer"
             onClick={() => navigate(ServerVariables.ArtistLogin)}
           >
             Login

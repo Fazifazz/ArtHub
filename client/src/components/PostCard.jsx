@@ -6,7 +6,7 @@ import { userRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
-import {  updateUser } from "../redux/AuthSlice";
+import { updateUser } from "../redux/AuthSlice";
 import { updateArtist } from "../redux/ArtistAuthSlice";
 import toast from "react-hot-toast";
 import { ServerVariables } from "../util/ServerVariables";
@@ -45,12 +45,16 @@ const PostCard = () => {
     },
   };
   useEffect(() => {
+    getPosts();
+  }, [location]);
+
+  const getPosts = () => {
     if (location.pathname === "/userHome") {
       getAllFollowingPosts();
     } else {
-       getAllPosts();
+      getAllPosts();
     }
-  }, [location]);
+  };
 
   const getAllFollowingPosts = async () => {
     dispatch(showLoading());
@@ -88,7 +92,7 @@ const PostCard = () => {
         if (location.pathname === "/userHome") {
           getAllFollowingPosts();
         } else {
-           getAllPosts();
+          getAllPosts();
         }
         socket.emit(
           "allNotifications",
@@ -108,7 +112,7 @@ const PostCard = () => {
         if (location.pathname === "/userHome") {
           getAllFollowingPosts();
         } else {
-           getAllPosts();
+          getAllPosts();
         }
       }
     });
@@ -126,7 +130,7 @@ const PostCard = () => {
         if (location.pathname === "/userHome") {
           getAllFollowingPosts();
         } else {
-           getAllPosts();
+          getAllPosts();
         }
       }
     });
@@ -147,7 +151,7 @@ const PostCard = () => {
           if (location.pathname === "/userHome") {
             getAllFollowingPosts();
           } else {
-             getAllPosts();
+            getAllPosts();
           }
           return;
         }
@@ -174,7 +178,7 @@ const PostCard = () => {
           if (location.pathname === "/userHome") {
             getAllFollowingPosts();
           } else {
-             getAllPosts();
+            getAllPosts();
           }
           return;
         }
@@ -191,114 +195,120 @@ const PostCard = () => {
     <>
       <div className="flex flex-col items-center justify-center">
         <div className="w-full max-w-md">
-          {artistPosts?.length
-            ? artistPosts.map((post) => (
-                <div
-                  key={post._id}
-                  className="bg-gray-200  p-4 my-4 rounded-md shadow-md"
-                >
-                  {/* Artist Profile Section */}
-                  <div className="flex items-center mb-2 justify-between">
-                    <img
-                      className="h-8 w-8 rounded-full mr-2"
-                      src={`${API_BASE_URL}/artistProfile/${post?.postedBy?.profile}`}
-                      onClick={() =>
-                        navigate(ServerVariables.viewArtistDetails, {
-                          state: { artist: post?.postedBy },
-                        })
-                      }
-                      alt=""
-                    />
-                    <p
-                      className="uppercase text-xl font-semibold "
-                      onClick={() =>
-                        navigate(ServerVariables.viewArtistDetails, {
-                          state: { artist: post?.postedBy },
-                        })
-                      }
+          {artistPosts?.length ? (
+            artistPosts.map((post) => (
+              <div
+                key={post._id}
+                className="bg-gray-200  p-4 my-4 rounded-md shadow-md"
+              >
+                {/* Artist Profile Section */}
+                <div className="flex items-center mb-2 justify-between">
+                  <img
+                    className="h-8 w-8 rounded-full mr-2"
+                    src={`${API_BASE_URL}/artistProfile/${post?.postedBy?.profile}`}
+                    onClick={() =>
+                      navigate(ServerVariables.viewArtistDetails, {
+                        state: { artist: post?.postedBy },
+                      })
+                    }
+                    alt=""
+                  />
+                  <p
+                    className="uppercase text-xl font-semibold "
+                    onClick={() =>
+                      navigate(ServerVariables.viewArtistDetails, {
+                        state: { artist: post?.postedBy },
+                      })
+                    }
+                  >
+                    {post?.postedBy?.name}
+                  </p>
+                  {user?.followings?.includes(post.postedBy._id) ? (
+                    <button
+                      className="bg-gray-500 w-20 text-center hover:bg-gray-600  rounded text-white"
+                      onClick={() => handleUnFollow(post.postedBy._id)}
                     >
-                      {post?.postedBy?.name}
-                    </p>
-                    {user?.followings?.includes(post.postedBy._id) ? (
+                      Following
+                    </button>
+                  ) : (
+                    <button
+                      className="bg-gray-800 w-20 text-center hover:bg-gray-950 rounded text-white"
+                      onClick={() => handleFollow(post.postedBy._id)}
+                    >
+                      Follow
+                    </button>
+                  )}
+                </div>
+                {/* Horizontal Line */}
+                <div className="border-t border-gray-300 my-2"></div>
+
+                {/* Post Details Section */}
+                <p className="uppercase text-gray-700 mb-4">{post?.title}</p>
+                <p className="text-gray-700 mb-4">{post?.description}</p>
+                {post.image && (
+                  <img
+                    src={`${API_BASE_URL}/artistPosts/${post.image}`}
+                    alt={`Post by ${post?.postedBy?.name}`}
+                    className="mb-4 rounded-md w-full"
+                  />
+                )}
+
+                {/* Like and Comment Section */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    {post.likes.includes(user._id) ? (
                       <button
-                        className="bg-gray-500 w-20 text-center hover:bg-gray-600  rounded text-white"
-                        onClick={() => handleUnFollow(post.postedBy._id)}
+                        onClick={() => handleUnLikePost(post._id)}
+                        className="flex items-center space-x-1 text-red-600"
                       >
-                        Following
+                        <FaHeart size={20} />
+                        <span>
+                          {post?.likes?.length && post?.likes?.length} Likes
+                        </span>
                       </button>
                     ) : (
                       <button
-                        className="bg-gray-800 w-20 text-center hover:bg-gray-950 rounded text-white"
-                        onClick={() => handleFollow(post.postedBy._id)}
+                        onClick={() => handleLikePost(post._id)}
+                        className="flex items-center space-x-1 text-gray-500"
                       >
-                        Follow
+                        <FaHeart size={20} />
+                        <span>
+                          {post?.likes?.length && post?.likes?.length} Likes
+                        </span>
                       </button>
                     )}
+                    <button
+                      className="flex items-center space-x-1 text-gray-500"
+                      onClick={() => openModal(post._id)}
+                    >
+                      <FaComment size={20} />
+                      <span>{post?.comments?.length} Comments</span>
+                    </button>
                   </div>
-                  {/* Horizontal Line */}
-                  <div className="border-t border-gray-300 my-2"></div>
-
-                  {/* Post Details Section */}
-                  <p className="uppercase text-gray-700 mb-4">{post?.title}</p>
-                  <p className="text-gray-700 mb-4">{post?.description}</p>
-                  {post.image && (
-                    <img
-                      src={`${API_BASE_URL}/artistPosts/${post.image}`}
-                      alt={`Post by ${post?.postedBy?.name}`}
-                      className="mb-4 rounded-md w-full"
-                    />
-                  )}
-
-                  {/* Like and Comment Section */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      {post.likes.includes(user._id) ? (
-                        <button
-                          onClick={() => handleUnLikePost(post._id)}
-                          className="flex items-center space-x-1 text-red-600"
-                        >
-                          <FaHeart size={20} />
-                          <span>
-                            {post?.likes?.length && post?.likes?.length} Likes
-                          </span>
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleLikePost(post._id)}
-                          className="flex items-center space-x-1 text-gray-500"
-                        >
-                          <FaHeart size={20} />
-                          <span>
-                            {post?.likes?.length && post?.likes?.length} Likes
-                          </span>
-                        </button>
-                      )}
-                      <button
-                        className="flex items-center space-x-1 text-gray-500"
-                        onClick={() => openModal(post._id)}
-                      >
-                        <FaComment size={20} />
-                        <span>{post?.comments?.length} Comments</span>
-                      </button>
-                    </div>
-                  </div>
-                  <Modal
-                    isOpen={isModalOpen}
-                    onRequestClose={closeModal}
-                    ariaHideApp={false}
-                    style={customStyles}
-                  >
-                    <AddCommentModal
-                      isOpen={isModalOpen}
-                      closeModal={closeModal}
-                      postId={selectedPostId}
-                      addComment={addComment}
-                      artistPosts={artistPosts}
-                    />
-                  </Modal>
                 </div>
-              ))
-            : <h2 className="text-center mt-96 text-green-600">since you are not followed any artists,No Followers post found.Go and follow your artists...</h2>}
+                <Modal
+                  isOpen={isModalOpen}
+                  onRequestClose={closeModal}
+                  ariaHideApp={false}
+                  style={customStyles}
+                >
+                  <AddCommentModal
+                    isOpen={isModalOpen}
+                    closeModal={closeModal}
+                    postId={selectedPostId}
+                    addComment={addComment}
+                    artistPosts={artistPosts}
+                    getPosts={getPosts}
+                  />
+                </Modal>
+              </div>
+            ))
+          ) : (
+            <h2 className="text-center mt-96 text-green-600">
+              since you are not followed any artists,No Followers post found.Go
+              and follow your artists...
+            </h2>
+          )}
         </div>
       </div>
     </>

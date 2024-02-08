@@ -31,6 +31,7 @@ export const apiEndPoints = {
   userNotificationsCount: "api/user/userNotificationsCount",
   addRatingToArtist: "api/user/addRatingToArtist",
   chechUserRating: "api/user/chechUserRating",
+  deleteComment: "api/user/deleteComment",
 
   //artist endpoints
   postArtistVerifyLogin: "/api/artist/artistVerifyLogin",

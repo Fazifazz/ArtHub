@@ -12,17 +12,22 @@ import toast from "react-hot-toast";
 const registerSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
   mobile: Yup.string()
-    .min(10, "mobile number must be 10 letters")
-    .max(10, "mobile number must be 10 letters")
-    .required("mobile number is required"),
+    .min(10, "Mobile number must be 10 digits")
+    .max(10, "Mobile number must be 10 digits")
+    .required("Mobile number is required"),
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
-    .min(6, "Password must be atleast 6 characters")
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    )
     .required("Password is required"),
   Cpassword: Yup.string()
     .oneOf([Yup.ref("password"), null], "Passwords must match")
-    .required("confirm password is required"),
+    .required("Confirm password is required"),
 });
+
 
 function Register() {
   const navigate = useNavigate();
@@ -68,7 +73,7 @@ function Register() {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <div className="bg-black text-white p-8 rounded shadow-md w-96 text-center">
+      <div className="bg-black text-white p-8 rounded shadow-mdw-[16rem]  sm:w-96 text-center">
         <img
           src="/images/userImages/hub1.png"
           alt="Logo"

@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useFormik } from "formik";
 import MyButton from "../../components/MyButton";
 import { ServerVariables } from "../../util/ServerVariables";
-import { ArtistRequest, userRequest } from "../../Helper/instance";
+import { ArtistRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import { hideLoading, showLoading } from "../../redux/AlertSlice";
 
@@ -16,6 +16,7 @@ const ArtistOtp = () => {
   const timerIntervalRef = useRef(null);
   const location = useLocation();
   const email = location.state ? location.state.email : "";
+  const digitRefs = useRef([]);
 
   useEffect(() => {
     startTimer();
@@ -63,25 +64,39 @@ const ArtistOtp = () => {
     },
   });
 
+  const handleInputChange = (e, index) => {
+    formik.handleChange(e); // Handle formik change
+    const value = e.target.value;
+    if (value && index < 3) {
+      digitRefs.current[index + 1].focus(); // Focus on next input field
+    } else if (!value && index > 0) {
+      digitRefs.current[index - 1].focus(); // Focus on previous input field
+    }
+  };
+
   const resendOtp = () => {
     dispatch(showLoading());
     ArtistRequest({
       url: apiEndPoints.ArtistResendOtp,
       method: "post",
       data: { email: email },
-    }).then((res) => {
-      dispatch(hideLoading());
-      if (res.data.success) {
-        toast.success(res.data.success);
-        startTimer();
-      } else {
-        toast.error("failed to resend,try again");
-      }
-    }).catch((err) => {
-      dispatch(hideLoading());
-      toast.error("something went wrong");
-      console.log(err.message);
-    });
+    })
+      .then((res) => {
+        dispatch(hideLoading());
+        if (res.data.success) {
+          toast.success(res.data.success);
+          formik.resetForm();
+          startTimer();
+        } else {
+          toast.error("failed to resend,try again");
+          formik.resetForm();
+        }
+      })
+      .catch((err) => {
+        dispatch(hideLoading());
+        toast.error("something went wrong");
+        console.log(err.message);
+      });
   };
 
   return (
@@ -93,17 +108,21 @@ const ArtistOtp = () => {
           className="h-28 w-44 mx-auto"
         />
         <h2 className="text-2xl font-bold mb-6">OTP Verification</h2>
+        <p className="text-yellow-600 mb-2">
+          Please enter the otp that is sended to your email
+        </p>
         <form onSubmit={formik.handleSubmit} noValidate>
           <div className="flex justify-between  mb-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <div key={index} className="w-1/4 mr-2">
                 <input
+                  ref={(el) => (digitRefs.current[index] = el)}
                   type="text"
                   name={`digit${index + 1}`}
                   className="text-black w-full p-2 border border-gray-300 rounded"
                   maxLength="1"
                   value={formik.values[`digit${index + 1}`]}
-                  onChange={formik.handleChange}
+                  onChange={(e) => handleInputChange(e, index)}
                   onBlur={formik.handleBlur}
                 />
               </div>
@@ -130,7 +149,7 @@ const ArtistOtp = () => {
         <p className="text-sm">
           Back to
           <a
-            className="text-blue-500"
+            className="text-blue-500 cursor-pointer"
             onClick={() => navigate(ServerVariables.ArtistLogin)}
           >
             Login

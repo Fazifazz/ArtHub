@@ -171,7 +171,7 @@ const ArtistChatPage = () => {
                   whileHover={{ scale: 1.05 }}
                   key={user._id}
                   className={`flex items-center mb-4 cursor-pointer shadow-md hover:bg-green-100 p-2 rounded-md ${
-                    selectedUserId === user.userId ? "bg-green-100" : ""
+                    selectedUserId === user.userId._id ? "bg-green-100" : ""
                   }`}
                   onClick={() => handleUserClick(user.userId._id)}
                 >

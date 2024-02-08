@@ -10,11 +10,11 @@ import Modal from "react-modal";
 import AddCommentModal from "./AddCommentModal";
 import { API_BASE_URL } from "../config/api";
 
-const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
+const PostCard = ({ post, onLike, onUnLike, getPosts }) => {
   const { user } = useSelector((state) => state.Auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [comments, setComments] = useState([]);
   const dispatch = useDispatch();
-
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -35,6 +35,29 @@ const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
     },
   };
 
+  useEffect(() => {
+    getAllComments();
+  }, [comments]);
+
+  const getAllComments = () => {
+    const postId = post._id;
+    userRequest({
+      url: apiEndPoints.getComments,
+      method: "post",
+      data: { postId },
+    })
+      .then((res) => {
+        if (res.data.success) {
+          setComments(res.data?.comments);
+        } else {
+          toast.error("failed to load comments");
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  };
+
   const AddComment = async (text, postId) => {
     dispatch(showLoading());
     userRequest({
@@ -44,8 +67,8 @@ const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
     }).then((res) => {
       dispatch(hideLoading());
       if (res.data.success) {
-        getPosts()
-        setIsModalOpen(false)
+        getPosts();
+        getAllComments();
       }
     });
   };
@@ -82,7 +105,7 @@ const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
             <button className="flex items-center space-x-1 text-gray-500">
               <FaComment size={20} />
               <span onClick={openModal}>
-                {post?.comments?.length && post?.comments?.length} Comments
+                {comments?.length && comments?.length} Comments
               </span>
             </button>
           </div>
@@ -106,7 +129,7 @@ const PostCard = ({ post, onLike, onUnLike,getPosts  }) => {
   );
 };
 
-const PostList = ({ posts, onLike, onUnLike,getPosts }) => {
+const PostList = ({ posts, onLike, onUnLike, getPosts }) => {
   return (
     <div className="flex flex-wrap justify-center">
       {posts.map((post) => (
@@ -125,7 +148,6 @@ const PostList = ({ posts, onLike, onUnLike,getPosts }) => {
 const ArtistAllPosts = ({ artistId }) => {
   const [posts, setPosts] = useState([]);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {

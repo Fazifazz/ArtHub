@@ -5,17 +5,20 @@ import { ServerVariables } from "../../util/ServerVariables";
 import MyButton from "../../components/MyButton";
 import { useDispatch } from "react-redux";
 import { ArtistLoginThunk } from "../../redux/ArtistAuthSlice";
+import { useState } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi"; // Import eye icons
 
 const loginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
   password: Yup.string()
-    .min(6, "Password must be atleast 6 characters")
+    .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
 });
 
 const ArtistLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -28,7 +31,9 @@ const ArtistLogin = () => {
     },
   });
 
-
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -59,46 +64,63 @@ const ArtistLogin = () => {
               {formik.errors.email}
             </p>
           )}
-          <div className="mb-4">
+          <div className="mb-4 relative"> {/* Added relative class */}
             <label className="block text-sm font-semibold text-gray-600">
               Password:
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
-              className="text-black w-full p-2 border border-gray-300 rounded"
+              className="text-black w-full p-2 border border-gray-300 rounded pr-10" 
               value={formik.values.password}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 px-2 mt-6" 
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? (
+                <FiEyeOff color="black" />
+              ) : (
+                <FiEye color="black" />
+              )}
+            </button>
           </div>
           {formik.errors.password && formik.touched.password && (
             <p className="text-sm font-bold text-red-600">
               {formik.errors.password}
             </p>
           )}
+          
           <div className="flex items-center justify-center">
-            <MyButton text="Login"/>
+            <MyButton text="Login" />
           </div>
         </form>
 
         <p className="text-sm">
-          Dont have an account?
+          Don't have an account?
           <a
-            className="text-blue-500"
+            className="text-blue-500 cursor-pointer"
             onClick={() => navigate(ServerVariables.ArtistRegister)}
           >
             Sign up
           </a>
         </p>
-        <a className="text-blue-500" onClick={()=>navigate(ServerVariables.artistVerifyEmail)}>
+        <a
+          className="text-blue-500 cursor-pointer"
+          onClick={() => navigate(ServerVariables.artistVerifyEmail)}
+        >
           Forgot Password?
         </a>
         <div className="text-center">
-        <a className="text-yellow-300" onClick={()=>navigate(ServerVariables.Landing)}>
-          Back
-        </a>
-
+          <a
+            className="text-yellow-300 cursor-pointer"
+            onClick={() => navigate(ServerVariables.Landing)}
+          >
+            Back
+          </a>
         </div>
       </div>
     </div>

@@ -350,16 +350,17 @@ const Navbar = () => {
                     aria-hidden="true"
                   />
                   {MsgCount > 0 && (
-                        <>
-                          <span className="absolute top-0  bg-red-500 text-white rounded-full px-1  text-xs">
-                            {adjustedMsgcount}
-                          </span>
-                        </>
-                      )}
+                    <>
+                      <span className="absolute top-0  bg-red-500 text-white rounded-full px-1  text-xs">
+                        {adjustedMsgcount}
+                      </span>
+                    </>
+                  )}
                 </button>
                 <button
                   type="button"
                   className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  onClick={() => navigate(ServerVariables.userNotifications)}
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>

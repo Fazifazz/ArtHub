@@ -162,7 +162,7 @@ const ChatWithArtist = () => {
                 onChange={handleFilter}
               />
             </div>
-          </header>
+          </header> 
 
           {artists.length ? (
             artists.map((artist) => (

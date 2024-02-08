@@ -503,7 +503,7 @@ exports.deleteReply = catchAsync(async (req, res) => {
       path: "comments",
       populate: {
         path: "postedBy",
-        select: "name profile", // Replace 'User' with the actual model name for the user
+        select: "name profile",
       },
     })
     .populate("postedBy");
@@ -628,7 +628,6 @@ exports.checkCurrentArtistBlocked = catchAsync(async (req, res) => {
   }
   return res.status(200).json({ success: "ok" });
 });
-
 
 exports.getArtistFollowers = catchAsync(async (req, res) => {
   const artist = await Artist.findById(req.artistId).populate("followers");

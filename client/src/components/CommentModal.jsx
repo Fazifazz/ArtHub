@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import { FaReply } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { hideLoading, showLoading } from "../redux/AlertSlice";
 import { ArtistRequest } from "../Helper/instance";
 import { apiEndPoints } from "../util/api";

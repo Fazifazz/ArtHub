@@ -16,6 +16,7 @@ const ArtistForgetOtp = () => {
   const timerIntervalRef = useRef(null);
   const location = useLocation();
   const email = location.state ? location.state.email : "";
+  const digitRefs = useRef([]);
 
   useEffect(() => {
     startTimer();
@@ -65,6 +66,16 @@ const ArtistForgetOtp = () => {
     },
   });
 
+  const handleInputChange = (e, index) => {
+    formik.handleChange(e); // Handle formik change
+    const value = e.target.value;
+    if (value && index < 3) {
+      digitRefs.current[index + 1].focus(); // Focus on next input field
+    } else if (!value && index > 0) {
+      digitRefs.current[index - 1].focus(); // Focus on previous input field
+    }
+  };
+
   const resendOtp = () => {
     dispatch(showLoading());
     ArtistRequest({
@@ -97,17 +108,21 @@ const ArtistForgetOtp = () => {
           className="h-28 w-44 mx-auto"
         />
         <h2 className="text-2xl font-bold mb-6">OTP Verification</h2>
+        <p className="text-yellow-600 mb-2">
+          Please enter the otp that is sended to your email
+        </p>
         <form onSubmit={formik.handleSubmit} noValidate>
           <div className="flex justify-between  mb-4">
             {Array.from({ length: 4 }).map((_, index) => (
               <div key={index} className="w-1/4 mr-2">
                 <input
+                  ref={(el) => (digitRefs.current[index] = el)}
                   type="text"
                   name={`digit${index + 1}`}
                   className="text-black w-full p-2 border border-gray-300 rounded"
                   maxLength="1"
                   value={formik.values[`digit${index + 1}`]}
-                  onChange={formik.handleChange}
+                  onChange={(e) => handleInputChange(e, index)}
                   onBlur={formik.handleBlur}
                 />
               </div>
@@ -134,7 +149,7 @@ const ArtistForgetOtp = () => {
         <p className="text-sm">
           Back to
           <a
-            className="text-blue-500"
+            className="text-blue-500 cursor-pointer"
             onClick={() => navigate(ServerVariables.ArtistLogin)}
           >
             Login

@@ -72,5 +72,10 @@ userRouter
     userAuth,
     userController.checkUserRating 
   )
+  .post(
+    "/deleteComment",
+    userAuth,
+    userController.deleteComment 
+  )
 
 module.exports = userRouter;

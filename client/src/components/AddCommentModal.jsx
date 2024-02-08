@@ -3,6 +3,12 @@ import Modal from "react-modal";
 import { FaTelegram } from "react-icons/fa";
 import ShowReplies from "./showReplies";
 import { API_BASE_URL } from "../config/api";
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { hideLoading, showLoading } from "../redux/AlertSlice";
+import { userRequest } from "../Helper/instance";
+import { apiEndPoints } from "../util/api";
+import toast from "react-hot-toast";
 
 const AddCommentModal = ({
   isOpen,
@@ -11,9 +17,13 @@ const AddCommentModal = ({
   addComment,
   artistPosts,
   post,
+  getPosts
 }) => {
   const [newComment, setNewComment] = useState("");
   const [selectedPost, setSelectedPost] = useState(null);
+  const [comments, setComments] = useState([]);
+  const { user } = useSelector((state) => state.Auth);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (post) {
@@ -25,11 +35,57 @@ const AddCommentModal = ({
     }
   }, [postId, artistPosts]);
 
+  useEffect(() => {
+    getAllComments();
+  }, [comments]);
+
+  const getAllComments = () => {
+    userRequest({
+      url: apiEndPoints.getComments,
+      method: "post",
+      data: { postId },
+    })
+      .then((res) => {
+        if (res.data.success) {
+          setComments(res.data?.comments);
+        } else {
+          toast.error("failed to load comments");
+        }
+      })
+      .catch((err) => {
+        toast.error("something went wrong!");
+        console.log(err.message);
+      });
+  };
+
   const handleAddComment = () => {
     if (newComment.trim() !== "") {
       addComment(newComment, postId);
       setNewComment("");
     }
+  };
+
+  const deleteComment = (postid, commentId) => {
+    dispatch(showLoading());
+    userRequest({
+      url: apiEndPoints.deleteComment,
+      method: "post",
+      data: { postid, commentId },
+    })
+      .then((res) => {
+        dispatch(hideLoading());
+        if (res.data.success) {
+          setSelectedPost(res.data?.post);
+          getAllComments()
+          getPosts()
+        } else {
+          toast.error("failed to delete comment");
+        }
+      })
+      .catch((err) => {
+        dispatch(hideLoading());
+        console.log(err.message);
+      });
   };
 
   return (
@@ -44,7 +100,7 @@ const AddCommentModal = ({
         content: {
           top: "50%",
           left: "50%",
-          right: "auto",
+          right: "auto",  
           bottom: "auto",
           marginRight: "-50%",
           transform: "translate(-50%, -50%)",
@@ -65,8 +121,8 @@ const AddCommentModal = ({
         )}
         <h2 className="text-slate-400 mb-4">Comments</h2>
         <div className="comments-container">
-          {selectedPost?.comments?.length ? (
-            selectedPost.comments.map((comment) => (
+          {comments?.length ? (
+            comments?.map((comment) => (
               <div key={comment._id} className="mb-4">
                 <div className="flex items-center">
                   <img
@@ -82,6 +138,12 @@ const AddCommentModal = ({
                     <small className="text-gray-500 ml-2">
                       {new Date(comment?.createdAt).toLocaleString()}
                     </small>
+                    {user._id === comment?.postedBy?._id && (
+                      <MdOutlineDeleteForever
+                        className="fill-red-800 mx-2"
+                        onClick={() => deleteComment(postId, comment._id)}
+                      />
+                    )}
                   </div>
                 </div>
                 {comment.replies?.length ? (

@@ -7,35 +7,55 @@ import { hideLoading, showLoading } from "../../redux/AlertSlice";
 import { ArtistRequest } from "../../Helper/instance";
 import { apiEndPoints } from "../../util/api";
 import toast from "react-hot-toast";
+import * as Yup from "yup"; 
+import { FiEye, FiEyeOff } from "react-icons/fi"; 
 
 function ArtistChangePassword() {
   const [password, setPassword] = useState("");
   const [Cpassword, setCPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showCPassword, setShowCPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   const email = location.state ? location.state.email : "";
 
+  // Password validation schema
+  const passwordSchema = Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    )
+    .required("Password is required");
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleCPasswordVisibility = () => {
+    setShowCPassword(!showCPassword);
+  };
+
   const updatePassword = async (e) => {
     e.preventDefault();
-    if (!password || !Cpassword) {
-      setError("All fields are required");
-      return setTimeout(() => {
+    // Validate passwords against schema
+    try {
+      await passwordSchema.validate(password);
+    } catch (error) {
+      setError(error.message);
+      setTimeout(() => {
         setError("");
       }, 2000);
-    }
-    if (password.length < 6) {
-      setError("password must have atleast 6 letters");
-      return setTimeout(() => {
-        setError("");
-      }, 2000);
+      return;
     }
     if (password !== Cpassword) {
-      setError("password not match confirm password");
-      return setTimeout(() => {
+      setError("Password does not match the confirm password");
+      setTimeout(() => {
         setError("");
       }, 2000);
+      return;
     }
     dispatch(showLoading());
     ArtistRequest({
@@ -54,7 +74,7 @@ function ArtistChangePassword() {
       })
       .catch((err) => {
         dispatch(hideLoading());
-        toast.error("something went wrong");
+        toast.error("Something went wrong");
         console.log(err.message);
       });
   };
@@ -67,30 +87,56 @@ function ArtistChangePassword() {
           alt="Logo"
           className="h-28 w-44 mx-auto"
         />
-        <h2 className="text-2xl font-bold mb-6">Set new Password</h2>
-        {error ? <p className="text-sm font-bold text-red-600">{error}</p> : ""}
+        <h2 className="text-2xl font-bold mb-6">Set New Password</h2>
+        {error && <p className="text-sm font-bold text-red-600">{error}</p>}
         <form>
           <div className="text-center w-full">
-            <label className="text-center">New password:</label>
-            <input
-              type="text"
-              name="email"
-              placeholder="please enter new password.."
-              className="text-black w-full p-2 border border-gray-300 rounded"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <label className="text-center">New Password:</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Please enter a new password.."
+                className="text-black w-full p-2 border border-gray-300 rounded"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 px-3 py-2"
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? (
+                  <FiEyeOff color="black" />
+                ) : (
+                  <FiEye color="black" />
+                )}
+              </button>
+            </div>
           </div>
           <div className="text-center w-full mb-4">
-            <label className="text-center">Confirm password:</label>
-            <input
-              type="text"
-              name="email"
-              placeholder="please confirm your password.."
-              className="text-black w-full p-2 border border-gray-300 rounded"
-              value={Cpassword}
-              onChange={(e) => setCPassword(e.target.value)}
-            />
+            <label className="text-center">Confirm Password:</label>
+            <div className="relative">
+              <input
+                type={showCPassword ? "text" : "password"}
+                name="Cpassword"
+                placeholder="Please confirm your password.."
+                className="text-black w-full p-2 border border-gray-300 rounded"
+                value={Cpassword}
+                onChange={(e) => setCPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 px-3 py-2"
+                onClick={toggleCPasswordVisibility}
+              >
+                {showCPassword ? (
+                  <FiEyeOff color="black" />
+                ) : (
+                  <FiEye color="black" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-center">
@@ -102,7 +148,7 @@ function ArtistChangePassword() {
           className="text-blue-500 text-center"
           onClick={() => navigate(ServerVariables.ArtistLogin)}
         >
-          cancel
+          Cancel
         </a>
       </div>
     </div>
