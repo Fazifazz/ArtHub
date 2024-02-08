@@ -48,8 +48,8 @@ const BannerCarousel = ({ banners }) => {
             className="w-full h-auto"
           />
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center text-white">
-            <h2 className="text-7xl font-bold">{banner.title}</h2>
-            <p className="text-lg">{banner.description}</p>
+            <h2 className="text-xl sm:text-3xl md:text-5xl lg:text-7xl  font-bold">{banner.title}</h2>
+            <p className="text-[0.5rem] sm:text-xs md:text-sm lg:text-2xl">{banner.description}</p>
           </div>
         </div>
       ))}
